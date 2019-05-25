@@ -2,12 +2,12 @@ use std::ffi::CStr;
 use std::mem;
 use std::os::raw::c_void;
 use std::rc::Rc;
+use std::cell::RefCell;
 
 use crate::gc::GarbageCollection;
 use crate::interpreter::Mrb;
 use crate::sys;
-use crate::value::types::Ruby::Data;
-use std::cell::RefCell;
+use crate::value::types::Ruby;
 
 pub mod types;
 
@@ -82,11 +82,11 @@ impl Value {
 
 impl Clone for Value {
     fn clone(&self) -> Self {
-        let ruby_type = self.ruby_type();
-        if ruby_type == Data {
+        if let Ruby::Data = self.ruby_type() {
             unsafe {
                 let ptr = mem::transmute::<*mut c_void, Rc<RefCell<_>>>(self.value.value.p);
                 let cloned_ptr = Rc::clone(&ptr);
+                mem::forget(ptr);
                 Self::new(
                     Rc::clone(&self.interp),
                     sys::mrb_value {
@@ -347,5 +347,21 @@ mod tests {
         // interpreter.
         let fixnum = interp.fixnum(99);
         assert!(!fixnum.is_dead());
+    }
+
+    #[test]
+    fn clone_int() {
+        unsafe {
+            let interp = Interpreter::create().expect("mrb init");
+            let value = Value::try_from_mrb(&interp, 255).expect("convert");
+            let cloned = value.clone();
+            assert_eq!(value.inspect(), "255");
+            assert_eq!(cloned.inspect(), "255");
+        }
+    }
+
+    #[test]
+    fn clone_string() {
+
     }
 }
