@@ -3678,6 +3678,10 @@ extern "C" {
     pub fn mrb_sys_class_of_value(mrb: *mut mrb_state, value: mrb_value) -> *mut RClass;
 }
 extern "C" {
+    #[link_name = "\u{1}_mrb_sys_get_ptr"]
+    pub fn mrb_sys_get_ptr(obj: mrb_value) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
     #[link_name = "\u{1}_mrb_sys_nil_value"]
     pub fn mrb_sys_nil_value() -> mrb_value;
 }

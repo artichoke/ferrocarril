@@ -1,8 +1,6 @@
 use std::ffi::CStr;
 use std::mem;
-use std::os::raw::c_void;
 use std::rc::Rc;
-use std::cell::RefCell;
 
 use crate::gc::GarbageCollection;
 use crate::interpreter::Mrb;
@@ -83,20 +81,18 @@ impl Value {
 impl Clone for Value {
     fn clone(&self) -> Self {
         if let Ruby::Data = self.ruby_type() {
-            unsafe {
-                let ptr = mem::transmute::<*mut c_void, Rc<RefCell<_>>>(self.value.value.p);
-                let cloned_ptr = Rc::clone(&ptr);
-                mem::forget(ptr);
-                Self::new(
-                    Rc::clone(&self.interp),
-                    sys::mrb_value {
-                        value: sys::mrb_value__bindgen_ty_1 {
-                            p: mem::transmute::<Rc<RefCell<_>>, *mut c_void>(cloned_ptr),
-                        },
-                        tt: self.value.tt
+            let ptr = unsafe { sys::mrb_sys_get_ptr(self.inner()) };
+            let cloned_ptr = ptr.clone();
+            mem::forget(ptr);
+            Self::new(
+                Rc::clone(&self.interp),
+                sys::mrb_value {
+                    value: sys::mrb_value__bindgen_ty_1 {
+                        p: cloned_ptr,
                     },
-                )
-            }
+                    tt: self.value.tt,
+                },
+            )
         } else {
             Self::new(
                 Rc::clone(&self.interp),
@@ -361,7 +357,5 @@ mod tests {
     }
 
     #[test]
-    fn clone_string() {
-
-    }
+    fn clone_string() {}
 }

@@ -268,3 +268,4 @@ target/
 !Cargo.lock
 # ignore the IntelliJ project file
 .idea/ferrocarril.iml
+.DS_Store
