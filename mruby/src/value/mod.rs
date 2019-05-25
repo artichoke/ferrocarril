@@ -1,10 +1,13 @@
 use std::ffi::CStr;
-
+use std::mem;
+use std::os::raw::c_void;
 use std::rc::Rc;
+
 use crate::gc::GarbageCollection;
 use crate::interpreter::Mrb;
 use crate::sys;
 use crate::value::types::Ruby::Data;
+use std::cell::RefCell;
 
 pub mod types;
 
@@ -81,16 +84,24 @@ impl Clone for Value {
     fn clone(&self) -> Self {
         let ruby_type = self.ruby_type();
         if ruby_type == Data {
-            Self::new {
-                interp: Rc::clone(self.interp.borrow()),
-                value: self.value.clone(),
+            unsafe {
+                let ptr = mem::transmute::<*mut c_void, Rc<RefCell<_>>>(self.value.value.p);
+                let cloned_ptr = Rc::clone(&ptr);
+                Self::new(
+                    Rc::clone(&self.interp),
+                    sys::mrb_value {
+                        value: sys::mrb_value__bindgen_ty_1 {
+                            p: mem::transmute::<Rc<RefCell<_>>, *mut c_void>(cloned_ptr),
+                        },
+                        tt: self.value.tt
+                    },
+                )
             }
-        }
-        else {
-            Self::new {
-                interp: Rc::clone(self.interp.borrow()),
-                value: self.value.clone(),
-            }
+        } else {
+            Self::new(
+                Rc::clone(&self.interp),
+                self.value.clone(),
+            )
         }
     }
 }

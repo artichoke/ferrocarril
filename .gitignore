@@ -266,3 +266,5 @@ tags
 target/
 # ferrocarril is an application
 !Cargo.lock
+# ignore the IntelliJ project file
+.idea/ferrocarril.iml
