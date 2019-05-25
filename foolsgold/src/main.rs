@@ -1,9 +1,12 @@
 #![feature(integer_atomics)]
 #![feature(proc_macro_hygiene, decl_macro)]
+#![deny(warnings, intra_doc_link_resolution_failure)]
 #![deny(clippy::all, clippy::pedantic)]
 
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate mruby;
 #[macro_use]
 extern crate ref_thread_local;
 #[macro_use]
@@ -13,7 +16,7 @@ use rocket::routes;
 
 mod assets;
 mod execmodel;
-mod sources;
+mod foolsgold;
 
 pub fn main() -> Result<(), i32> {
     env_logger::Builder::from_env("FOOLSGOLD_LOG").init();

@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::collections::HashSet;
 use std::convert::AsRef;
 use std::ffi::CString;
@@ -17,7 +18,7 @@ pub struct Spec {
     data_type: sys::mrb_data_type,
     methods: HashSet<method::Spec>,
     parent: Option<Parent>,
-    super_class: Option<Rc<Spec>>,
+    super_class: Option<Rc<RefCell<Spec>>>,
     is_mrb_tt_data: bool,
 }
 
@@ -50,7 +51,7 @@ impl Spec {
         self.is_mrb_tt_data = is_mrb_tt_data;
     }
 
-    pub fn with_super_class(&mut self, super_class: Rc<Self>) {
+    pub fn with_super_class(&mut self, super_class: Rc<RefCell<Self>>) {
         self.super_class = Some(super_class);
     }
 }
@@ -78,14 +79,28 @@ impl ClassLike for Spec {
         self.parent.clone()
     }
 
-    fn rclass(&self, interp: Mrb) -> *mut sys::RClass {
+    fn rclass(&self, interp: Mrb) -> Option<*mut sys::RClass> {
         let mrb = interp.borrow().mrb;
         if let Some(ref parent) = self.parent {
-            unsafe {
-                sys::mrb_class_get_under(mrb, (*parent).rclass(interp), self.cstring().as_ptr())
+            if let Some(parent) = parent.rclass(interp) {
+                if unsafe { sys::mrb_class_defined_under(mrb, parent, self.cstring.as_ptr()) } == 0
+                {
+                    // parent exists and class is NOT defined under parent
+                    None
+                } else {
+                    // parent exists class is defined under parent
+                    Some(unsafe { sys::mrb_class_get_under(mrb, parent, self.cstring().as_ptr()) })
+                }
+            } else {
+                // parent does not exist
+                None
             }
+        } else if unsafe { sys::mrb_class_defined(mrb, self.cstring.as_ptr()) } == 0 {
+            // class does NOT exist in root namespace
+            None
         } else {
-            unsafe { sys::mrb_class_get(mrb, self.cstring().as_ptr()) }
+            // class exists in root namespace
+            Some(unsafe { sys::mrb_class_get(mrb, self.cstring().as_ptr()) })
         }
     }
 }
@@ -125,18 +140,18 @@ impl Define for Spec {
     fn define(&self, interp: &Mrb) -> Result<*mut sys::RClass, MrbError> {
         let mrb = interp.borrow().mrb;
         let super_class = if let Some(ref spec) = self.super_class {
-            spec.rclass(Rc::clone(interp))
+            spec.borrow()
+                .rclass(Rc::clone(&interp))
+                .ok_or_else(|| MrbError::NotDefined(spec.borrow().fqname()))?
         } else {
             unsafe { (*mrb).object_class }
         };
         let rclass = if let Some(ref parent) = self.parent {
+            let parent = parent
+                .rclass(Rc::clone(&interp))
+                .ok_or_else(|| MrbError::NotDefined(parent.fqname()))?;
             unsafe {
-                sys::mrb_define_class_under(
-                    mrb,
-                    parent.rclass(Rc::clone(&interp)),
-                    self.cstring().as_ptr(),
-                    super_class,
-                )
+                sys::mrb_define_class_under(mrb, parent, self.cstring().as_ptr(), super_class)
             }
         } else {
             unsafe { sys::mrb_define_class(mrb, self.cstring().as_ptr(), super_class) }
@@ -159,29 +174,28 @@ impl Define for Spec {
 
 #[cfg(test)]
 mod tests {
+    use std::cell::RefCell;
     use std::rc::Rc;
 
     use crate::class::Spec;
     use crate::convert::TryFromMrb;
-    use crate::def::Define;
+    use crate::def::{ClassLike, Define, Parent};
     use crate::eval::MrbEval;
     use crate::interpreter::Interpreter;
+    use crate::module;
 
     #[test]
     fn super_class() {
         let interp = Interpreter::create().expect("mrb init");
-        let standard_error = Rc::new(Spec::new("StandardError", None, None));
-        {
+        let standard_error = Rc::new(RefCell::new(Spec::new("StandardError", None, None)));
+        let spec = {
             let mut api = interp.borrow_mut();
-            api.def_class::<()>("RustError", None, None);
-            let spec = api.class_spec_mut::<()>();
-            spec.with_super_class(standard_error);
-        }
-        {
-            let api = interp.borrow();
-            let spec = api.class_spec::<()>();
-            spec.define(&interp).expect("class install");
-        }
+            let spec = api.def_class::<()>("RustError", None, None);
+            spec.borrow_mut()
+                .with_super_class(Rc::clone(&standard_error));
+            spec
+        };
+        spec.borrow().define(&interp).expect("class install");
 
         let result = interp
             .eval("RustError.new.is_a?(StandardError)")
@@ -191,5 +205,78 @@ mod tests {
         let result = interp.eval("RustError < StandardError").expect("eval");
         let result = unsafe { bool::try_from_mrb(&interp, result).expect("convert") };
         assert!(result, "RustError inherits from StandardError");
+    }
+
+    #[test]
+    fn refcell_allows_mutable_class_specs_after_attached_as_parent() {
+        struct BaseClass;
+        struct SubClass;
+        let interp = Interpreter::create().expect("mrb init");
+        let (base, sub) = {
+            let mut api = interp.borrow_mut();
+            let base = api.def_class::<BaseClass>("BaseClass", None, None);
+            let sub = api.def_class::<SubClass>("SubClass", None, None);
+            sub.borrow_mut().with_super_class(Rc::clone(&base));
+            (base, sub)
+        };
+        base.borrow().define(&interp).expect("def class");
+        sub.borrow().define(&interp).expect("def class");
+        {
+            let api = interp.borrow();
+            // this should not panic
+            let _ = api.class_spec::<BaseClass>().unwrap().borrow_mut();
+            let _ = api.class_spec::<SubClass>().unwrap().borrow_mut();
+        }
+    }
+
+    #[test]
+    fn rclass_for_undef_root_class() {
+        let interp = Interpreter::create().expect("mrb init");
+        let spec = Spec::new("Foo", None, None);
+        assert!(spec.rclass(Rc::clone(&interp)).is_none());
+    }
+
+    #[test]
+    fn rclass_for_undef_nested_class() {
+        let interp = Interpreter::create().expect("mrb init");
+        let parent = module::Spec::new("Kernel", None);
+        let parent = Parent::Module {
+            spec: Rc::new(RefCell::new(parent)),
+        };
+        let spec = Spec::new("Foo", Some(parent), None);
+        assert!(spec.rclass(Rc::clone(&interp)).is_none());
+    }
+
+    #[test]
+    fn rclass_for_root_class() {
+        let interp = Interpreter::create().expect("mrb init");
+        let spec = Spec::new("StandardError", None, None);
+        assert!(spec.rclass(Rc::clone(&interp)).is_some());
+    }
+
+    #[test]
+    fn rclass_for_nested_class() {
+        let interp = Interpreter::create().expect("mrb init");
+        interp
+            .eval("module Foo; class Bar; end; end")
+            .expect("eval");
+        let parent = module::Spec::new("Foo", None);
+        let parent = Parent::Module {
+            spec: Rc::new(RefCell::new(parent)),
+        };
+        let spec = Spec::new("Bar", Some(parent), None);
+        assert!(spec.rclass(Rc::clone(&interp)).is_some());
+    }
+
+    #[test]
+    fn rclass_for_nested_class_under_class() {
+        let interp = Interpreter::create().expect("mrb init");
+        interp.eval("class Foo; class Bar; end; end").expect("eval");
+        let parent = Spec::new("Foo", None, None);
+        let parent = Parent::Class {
+            spec: Rc::new(RefCell::new(parent)),
+        };
+        let spec = Spec::new("Bar", Some(parent), None);
+        assert!(spec.rclass(Rc::clone(&interp)).is_some());
     }
 }

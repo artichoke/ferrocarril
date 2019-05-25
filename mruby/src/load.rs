@@ -12,14 +12,18 @@ where
     Self: MrbApi,
 {
     /// Add a Rust-backed Ruby source file to the virtual filesystem. A stub
-    /// Ruby file is added to the filesystem and [`require`] will dynamically
+    /// Ruby file is added to the filesystem and `require` will dynamically
     /// define Ruby items when invoked via `Kernel#require`.
     ///
     /// If filename is a relative path, the Ruby source is added to the
     /// filesystem relative to [`RUBY_LOAD_PATH`]. If the path is absolute, the
     /// file is placed directly on the filesystem. Anscestor directories are
     /// created automatically.
-    fn def_file<T>(&mut self, filename: T, require: fn(Self)) -> Result<(), MrbError>
+    fn def_file<T>(
+        &self,
+        filename: T,
+        require: fn(Self) -> Result<(), MrbError>,
+    ) -> Result<(), MrbError>
     where
         T: AsRef<str>;
 
@@ -31,7 +35,7 @@ where
     /// filesystem relative to [`RUBY_LOAD_PATH`]. If the path is absolute, the
     /// file is placed directly on the filesystem. Anscestor directories are
     /// created automatically.
-    fn def_file_for_type<T, F>(&mut self, filename: T) -> Result<(), MrbError>
+    fn def_file_for_type<T, F>(&self, filename: T) -> Result<(), MrbError>
     where
         T: AsRef<str>,
         F: MrbFile;
@@ -42,7 +46,7 @@ where
     /// filesystem relative to [`RUBY_LOAD_PATH`]. If the path is absolute, the
     /// file is placed directly on the filesystem. Anscestor directories are
     /// created automatically.
-    fn def_rb_source_file<T, F>(&mut self, filename: T, contents: F) -> Result<(), MrbError>
+    fn def_rb_source_file<T, F>(&self, filename: T, contents: F) -> Result<(), MrbError>
     where
         T: AsRef<str>,
         F: AsRef<[u8]>;
@@ -62,7 +66,11 @@ where
 }
 
 impl MrbLoadSources for Mrb {
-    fn def_file<T>(&mut self, filename: T, require: fn(Self)) -> Result<(), MrbError>
+    fn def_file<T>(
+        &self,
+        filename: T,
+        require: fn(Self) -> Result<(), MrbError>,
+    ) -> Result<(), MrbError>
     where
         T: AsRef<str>,
     {
@@ -71,9 +79,12 @@ impl MrbLoadSources for Mrb {
         if let Some(parent) = path.parent() {
             api.vfs.create_dir_all(parent).map_err(MrbError::Vfs)?;
         }
-        let contents = format!("# virtual source file -- {:?}", &path);
-        api.vfs.write_file(&path, contents).map_err(MrbError::Vfs)?;
-        let metadata = VfsMetadata::new(Some(require));
+        if !api.vfs.is_file(&path) {
+            let contents = format!("# virtual source file -- {:?}", &path);
+            api.vfs.write_file(&path, contents).map_err(MrbError::Vfs)?;
+        }
+        let mut metadata = api.vfs.metadata(&path).unwrap_or_else(VfsMetadata::new);
+        metadata.require = Some(require);
         api.vfs
             .set_metadata(&path, metadata)
             .map_err(MrbError::Vfs)?;
@@ -84,7 +95,7 @@ impl MrbLoadSources for Mrb {
         Ok(())
     }
 
-    fn def_file_for_type<T, F>(&mut self, filename: T) -> Result<(), MrbError>
+    fn def_file_for_type<T, F>(&self, filename: T) -> Result<(), MrbError>
     where
         T: AsRef<str>,
         F: MrbFile,
@@ -92,7 +103,7 @@ impl MrbLoadSources for Mrb {
         self.def_file(filename.as_ref(), F::require)
     }
 
-    fn def_rb_source_file<T, F>(&mut self, filename: T, contents: F) -> Result<(), MrbError>
+    fn def_rb_source_file<T, F>(&self, filename: T, contents: F) -> Result<(), MrbError>
     where
         T: AsRef<str>,
         F: AsRef<[u8]>,
@@ -105,7 +116,7 @@ impl MrbLoadSources for Mrb {
         api.vfs
             .write_file(&path, contents.as_ref())
             .map_err(MrbError::Vfs)?;
-        let metadata = VfsMetadata::new(None);
+        let metadata = api.vfs.metadata(&path).unwrap_or_else(VfsMetadata::new);
         api.vfs
             .set_metadata(&path, metadata)
             .map_err(MrbError::Vfs)?;
