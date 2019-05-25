@@ -81,7 +81,7 @@ impl Value {
 impl Clone for Value {
     fn clone(&self) -> Self {
         if let Ruby::Data = self.ruby_type() {
-            let ptr = unsafe { sys::mrb_sys_get_ptr(self.inner()) };
+            let ptr = unsafe { sys::mrb_sys_get_data_ptr(self.inner()) };
             let cloned_ptr = ptr.clone();
             mem::forget(ptr);
             Self::new(

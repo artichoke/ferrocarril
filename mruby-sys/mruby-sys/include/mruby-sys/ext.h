@@ -57,7 +57,7 @@ struct RClass *mrb_sys_class_to_rclass(mrb_value value);
 
 struct RClass *mrb_sys_class_of_value(struct mrb_state *mrb, mrb_value value);
 
-void *mrb_sys_get_ptr(mrb_value obj);
+void *mrb_sys_get_data_ptr(mrb_value obj);
 
 // Construct `mrb_value`s
 
