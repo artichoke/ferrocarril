@@ -1,8 +1,10 @@
 use std::ffi::CStr;
 
+use std::rc::Rc;
 use crate::gc::GarbageCollection;
 use crate::interpreter::Mrb;
 use crate::sys;
+use crate::value::types::Ruby::Data;
 
 pub mod types;
 
@@ -59,6 +61,24 @@ impl Value {
         let string = unsafe { CStr::from_ptr(cstr) }.to_string_lossy();
         arena.restore();
         string.into_owned()
+    }
+}
+
+impl Clone for Value {
+    fn clone(&self) -> Self {
+        let ruby_type = self.ruby_type();
+        if ruby_type == Data {
+            Self::new {
+                interp: Rc::clone(self.interp.borrow()),
+                value: self.value.clone(),
+            }
+        }
+        else {
+            Self::new {
+                interp: Rc::clone(self.interp.borrow()),
+                value: self.value.clone(),
+            }
+        }
     }
 }
 
