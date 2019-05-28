@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["patch",""]],"struct":[["ArgumentError",""],["Exception",""],["LoadError",""],["ScriptError",""]]});

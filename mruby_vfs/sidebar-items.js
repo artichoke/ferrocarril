@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["FakeFileSystem","An in-memory file system."],["FakeTempDir",""]],"trait":[["DirEntry",""],["FileSystem","Provides standard file system operations."],["ReadDir",""],["TempDir","Tracks a temporary directory that will be deleted once the struct goes out of scope."],["TempFileSystem",""],["UnixFileSystem",""]]});

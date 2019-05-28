@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","Errors encountered during parsing some Ruby code."],["State","State shows whether mruby can parse some code or why it cannot. This enum only encapsulates whether mruby can parse the code. It may still have syntactic or semantic errors."]],"struct":[["Parser","Wraps a `mruby_sys` mruby parser."]]});
