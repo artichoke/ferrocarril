@@ -216,7 +216,7 @@
 <span id="216">216</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">EnclosingRubyScope</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
@@ -318,13 +318,13 @@
 
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>();
-            <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">api</span>
+            <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">api</span>
                 .<span class="ident">module_spec</span>::<span class="op">&lt;</span><span class="ident">FoolsGold</span><span class="op">&gt;</span>()
-                .<span class="ident">map</span>(<span class="ident">Parent</span>::<span class="ident">module</span>)
+                .<span class="ident">map</span>(<span class="ident">EnclosingRubyScope</span>::<span class="ident">module</span>)
                 .<span class="ident">ok_or</span>(<span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="string">&quot;FoolsGold&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
             <span class="comment">// We do not need to define a free method since we are not storing</span>
             <span class="comment">// any data in the `mrb_value`.</span>
-            <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">api</span>.<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;Counter&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>), <span class="prelude-val">None</span>);
+            <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">api</span>.<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;Counter&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">scope</span>), <span class="prelude-val">None</span>);
             <span class="ident">spec</span>.<span class="ident">borrow_mut</span>()
                 .<span class="ident">add_method</span>(<span class="string">&quot;get&quot;</span>, <span class="ident">get</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>());
             <span class="ident">spec</span>.<span class="ident">borrow_mut</span>()
@@ -340,14 +340,14 @@
 
 <span class="kw">impl</span> <span class="ident">MrbFile</span> <span class="kw">for</span> <span class="ident">Metrics</span> {
     <span class="kw">fn</span> <span class="ident">require</span>(<span class="ident">interp</span>: <span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">interp</span>
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">borrow</span>()
             .<span class="ident">module_spec</span>::<span class="op">&lt;</span><span class="ident">FoolsGold</span><span class="op">&gt;</span>()
-            .<span class="ident">map</span>(<span class="ident">Parent</span>::<span class="ident">module</span>)
+            .<span class="ident">map</span>(<span class="ident">EnclosingRubyScope</span>::<span class="ident">module</span>)
             .<span class="ident">ok_or</span>(<span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="string">&quot;FoolsGold&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">borrow_mut</span>()
-            .<span class="ident">def_module</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;Metrics&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>));
+            .<span class="ident">def_module</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;Metrics&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">scope</span>));
         <span class="ident">spec</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
@@ -412,12 +412,12 @@
 
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>();
-            <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">api</span>
+            <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">api</span>
                 .<span class="ident">module_spec</span>::<span class="op">&lt;</span><span class="ident">FoolsGold</span><span class="op">&gt;</span>()
-                .<span class="ident">map</span>(<span class="ident">Parent</span>::<span class="ident">module</span>)
+                .<span class="ident">map</span>(<span class="ident">EnclosingRubyScope</span>::<span class="ident">module</span>)
                 .<span class="ident">ok_or</span>(<span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="string">&quot;FoolsGold&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span>
-                <span class="ident">api</span>.<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;RequestContext&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>), <span class="prelude-val">Some</span>(<span class="ident">rust_data_free</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>));
+                <span class="ident">api</span>.<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;RequestContext&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">scope</span>), <span class="prelude-val">Some</span>(<span class="ident">rust_data_free</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>));
             <span class="ident">spec</span>.<span class="ident">borrow_mut</span>().<span class="ident">mrb_value_is_rust_backed</span>(<span class="bool-val">true</span>);
             <span class="ident">spec</span>.<span class="ident">borrow_mut</span>()
                 .<span class="ident">add_method</span>(<span class="string">&quot;initialize&quot;</span>, <span class="ident">initialize</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>());

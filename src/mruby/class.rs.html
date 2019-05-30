@@ -280,7 +280,6 @@
 <span id="280">280</span>
 <span id="281">281</span>
 <span id="282">282</span>
-<span id="283">283</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashSet</span>;
@@ -290,7 +289,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">Free</span>, <span class="ident">Method</span>, <span class="ident">Parent</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">EnclosingRubyScope</span>, <span class="ident">Free</span>, <span class="ident">Method</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">method</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
@@ -302,13 +301,13 @@
     <span class="ident">cstring</span>: <span class="ident">CString</span>,
     <span class="ident">data_type</span>: <span class="ident">sys</span>::<span class="ident">mrb_data_type</span>,
     <span class="ident">methods</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">method</span>::<span class="ident">Spec</span><span class="op">&gt;</span>,
-    <span class="ident">parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parent</span><span class="op">&gt;</span>,
+    <span class="ident">enclosing_scope</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EnclosingRubyScope</span><span class="op">&gt;</span>,
     <span class="ident">super_class</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Spec</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
     <span class="ident">is_mrb_tt_data</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Spec</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="ident">T</span>, <span class="ident">parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parent</span><span class="op">&gt;</span>, <span class="ident">free</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Free</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="ident">T</span>, <span class="ident">enclosing_scope</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EnclosingRubyScope</span><span class="op">&gt;</span>, <span class="ident">free</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Free</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
     {
@@ -322,7 +321,7 @@
             <span class="ident">cstring</span>: <span class="ident">cstr</span>,
             <span class="ident">data_type</span>,
             <span class="ident">methods</span>: <span class="ident">HashSet</span>::<span class="ident">new</span>(),
-            <span class="ident">parent</span>,
+            <span class="ident">enclosing_scope</span>,
             <span class="ident">super_class</span>: <span class="prelude-val">None</span>,
             <span class="ident">is_mrb_tt_data</span>: <span class="bool-val">false</span>,
         }
@@ -366,31 +365,32 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">parent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parent</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">parent</span>.<span class="ident">clone</span>()
+    <span class="kw">fn</span> <span class="ident">enclosing_scope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EnclosingRubyScope</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">enclosing_scope</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">rclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">RClass</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">mrb</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>;
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">parent</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parent</span>) <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">rclass</span>(<span class="ident">interp</span>) {
-                <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_class_defined_under</span>(<span class="ident">mrb</span>, <span class="ident">parent</span>, <span class="self">self</span>.<span class="ident">cstring</span>.<span class="ident">as_ptr</span>()) } <span class="op">==</span> <span class="number">0</span>
-                {
-                    <span class="comment">// parent exists and class is NOT defined under parent</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">scope</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">enclosing_scope</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">scope</span>) <span class="op">=</span> <span class="ident">scope</span>.<span class="ident">rclass</span>(<span class="ident">interp</span>) {
+                <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_class_defined_under</span>(<span class="ident">mrb</span>, <span class="ident">scope</span>, <span class="self">self</span>.<span class="ident">cstring</span>.<span class="ident">as_ptr</span>()) } <span class="op">==</span> <span class="number">0</span> {
+                    <span class="comment">// Enclosing scope exists and Class is NOT defined under</span>
+                    <span class="comment">// the enclosing scope.</span>
                     <span class="prelude-val">None</span>
                 } <span class="kw">else</span> {
-                    <span class="comment">// parent exists class is defined under parent</span>
-                    <span class="prelude-val">Some</span>(<span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_class_get_under</span>(<span class="ident">mrb</span>, <span class="ident">parent</span>, <span class="self">self</span>.<span class="ident">cstring</span>().<span class="ident">as_ptr</span>()) })
+                    <span class="comment">// Enclosing scope exists Class IS defined under the</span>
+                    <span class="comment">// enclosing scope.</span>
+                    <span class="prelude-val">Some</span>(<span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_class_get_under</span>(<span class="ident">mrb</span>, <span class="ident">scope</span>, <span class="self">self</span>.<span class="ident">cstring</span>().<span class="ident">as_ptr</span>()) })
                 }
             } <span class="kw">else</span> {
-                <span class="comment">// parent does not exist</span>
+                <span class="comment">// The enclosing scope does not exist.</span>
                 <span class="prelude-val">None</span>
             }
         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_class_defined</span>(<span class="ident">mrb</span>, <span class="self">self</span>.<span class="ident">cstring</span>.<span class="ident">as_ptr</span>()) } <span class="op">==</span> <span class="number">0</span> {
-            <span class="comment">// class does NOT exist in root namespace</span>
+            <span class="comment">// Class does NOT exist in root scope.</span>
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
-            <span class="comment">// class exists in root namespace</span>
+            <span class="comment">// Class exists in root scope.</span>
             <span class="prelude-val">Some</span>(<span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_class_get</span>(<span class="ident">mrb</span>, <span class="self">self</span>.<span class="ident">cstring</span>().<span class="ident">as_ptr</span>()) })
         }
     }
@@ -415,7 +415,7 @@
 <span class="kw">impl</span> <span class="ident">Hash</span> <span class="kw">for</span> <span class="ident">Spec</span> {
     <span class="kw">fn</span> <span class="ident">hash</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">Hasher</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">H</span>) {
         <span class="self">self</span>.<span class="ident">name</span>().<span class="ident">hash</span>(<span class="ident">state</span>);
-        <span class="self">self</span>.<span class="ident">parent</span>().<span class="ident">hash</span>(<span class="ident">state</span>);
+        <span class="self">self</span>.<span class="ident">enclosing_scope</span>().<span class="ident">hash</span>(<span class="ident">state</span>);
     }
 }
 
@@ -437,13 +437,11 @@
         } <span class="kw">else</span> {
             <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="ident">mrb</span>).<span class="ident">object_class</span> }
         };
-        <span class="kw">let</span> <span class="ident">rclass</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">parent</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent</span> {
-            <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">parent</span>
+        <span class="kw">let</span> <span class="ident">rclass</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">scope</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">enclosing_scope</span> {
+            <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">scope</span>
                 .<span class="ident">rclass</span>(<span class="ident">interp</span>)
-                .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="ident">parent</span>.<span class="ident">fqname</span>()))<span class="question-mark">?</span>;
-            <span class="kw">unsafe</span> {
-                <span class="ident">sys</span>::<span class="ident">mrb_define_class_under</span>(<span class="ident">mrb</span>, <span class="ident">parent</span>, <span class="self">self</span>.<span class="ident">cstring</span>().<span class="ident">as_ptr</span>(), <span class="ident">super_class</span>)
-            }
+                .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="ident">scope</span>.<span class="ident">fqname</span>()))<span class="question-mark">?</span>;
+            <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_define_class_under</span>(<span class="ident">mrb</span>, <span class="ident">scope</span>, <span class="self">self</span>.<span class="ident">cstring</span>().<span class="ident">as_ptr</span>(), <span class="ident">super_class</span>) }
         } <span class="kw">else</span> {
             <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_define_class</span>(<span class="ident">mrb</span>, <span class="self">self</span>.<span class="ident">cstring</span>().<span class="ident">as_ptr</span>(), <span class="ident">super_class</span>) }
         };
@@ -470,7 +468,7 @@
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">class</span>::<span class="ident">Spec</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">Parent</span>};
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">EnclosingRubyScope</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>;
@@ -499,7 +497,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">refcell_allows_mutable_class_specs_after_attached_as_parent</span>() {
+    <span class="kw">fn</span> <span class="ident">refcell_allows_mutable_class_specs_after_attached_as_enclosing_scope</span>() {
         <span class="kw">struct</span> <span class="ident">BaseClass</span>;
         <span class="kw">struct</span> <span class="ident">SubClass</span>;
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
@@ -530,9 +528,9 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">rclass_for_undef_nested_class</span>() {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">module</span>::<span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Kernel&quot;</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">Parent</span>::<span class="ident">module</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">parent</span>)));
-        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Foo&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>), <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">module</span>::<span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Kernel&quot;</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">EnclosingRubyScope</span>::<span class="ident">module</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">scope</span>)));
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Foo&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">scope</span>), <span class="prelude-val">None</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">spec</span>.<span class="ident">rclass</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">is_none</span>());
     }
 
@@ -549,9 +547,9 @@
         <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;module Foo; class Bar; end; end&quot;</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">module</span>::<span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Foo&quot;</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">Parent</span>::<span class="ident">module</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">parent</span>)));
-        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Bar&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>), <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">module</span>::<span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Foo&quot;</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">EnclosingRubyScope</span>::<span class="ident">module</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">spec</span>)));
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Bar&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">spec</span>), <span class="prelude-val">None</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">spec</span>.<span class="ident">rclass</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">is_some</span>());
     }
 
@@ -559,9 +557,9 @@
     <span class="kw">fn</span> <span class="ident">rclass_for_nested_class_under_class</span>() {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;class Foo; class Bar; end; end&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Foo&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">Parent</span>::<span class="ident">class</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">parent</span>)));
-        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Bar&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>), <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Foo&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">EnclosingRubyScope</span>::<span class="ident">class</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">spec</span>)));
+        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">Spec</span>::<span class="ident">new</span>(<span class="string">&quot;Bar&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">spec</span>), <span class="prelude-val">None</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">spec</span>.<span class="ident">rclass</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">is_some</span>());
     }
 }

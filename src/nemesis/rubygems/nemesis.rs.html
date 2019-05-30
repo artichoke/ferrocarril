@@ -61,7 +61,7 @@
 <span id="61">61</span>
 <span id="62">62</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::<span class="ident">Parent</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::<span class="ident">EnclosingRubyScope</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
@@ -112,14 +112,14 @@
 
 <span class="kw">impl</span> <span class="ident">MrbFile</span> <span class="kw">for</span> <span class="ident">Response</span> {
     <span class="kw">fn</span> <span class="ident">require</span>(<span class="ident">interp</span>: <span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">interp</span>
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">borrow</span>()
             .<span class="ident">module_spec</span>::<span class="op">&lt;</span><span class="ident">Nemesis</span><span class="op">&gt;</span>()
-            .<span class="ident">map</span>(<span class="ident">Parent</span>::<span class="ident">module</span>)
+            .<span class="ident">map</span>(<span class="ident">EnclosingRubyScope</span>::<span class="ident">module</span>)
             .<span class="ident">ok_or</span>(<span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="string">&quot;Nemesis&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
         <span class="ident">interp</span>
             .<span class="ident">borrow_mut</span>()
-            .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;Response&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">parent</span>), <span class="prelude-val">None</span>);
+            .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="string">&quot;Response&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">scope</span>), <span class="prelude-val">None</span>);
         <span class="prelude-val">Ok</span>(())
     }
 }
