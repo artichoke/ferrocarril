@@ -214,6 +214,8 @@
 <span id="214">214</span>
 <span id="215">215</span>
 <span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -227,6 +229,7 @@
     <span class="ident">Map</span>,
     <span class="ident">SignedInt</span>,
     <span class="ident">String</span>,
+    <span class="ident">UnsignedInt</span>,
     <span class="ident">Vec</span>,
 }
 
@@ -241,6 +244,7 @@
             <span class="ident">Rust</span>::<span class="ident">SignedInt</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;i64&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">String</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;String&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">Vec</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Vec&quot;</span>),
+            <span class="ident">Rust</span>::<span class="ident">UnsignedInt</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;usize&quot;</span>),
         }
     }
 }

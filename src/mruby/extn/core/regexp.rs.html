@@ -456,14 +456,153 @@
 <span id="456">456</span>
 <span id="457">457</span>
 <span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">onig</span>::{<span class="ident">Regex</span>, <span class="ident">RegexOptions</span>, <span class="ident">SearchOptions</span>, <span class="ident">Syntax</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">ArgumentError</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
@@ -476,6 +615,7 @@
         <span class="ident">interp</span>
             .<span class="ident">borrow_mut</span>()
             .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Regexp</span><span class="op">&gt;</span>(<span class="string">&quot;Regexp&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">rust_data_free</span>::<span class="op">&lt;</span><span class="ident">Regexp</span><span class="op">&gt;</span>));
+    <span class="ident">regexp</span>.<span class="ident">borrow_mut</span>().<span class="ident">mrb_value_is_rust_backed</span>(<span class="bool-val">true</span>);
     <span class="ident">regexp</span>.<span class="ident">borrow_mut</span>().<span class="ident">add_method</span>(
         <span class="string">&quot;initialize&quot;</span>,
         <span class="ident">Regexp</span>::<span class="ident">initialize</span>,
@@ -484,6 +624,9 @@
     <span class="ident">regexp</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">add_self_method</span>(<span class="string">&quot;compile&quot;</span>, <span class="ident">Regexp</span>::<span class="ident">compile</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_rest</span>());
+    <span class="ident">regexp</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">add_method</span>(<span class="string">&quot;match?&quot;</span>, <span class="ident">Regexp</span>::<span class="ident">is_match</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_req_and_opt</span>(<span class="number">1</span>, <span class="number">1</span>));
     <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
@@ -496,6 +639,20 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Options</span> {
+    <span class="kw">fn</span> <span class="ident">flags</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RegexOptions</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bits</span> <span class="op">=</span> <span class="ident">RegexOptions</span>::<span class="ident">REGEX_OPTION_NONE</span>;
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ignore_case</span> {
+            <span class="ident">bits</span> <span class="op">|=</span> <span class="ident">RegexOptions</span>::<span class="ident">REGEX_OPTION_IGNORECASE</span>;
+        }
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">extended</span> {
+            <span class="ident">bits</span> <span class="op">|=</span> <span class="ident">RegexOptions</span>::<span class="ident">REGEX_OPTION_EXTEND</span>;
+        }
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">multiline</span> {
+            <span class="ident">bits</span> <span class="op">|=</span> <span class="ident">RegexOptions</span>::<span class="ident">REGEX_OPTION_MULTILINE</span>;
+        }
+        <span class="ident">bits</span>
+    }
+
     <span class="kw">fn</span> <span class="ident">from_value</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">value</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">MrbError</span><span class="op">&gt;</span> {
         <span class="comment">// If options is an Integer, it should be one or more of the constants</span>
         <span class="comment">// Regexp::EXTENDED, Regexp::IGNORECASE, and Regexp::MULTILINE, or-ed</span>
@@ -606,11 +763,12 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Regexp</span> {
     <span class="ident">pattern</span>: <span class="ident">String</span>,
     <span class="ident">options</span>: <span class="ident">Options</span>,
     <span class="ident">encoding</span>: <span class="ident">Encoding</span>,
+    <span class="ident">regex</span>: <span class="ident">Regex</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Regexp</span> {
@@ -714,10 +872,18 @@
         } <span class="kw">else</span> {
             <span class="ident">args</span>.<span class="ident">pattern</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
         };
+        <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">unwrap_or_default</span>();
+        <span class="kw">let</span> <span class="ident">pattern</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">pattern</span>, <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+        <span class="kw">let</span> <span class="ident">regex</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">Regex</span>::<span class="ident">with_options</span>(<span class="kw-2">&amp;</span><span class="ident">pattern</span>, <span class="ident">options</span>.<span class="ident">flags</span>(), <span class="ident">Syntax</span>::<span class="ident">default</span>()),
+            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        );
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="self">Self</span> {
-            <span class="ident">pattern</span>: <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">pattern</span>, <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()),
-            <span class="ident">options</span>: <span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">unwrap_or_default</span>(),
+            <span class="ident">pattern</span>,
+            <span class="ident">options</span>,
             <span class="ident">encoding</span>: <span class="ident">args</span>.<span class="ident">encoding</span>.<span class="ident">unwrap_or_default</span>(),
+            <span class="ident">regex</span>,
         };
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">data</span>));
 
@@ -775,12 +941,82 @@
             <span class="ident">regexp_class</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;new&quot;</span>, <span class="ident">args</span>.<span class="ident">rest</span>)
         )
     }
+
+    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">is_match</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+        <span class="kw">struct</span> <span class="ident">Args</span> {
+            <span class="ident">string</span>: <span class="ident">String</span>,
+            <span class="ident">pos</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+        }
+
+        <span class="kw">impl</span> <span class="ident">Args</span> {
+            <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">extract</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">MrbError</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;</span>();
+                <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;</span>();
+                <span class="kw">let</span> <span class="ident">has_pos</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_bool</span><span class="op">&gt;</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">argspec</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+                <span class="ident">argspec</span>
+                    .<span class="ident">write_all</span>(
+                        <span class="macro">format</span><span class="macro">!</span>(
+                            <span class="string">&quot;{}{}{}{}\0&quot;</span>,
+                            <span class="ident">sys</span>::<span class="ident">specifiers</span>::<span class="ident">OBJECT</span>,
+                            <span class="ident">sys</span>::<span class="ident">specifiers</span>::<span class="ident">FOLLOWING_ARGS_OPTIONAL</span>,
+                            <span class="ident">sys</span>::<span class="ident">specifiers</span>::<span class="ident">OBJECT</span>,
+                            <span class="ident">sys</span>::<span class="ident">specifiers</span>::<span class="ident">PREVIOUS_OPTIONAL_ARG_GIVEN</span>
+                        )
+                        .<span class="ident">as_bytes</span>(),
+                    )
+                    .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">ArgSpec</span>)<span class="question-mark">?</span>;
+                <span class="ident">sys</span>::<span class="ident">mrb_get_args</span>(
+                    <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>,
+                    <span class="ident">argspec</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">string</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">pos</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">has_pos</span>,
+                );
+                <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">string</span>))
+                    .<span class="ident">map_err</span>(<span class="ident">MrbError</span>::<span class="ident">ConvertToRust</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">has_pos</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="prelude-val">None</span>
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">usize</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">pos</span>))
+                        .<span class="ident">map_err</span>(<span class="ident">MrbError</span>::<span class="ident">ConvertToRust</span>)<span class="question-mark">?</span>;
+                    <span class="prelude-val">Some</span>(<span class="ident">pos</span>)
+                };
+                <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">string</span>, <span class="ident">pos</span> })
+            }
+        }
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">Args</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+
+        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> {
+            <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="macro">class_spec_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="self">Self</span>);
+            <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">borrow</span>();
+            <span class="ident">sys</span>::<span class="ident">mrb_data_get_ptr</span>(<span class="ident">mrb</span>, <span class="ident">slf</span>, <span class="ident">borrow</span>.<span class="ident">data_type</span>())
+        };
+        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>(<span class="ident">ptr</span>);
+        <span class="kw">let</span> <span class="ident">regex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>);
+        <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">data</span>);
+
+        <span class="comment">// onig will panic if pos is beyond the end of string</span>
+        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>() <span class="op">&gt;</span> <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>() {
+            <span class="kw">return</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>();
+        }
+        <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regex</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>.<span class="ident">search_with_options</span>(
+            <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">string</span>,
+            <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
+            <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>(),
+            <span class="ident">SearchOptions</span>::<span class="ident">SEARCH_OPTION_NONE</span>,
+            <span class="prelude-val">None</span>,
+        );
+        <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">is_match</span>.<span class="ident">is_some</span>()).<span class="ident">inner</span>()
+    }
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MatchData</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">regexp</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
@@ -794,7 +1030,7 @@
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">regexp</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;regexp init&quot;</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;)&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
         <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">regexp</span>
             .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;class&quot;</span>, <span class="kw-2">&amp;</span>[])
             .<span class="ident">expect</span>(<span class="string">&quot;funcall&quot;</span>);
@@ -807,14 +1043,14 @@
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">regexp</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;regexp init&quot;</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;/foo.*bar/&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
         <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">regexp</span>
             .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;class&quot;</span>, <span class="kw-2">&amp;</span>[])
             .<span class="ident">expect</span>(<span class="string">&quot;funcall&quot;</span>);
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">class</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;name&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">expect</span>(<span class="string">&quot;funcall&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="string">&quot;Regexp&quot;</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;/foo.*bar/i&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -822,17 +1058,17 @@
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">regexp</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;regexp init&quot;</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;, true)&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;, false)&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;, nil)&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;, 1 | 2 | 4)&quot;</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;, &#39;ixm&#39;)&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -840,7 +1076,7 @@
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">regexp</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;regexp init&quot;</span>);
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Regexp.new(&#39;foo.*bar&#39;, &#39;u&#39;)&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Object</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">regexp</span>.<span class="ident">ruby_type</span>(), <span class="ident">Ruby</span>::<span class="ident">Data</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -913,6 +1149,46 @@
             <span class="ident">regexp</span>,
             <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">UnreachableValue</span>(<span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_UNDEF</span>))
         );
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">regexp_is_match</span>() {
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="ident">regexp</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;regexp init&quot;</span>);
+        <span class="comment">// Reuse regexp to ensure that Rc reference count is maintained</span>
+        <span class="comment">// correctly so no segfaults.</span>
+        <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;/R.../&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;match?&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;Ruby&quot;</span>)]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>));
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+            <span class="string">&quot;match?&quot;</span>,
+            <span class="kw-2">&amp;</span>[
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;Ruby&quot;</span>),
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">1</span>),
+            ],
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>));
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+            <span class="string">&quot;match?&quot;</span>,
+            <span class="kw-2">&amp;</span>[
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;Ruby&quot;</span>),
+                <span class="comment">// Pos beyond end of string</span>
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">5</span>),
+            ],
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>));
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+            <span class="string">&quot;match?&quot;</span>,
+            <span class="kw-2">&amp;</span>[
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;Ruby&quot;</span>),
+                <span class="comment">// Pos = len of string</span>
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">4</span>),
+            ],
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>));
+        <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;/P.../&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;match?&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;Ruby&quot;</span>)]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>));
     }
 }
 </pre></div>
