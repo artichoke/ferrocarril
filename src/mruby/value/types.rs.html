@@ -216,6 +216,8 @@
 <span id="216">216</span>
 <span id="217">217</span>
 <span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -264,6 +266,7 @@
     <span class="ident">Module</span>,
     <span class="ident">Nil</span>,
     <span class="ident">Object</span>,
+    <span class="ident">Proc</span>,
     <span class="ident">SingletonClass</span>,
     <span class="ident">String</span>,
     <span class="ident">Symbol</span>,
@@ -286,6 +289,7 @@
             <span class="ident">Ruby</span>::<span class="ident">Module</span> <span class="op">=&gt;</span> <span class="string">&quot;Module&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Nil</span> <span class="op">=&gt;</span> <span class="string">&quot;NilClass&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Object</span> <span class="op">=&gt;</span> <span class="string">&quot;Object&quot;</span>,
+            <span class="ident">Ruby</span>::<span class="ident">Proc</span> <span class="op">=&gt;</span> <span class="string">&quot;Proc&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">SingletonClass</span> <span class="op">=&gt;</span> <span class="string">&quot;Singleton (anonymous) class&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">String</span> <span class="op">=&gt;</span> <span class="string">&quot;String&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Symbol</span> <span class="op">=&gt;</span> <span class="string">&quot;Symbol&quot;</span>,
@@ -353,7 +357,7 @@
             <span class="comment">// def obj.bar; &#39;bar&#39;; end</span>
             <span class="comment">// ```</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_SCLASS</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">SingletonClass</span>,
-            <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_PROC</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;mruby type proc&quot;</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_PROC</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Proc</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_ARRAY</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Array</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_HASH</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Hash</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_STRING</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">String</span>,
