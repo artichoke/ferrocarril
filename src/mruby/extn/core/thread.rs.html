@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `mruby/src/extn/stdlib/thread.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>thread.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../mruby/index.html'><img src='../../../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `mruby/src/extn/core/thread.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>thread.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../mruby/index.html'><img src='../../../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -191,10 +191,10 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::{<span class="ident">EvalContext</span>, <span class="ident">MrbEval</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
@@ -202,10 +202,12 @@
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Thread</span><span class="op">&gt;</span>(<span class="string">&quot;Thread&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
     <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&gt;</span>(<span class="string">&quot;Mutex&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
-    <span class="ident">interp</span>.<span class="ident">def_rb_source_file</span>(<span class="string">&quot;thread.rb&quot;</span>, <span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;thread.rb&quot;</span>))<span class="question-mark">?</span>;
-    <span class="comment">// Thread is loaded by default, so require it on interpreter initialization</span>
+    <span class="comment">// Thread is loaded by default, so eval it on interpreter initialization</span>
     <span class="comment">// https://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Lint/UnneededRequireStatement</span>
-    <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;thread&#39;&quot;</span>)<span class="question-mark">?</span>;
+    <span class="ident">interp</span>.<span class="ident">eval_with_context</span>(
+        <span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;thread.rb&quot;</span>),
+        <span class="ident">EvalContext</span>::<span class="ident">new</span>(<span class="string">&quot;/src/lib/thread.rb&quot;</span>),
+    )<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 
@@ -372,11 +374,11 @@ end.join
         <span class="kw">let</span> <span class="ident">expected_backtrace</span> <span class="op">=</span> <span class="string">r#&quot;
 (eval):8: inner (RuntimeError)
 (eval):8:in call
-/src/lib/thread.rb:118:in initialize
+/src/lib/thread.rb:120:in initialize
 (eval):6:in call
-/src/lib/thread.rb:118:in initialize
+/src/lib/thread.rb:120:in initialize
 (eval):4:in call
-/src/lib/thread.rb:118:in initialize
+/src/lib/thread.rb:120:in initialize
 (eval):2
 &quot;#</span>;
         <span class="macro">assert_eq</span><span class="macro">!</span>(
