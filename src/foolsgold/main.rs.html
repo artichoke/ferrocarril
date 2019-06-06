@@ -44,7 +44,6 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
-<span id="47">47</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">integer_atomics</span>)]</span>
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">proc_macro_hygiene</span>, <span class="ident">decl_macro</span>)]</span>
@@ -56,19 +55,20 @@
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">mruby</span>;
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">ref_thread_local</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_embed</span>;
 
-<span class="kw">use</span> <span class="ident">rocket</span>::<span class="ident">routes</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
+<span class="kw">use</span> <span class="ident">nemesis</span>::{<span class="ident">Builder</span>, <span class="ident">Error</span>, <span class="ident">Mount</span>};
 
 <span class="kw">mod</span> <span class="ident">assets</span>;
-<span class="kw">mod</span> <span class="ident">execmodel</span>;
 <span class="kw">mod</span> <span class="ident">foolsgold</span>;
+
+<span class="kw">use</span> <span class="ident">assets</span>::<span class="ident">Assets</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">i32</span><span class="op">&gt;</span> {
     <span class="ident">env_logger</span>::<span class="ident">Builder</span>::<span class="ident">from_env</span>(<span class="string">&quot;FOOLSGOLD_LOG&quot;</span>).<span class="ident">init</span>();
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">spawn</span>() {
+        <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Failed to launch nemesis: {}&quot;</span>, <span class="ident">err</span>);
         <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;ERR: {}&quot;</span>, <span class="ident">err</span>);
         <span class="prelude-val">Err</span>(<span class="number">1</span>)
     } <span class="kw">else</span> {
@@ -76,22 +76,20 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">rocket</span>::<span class="ident">ignite</span>()
-        .<span class="ident">mount</span>(
-            <span class="string">&quot;/&quot;</span>,
-            <span class="macro">routes</span><span class="macro">!</span>[
-                <span class="ident">assets</span>::<span class="ident">index</span>,
-                <span class="ident">execmodel</span>::<span class="ident">shared_nothing</span>::<span class="ident">rack_app</span>,
-                <span class="ident">execmodel</span>::<span class="ident">prefork</span>::<span class="ident">rack_app</span>
-            ],
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="ident">Builder</span>::<span class="ident">default</span>()
+        .<span class="ident">add_mount</span>(
+            <span class="ident">Mount</span>::<span class="ident">from_rackup</span>(<span class="string">&quot;foolsgold&quot;</span>, <span class="ident">foolsgold</span>::<span class="ident">RACKUP</span>, <span class="string">&quot;/fools-gold&quot;</span>).<span class="ident">with_init</span>(<span class="ident">Box</span>::<span class="ident">new</span>(
+                <span class="op">|</span><span class="ident">interp</span><span class="op">|</span> {
+                    <span class="ident">foolsgold</span>::<span class="ident">init</span>(<span class="ident">interp</span>)<span class="question-mark">?</span>;
+                    <span class="comment">// preload foolsgold sources</span>
+                    <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;foolsgold&#39;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="prelude-val">Ok</span>(())
+                },
+            )),
         )
-        .<span class="ident">mount</span>(<span class="string">&quot;/img&quot;</span>, <span class="macro">routes</span><span class="macro">!</span>[<span class="ident">assets</span>::<span class="ident">pyrite</span>, <span class="ident">assets</span>::<span class="ident">resf</span>])
-        .<span class="ident">launch</span>();
-    <span class="comment">// This log is only reachable if Rocket has an error during startup,</span>
-    <span class="comment">// otherwise `rocket::ignite().launch()` blocks forever.</span>
-    <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Failed to launch rocket: {}&quot;</span>, <span class="ident">err</span>);
-    <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">to_string</span>())
+        .<span class="ident">add_static_assets</span>(<span class="ident">Assets</span>::<span class="ident">all</span>()<span class="question-mark">?</span>)
+        .<span class="ident">serve</span>()
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "foolsgold";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

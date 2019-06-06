@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["from_rackup","Create a Rack app by wrapping the supplied rackup source in a `Rack::Builder`. The returned [`Value`] has a call method and is suitable for passing to `handler::run`."]]});

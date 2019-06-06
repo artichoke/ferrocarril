@@ -28,44 +28,36 @@
 <span id="28">28</span>
 <span id="29">29</span>
 <span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">rocket</span>::<span class="ident">http</span>::{<span class="ident">ContentType</span>, <span class="ident">Status</span>};
-<span class="kw">use</span> <span class="ident">rocket</span>::{<span class="ident">get</span>, <span class="ident">Response</span>};
+<span class="kw">use</span> <span class="ident">nemesis</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Cursor</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 
 <span class="comment">// TODO: resolve path relative to CARGO_MANIFEST_DIR</span>
 <span class="comment">// https://github.com/pyros2097/rust-embed/pull/59</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RustEmbed</span>)]</span>
 <span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;foolsgold/static/&quot;</span>]</span>
-<span class="kw">struct</span> <span class="ident">Assets</span>;
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Assets</span>;
 
-<span class="attribute">#[<span class="ident">get</span>(<span class="string">&quot;/&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">index</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Status</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">html</span> <span class="op">=</span> <span class="ident">Assets</span>::<span class="ident">get</span>(<span class="string">&quot;index.html&quot;</span>).<span class="ident">ok_or</span>(<span class="ident">Status</span>::<span class="ident">NotFound</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">build</span>()
-        .<span class="ident">sized_body</span>(<span class="ident">Cursor</span>::<span class="ident">new</span>(<span class="ident">html</span>))
-        .<span class="ident">header</span>(<span class="ident">ContentType</span>::<span class="ident">HTML</span>)
-        .<span class="ident">finalize</span>();
-    <span class="prelude-val">Ok</span>(<span class="ident">response</span>)
-}
-
-<span class="attribute">#[<span class="ident">get</span>(<span class="string">&quot;/pyrite.jpg&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pyrite</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Status</span><span class="op">&gt;</span> {
-    <span class="ident">Assets</span>::<span class="ident">get</span>(<span class="string">&quot;pyrite.jpg&quot;</span>)
-        .<span class="ident">map</span>(<span class="ident">Cow</span>::<span class="ident">into_owned</span>)
-        .<span class="ident">ok_or</span>(<span class="ident">Status</span>::<span class="ident">NotFound</span>)
-}
-
-<span class="attribute">#[<span class="ident">get</span>(<span class="string">&quot;/resf.png&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resf</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Status</span><span class="op">&gt;</span> {
-    <span class="ident">Assets</span>::<span class="ident">get</span>(<span class="string">&quot;resf.png&quot;</span>)
-        .<span class="ident">map</span>(<span class="ident">Cow</span>::<span class="ident">into_owned</span>)
-        .<span class="ident">ok_or</span>(<span class="ident">Status</span>::<span class="ident">NotFound</span>)
+<span class="kw">impl</span> <span class="ident">Assets</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">assets</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">default</span>();
+        <span class="kw">for</span> <span class="ident">source</span> <span class="kw">in</span> <span class="self">Self</span>::<span class="ident">iter</span>() {
+            <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>)
+                .<span class="ident">map</span>(<span class="ident">Cow</span>::<span class="ident">into_owned</span>)
+                .<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="ident">FailedLaunch</span>(<span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;missing static asset {}&quot;</span>,
+                    <span class="ident">source</span>
+                )))<span class="question-mark">?</span>;
+            <span class="kw">if</span> <span class="ident">source</span> <span class="op">==</span> <span class="string">&quot;index.html&quot;</span> {
+                <span class="kw">let</span> <span class="ident">route</span> <span class="op">=</span> <span class="string">&quot;/&quot;</span>.<span class="ident">to_owned</span>();
+                <span class="ident">assets</span>.<span class="ident">insert</span>(<span class="ident">route</span>, <span class="ident">content</span>.<span class="ident">clone</span>());
+            }
+            <span class="kw">let</span> <span class="ident">route</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;/{}&quot;</span>, <span class="ident">source</span>);
+            <span class="ident">assets</span>.<span class="ident">insert</span>(<span class="ident">route</span>, <span class="ident">content</span>);
+        }
+        <span class="prelude-val">Ok</span>(<span class="ident">assets</span>)
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "foolsgold";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"mod":[["adapter",""],["handler","Run a Rack app with an environment derived from the request."],["request","Convert a [`rocket::Request`] to a Rack environment."],["response","Convert a `Nemesis::Response` Rack response to a [`rocket::Response`]."]]});
+initSidebarItems({"enum":[["Error",""]],"macro":[["rocket_uri_macro_static_asset","Rocket code generated wrapping URI macro."]],"struct":[["Builder",""],["Mount",""]]});
