@@ -101,6 +101,20 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Nemesis server implementations.</span>
 
@@ -185,8 +199,11 @@
 <span class="kw">impl</span> <span class="ident">Mount</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rackup</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">rackup</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">mount_path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">to_owned</span>();
+        <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">mount_path</span>.<span class="ident">to_owned</span>();
         <span class="kw">let</span> <span class="ident">rackup</span> <span class="op">=</span> <span class="ident">rackup</span>.<span class="ident">to_owned</span>();
-        <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span><span class="op">|</span> <span class="ident">RackApp</span>::<span class="ident">from_rackup</span>(<span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">rackup</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">clone</span>());
+        <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span><span class="op">|</span> {
+            <span class="ident">RackApp</span>::<span class="ident">from_rackup</span>(<span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">rackup</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">path</span>.<span class="ident">clone</span>())
+        };
         <span class="self">Self</span> {
             <span class="ident">path</span>: <span class="ident">mount_path</span>.<span class="ident">to_owned</span>(),
             <span class="ident">app</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">app</span>)),
@@ -202,6 +219,17 @@
             <span class="ident">app</span>: <span class="self">self</span>.<span class="ident">app</span>,
             <span class="ident">interp_init</span>: <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">init</span>)),
             <span class="ident">exec_mode</span>: <span class="self">self</span>.<span class="ident">exec_mode</span>,
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_shared_interpreter</span>(<span class="self">self</span>, <span class="ident">max_requests</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">path</span>: <span class="self">self</span>.<span class="ident">path</span>,
+            <span class="ident">app</span>: <span class="self">self</span>.<span class="ident">app</span>,
+            <span class="ident">interp_init</span>: <span class="self">self</span>.<span class="ident">interp_init</span>,
+            <span class="ident">exec_mode</span>: <span class="ident">ExecMode</span>::<span class="ident">PerAppPerWorker</span> {
+                <span class="ident">max_requests</span>: <span class="ident">max_requests</span>.<span class="ident">unwrap_or_default</span>(),
+            },
         }
     }
 }
