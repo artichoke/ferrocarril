@@ -220,6 +220,7 @@
 <span id="220">220</span>
 <span id="221">221</span>
 <span id="222">222</span>
+<span id="223">223</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -271,6 +272,7 @@
     <span class="ident">Nil</span>,
     <span class="ident">Object</span>,
     <span class="ident">Proc</span>,
+    <span class="ident">Range</span>,
     <span class="ident">SingletonClass</span>,
     <span class="ident">String</span>,
     <span class="ident">Symbol</span>,
@@ -294,6 +296,7 @@
             <span class="ident">Ruby</span>::<span class="ident">Nil</span> <span class="op">=&gt;</span> <span class="string">&quot;NilClass&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Object</span> <span class="op">=&gt;</span> <span class="string">&quot;Object&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Proc</span> <span class="op">=&gt;</span> <span class="string">&quot;Proc&quot;</span>,
+            <span class="ident">Ruby</span>::<span class="ident">Range</span> <span class="op">=&gt;</span> <span class="string">&quot;Range&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">SingletonClass</span> <span class="op">=&gt;</span> <span class="string">&quot;Singleton (anonymous) class&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">String</span> <span class="op">=&gt;</span> <span class="string">&quot;String&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Symbol</span> <span class="op">=&gt;</span> <span class="string">&quot;Symbol&quot;</span>,
@@ -365,8 +368,7 @@
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_ARRAY</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Array</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_HASH</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Hash</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_STRING</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">String</span>,
-            <span class="comment">// TODO: how to surface this?</span>
-            <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_RANGE</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;mruby type range&quot;</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_RANGE</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Range</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_EXCEPTION</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Exception</span>,
             <span class="comment">// TODO: how to surface this?</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_FILE</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;mruby type file&quot;</span>),
