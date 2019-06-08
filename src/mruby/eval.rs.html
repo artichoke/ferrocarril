@@ -297,6 +297,24 @@
 <span id="297">297</span>
 <span id="298">298</span>
 <span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>;
@@ -552,22 +570,22 @@ NestedEval.file
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">unparseable_code_returns_err_undef</span>() {
+    <span class="kw">fn</span> <span class="ident">unparseable_code_returns_err_syntax_error</span>() {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;&#39;a&quot;</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ());
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">result</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">UnreachableValue</span>(<span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_UNDEF</span>))
+            <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="string">&quot;SyntaxError: syntax error&quot;</span>.<span class="ident">to_owned</span>()))
         );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">interpreter_is_usable_after_returning_undef</span>() {
+    <span class="kw">fn</span> <span class="ident">interpreter_is_usable_after_syntax_error</span>() {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;&#39;a&quot;</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ());
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">result</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">UnreachableValue</span>(<span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_UNDEF</span>))
+            <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="string">&quot;SyntaxError: syntax error&quot;</span>.<span class="ident">to_owned</span>()))
         );
         <span class="comment">// Ensure interpreter is usable after evaling unparseable code</span>
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;&#39;a&#39; * 10 &quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
@@ -595,6 +613,24 @@ NestedEval.file
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;source&#39;; __FILE__&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">String</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">result</span>).<span class="ident">expect</span>(<span class="string">&quot;convert&quot;</span>) };
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>, <span class="string">&quot;(eval)&quot;</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">return_syntax_error</span>() {
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="ident">interp</span>
+            .<span class="ident">def_rb_source_file</span>(<span class="string">&quot;fail.rb&quot;</span>, <span class="string">&quot;def bad; &#39;as&#39;.scan(/./o); end&quot;</span>)
+            .<span class="ident">expect</span>(<span class="string">&quot;def file&quot;</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;fail&#39;&quot;</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ());
+        <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">MrbError</span>::<span class="ident">Exec</span>(
+            <span class="string">&quot;
+(eval):1: mruby exception: SyntaxError: syntax error (RuntimeError)
+(eval):1
+            &quot;</span>
+            .<span class="ident">trim</span>()
+            .<span class="ident">to_owned</span>(),
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Err</span>(<span class="ident">expected</span>));
     }
 }
 </pre></div>

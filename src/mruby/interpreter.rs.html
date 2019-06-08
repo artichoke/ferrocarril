@@ -241,6 +241,10 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">trace</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -255,6 +259,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gc</span>::<span class="ident">GarbageCollection</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">state</span>::<span class="ident">State</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>::{<span class="self">self</span>, <span class="ident">DescribeState</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Ruby</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
@@ -383,15 +388,18 @@
         <span class="comment">// backtrace.join(&quot;\n&quot;)</span>
         <span class="comment">// ```</span>
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">new</span>(<span class="self">self</span>, <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_sys_obj_value</span>(<span class="ident">exc</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>) });
-        <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;inspect&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">ok</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">backtrace</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;backtrace&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">ok</span>()<span class="question-mark">?</span>;
-        <span class="ident">backtrace</span>
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span>(), <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;unshift&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">exception</span>])
-            .<span class="ident">ok</span>()<span class="question-mark">?</span>;
-
-        <span class="ident">backtrace</span>
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;join&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="self">self</span>, <span class="string">&quot;\n&quot;</span>)])
-            .<span class="ident">ok</span>()
+        <span class="kw">if</span> <span class="ident">backtrace</span>.<span class="ident">ruby_type</span>() <span class="op">==</span> <span class="ident">Ruby</span>::<span class="ident">Array</span> {
+            <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;inspect&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">ok</span>()<span class="question-mark">?</span>;
+            <span class="ident">backtrace</span>
+                .<span class="ident">funcall</span>::<span class="op">&lt;</span>(), <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;unshift&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">exception</span>])
+                .<span class="ident">ok</span>()<span class="question-mark">?</span>;
+            <span class="ident">backtrace</span>
+                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;join&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="self">self</span>, <span class="string">&quot;\n&quot;</span>)])
+                .<span class="ident">ok</span>()
+        } <span class="kw">else</span> {
+            <span class="ident">value</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;inspect&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">ok</span>()
+        }
     }
 
     <span class="kw">fn</span> <span class="ident">nil</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
