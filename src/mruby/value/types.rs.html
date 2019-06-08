@@ -218,6 +218,8 @@
 <span id="218">218</span>
 <span id="219">219</span>
 <span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -229,6 +231,7 @@
     <span class="ident">Bytes</span>,
     <span class="ident">Float</span>,
     <span class="ident">Map</span>,
+    <span class="ident">Object</span>,
     <span class="ident">SignedInt</span>,
     <span class="ident">String</span>,
     <span class="ident">UnsignedInt</span>,
@@ -243,6 +246,7 @@
             <span class="ident">Rust</span>::<span class="ident">Bytes</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;&amp;[u8]&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">Float</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;f64&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">Map</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;HashMap&quot;</span>),
+            <span class="ident">Rust</span>::<span class="ident">Object</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;struct&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">SignedInt</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;i64&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">String</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;String&quot;</span>),
             <span class="ident">Rust</span>::<span class="ident">Vec</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Vec&quot;</span>),

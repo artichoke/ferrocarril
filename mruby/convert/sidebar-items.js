@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Error",""]],"trait":[["FromMrb",""],["TryFromMrb",""]],"type":[["Float",""],["Int",""]]});
+initSidebarItems({"struct":[["Error",""]],"trait":[["FromMrb",""],["RustBackedValue","Provides converters to and from [`Value`] with ruby type of [`Ruby::Data`]."],["TryFromMrb",""]],"type":[["Float",""],["Int",""]]});

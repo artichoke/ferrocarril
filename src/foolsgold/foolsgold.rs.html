@@ -200,22 +200,8 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::{<span class="ident">RustBackedValue</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">EnclosingRubyScope</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
@@ -225,11 +211,7 @@
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">AsRef</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">c_void</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicI64</span>, <span class="ident">Ordering</span>};
 <span class="kw">use</span> <span class="ident">uuid</span>::<span class="ident">Uuid</span>;
 
@@ -357,29 +339,20 @@
     <span class="ident">trace_id</span>: <span class="ident">Uuid</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">RustBackedValue</span> <span class="kw">for</span> <span class="ident">RequestContext</span> {}
+
 <span class="kw">impl</span> <span class="ident">MrbFile</span> <span class="kw">for</span> <span class="ident">RequestContext</span> {
     <span class="kw">fn</span> <span class="ident">require</span>(<span class="ident">interp</span>: <span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
-        <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">initialize</span>(
-            <span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>,
-            <span class="kw-2">mut</span> <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
-        ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+        <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
             <span class="kw">unsafe</span> {
+                <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+
                 <span class="kw">let</span> <span class="ident">request_id</span> <span class="op">=</span> <span class="ident">Uuid</span>::<span class="ident">new_v4</span>();
                 <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">RequestContext</span> {
                     <span class="ident">trace_id</span>: <span class="ident">request_id</span>,
                 };
-                <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">data</span>));
-                <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">RequestContext</span><span class="op">&gt;&gt;</span>, <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span><span class="op">&gt;</span>(<span class="ident">data</span>);
-
-                <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-                {
-                    <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="macro">class_spec_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">RequestContext</span>);
-                    <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">borrow</span>();
-                    <span class="ident">sys</span>::<span class="ident">mrb_sys_data_init</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">slf</span>, <span class="ident">ptr</span>, <span class="ident">borrow</span>.<span class="ident">data_type</span>());
-                };
-
                 <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;initialized RequestContext with trace id {}&quot;</span>, <span class="ident">request_id</span>);
-                <span class="ident">slf</span>
+                <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">data</span>.<span class="ident">try_into_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">Some</span>(<span class="ident">slf</span>)))
             }
         }
 
@@ -387,12 +360,11 @@
             <span class="kw">unsafe</span> {
                 <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
 
-                <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> {
-                    <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="macro">class_spec_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">RequestContext</span>);
-                    <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">borrow</span>();
-                    <span class="ident">sys</span>::<span class="ident">mrb_data_get_ptr</span>(<span class="ident">mrb</span>, <span class="ident">slf</span>, <span class="ident">borrow</span>.<span class="ident">data_type</span>())
-                };
-                <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">RequestContext</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>(<span class="ident">ptr</span>);
+                <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+                    <span class="ident">interp</span>,
+                    <span class="ident">RequestContext</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
+                    <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+                );
                 <span class="kw">let</span> <span class="ident">trace_id</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>().<span class="ident">trace_id</span>;
                 <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Retrieved trace id {} in {:?}&quot;</span>, <span class="ident">trace_id</span>, <span class="ident">interp</span>);
                 <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">data</span>);
