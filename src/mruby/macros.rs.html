@@ -110,34 +110,19 @@
 <span id="110">110</span>
 <span id="111">111</span>
 <span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
-<span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
-<span id="128">128</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">//! This module defines macros for working with interpreters and `Value`s. This</span>
-<span class="doccomment">//! source module is included first in `lib.rs`, which means the macros are</span>
-<span class="doccomment">//! available to all modules within the mruby crate in addition to being</span>
-<span class="doccomment">//! exported.</span>
+<span class="comment">// This module defines macros for working with interpreters and `Value`s. This</span>
+<span class="comment">// source module is included first in `lib.rs`, which means the macros are</span>
+<span class="comment">// available to all modules within the mruby crate in addition to being</span>
+<span class="comment">// exported.</span>
 
 <span class="doccomment">/// Extract an [`Mrb`](interpreter::Mrb) instance from the userdata on a</span>
-<span class="doccomment">/// [`sys::mrb_state`]. If there is an error when extracting the Rust wrapper</span>
-<span class="doccomment">/// around the interpreter, attempt to raise a `RuntimeError` and return `nil`.</span>
+<span class="doccomment">/// [`sys::mrb_state`].</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This macro is `unsafe` and assumes it is being called from an `extern &quot;C&quot; fn`</span>
-<span class="doccomment">/// that is embedded in an mruby class, module, or function definition.</span>
+<span class="doccomment">/// If there is an error when extracting the Rust wrapper around the</span>
+<span class="doccomment">/// interpreter, attempt to raise a `RuntimeError` and return `nil`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This macro is `unsafe`.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">interpreter_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mrb</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> {
@@ -150,6 +135,8 @@
                 <span class="kw">if</span> <span class="kw">let</span> (<span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">eclass</span>), <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">message</span>)) <span class="op">=</span>
                     (<span class="ident">eclass</span>, <span class="ident">message</span>)
                 {
+                    <span class="comment">// must call the sys function directly because we could not</span>
+                    <span class="comment">// extract an interp.</span>
                     <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_raise</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mrb</span>, <span class="ident">eclass</span>.<span class="ident">as_ptr</span>(), <span class="ident">message</span>.<span class="ident">as_ptr</span>());
                 }
                 <span class="comment">// must call the sys function directly because we could not</span>
@@ -161,27 +148,19 @@
     };
 }
 
-<span class="doccomment">/// Unwrap a `Result` or raise a `RuntimeError` and return `default`.</span>
+<span class="doccomment">/// Unwrap a [`Result`] or raise a `RuntimeError` and return the supplied</span>
+<span class="doccomment">/// default value.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This macro is `unsafe` and assumes it is being called from an `extern &quot;C&quot; fn`</span>
-<span class="doccomment">/// that is embedded in an mruby class, module, or function definition.</span>
+<span class="doccomment">/// This macro is `unsafe`.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">unwrap_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">onerr</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> {
         <span class="kw">match</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span> {
             <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
-                <span class="comment">// There was a TypeError converting to the desired Rust type.</span>
-                <span class="kw">let</span> <span class="ident">eclass</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>::<span class="ident">new</span>(<span class="string">&quot;RuntimeError&quot;</span>);
-                <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">err</span>));
-                <span class="kw">if</span> <span class="kw">let</span> (<span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">eclass</span>), <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">message</span>)) <span class="op">=</span>
-                    (<span class="ident">eclass</span>, <span class="ident">message</span>)
-                {
-                    <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_raise</span>(
-                        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>,
-                        <span class="ident">eclass</span>.<span class="ident">as_ptr</span>(),
-                        <span class="ident">message</span>.<span class="ident">as_ptr</span>(),
-                    );
-                }
+                <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">RuntimeError</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">RubyException</span><span class="op">&gt;</span>::<span class="ident">raise</span>(
+                    <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">err</span>.<span class="ident">to_string</span>()
+                );
                 <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">onerr</span>;
             }
             <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">value</span>,
@@ -192,8 +171,7 @@
 <span class="doccomment">/// Unwrap a `Result&lt;Value&gt;` and return the inner [`sys::mrb_value`] or raise a</span>
 <span class="doccomment">/// `RuntimeError` and return `nil`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This macro is `unsafe` and assumes it is being called from an `extern &quot;C&quot; fn`</span>
-<span class="doccomment">/// that is embedded in an mruby class, module, or function definition.</span>
+<span class="doccomment">/// This macro is `unsafe`.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">unwrap_value_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> {
@@ -206,11 +184,9 @@
     };
 }
 
-<span class="doccomment">/// Lookup a [`class::Spec`] for a Rust type `T`. If the spec does not exist,</span>
-<span class="doccomment">/// raise on the interpreter and return `nil`.</span>
+<span class="doccomment">/// Lookup a [`class::Spec`] for a Rust type `T`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This macro is `unsafe` and assumes it is being called from an `extern &quot;C&quot; fn`</span>
-<span class="doccomment">/// that is embedded in an mruby class, module, or function definition.</span>
+<span class="doccomment">/// If the spec does not exist, raise on the interpreter and return `nil`.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">class_spec_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) <span class="op">=&gt;</span> {
@@ -219,23 +195,18 @@
         } <span class="kw">else</span> {
             <span class="comment">// The class spec does not exist or has not been deifned with</span>
             <span class="comment">// `State::def_class` yet.</span>
-            <span class="kw">let</span> <span class="ident">eclass</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>::<span class="ident">new</span>(<span class="string">&quot;RuntimeError&quot;</span>);
-            <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>::<span class="ident">new</span>(<span class="string">&quot;Uninitialized Class&quot;</span>);
-            <span class="kw">if</span> <span class="kw">let</span> (<span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">eclass</span>), <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">message</span>)) <span class="op">=</span>
-                (<span class="ident">eclass</span>, <span class="ident">message</span>)
-            {
-                <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_raise</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>, <span class="ident">eclass</span>.<span class="ident">as_ptr</span>(), <span class="ident">message</span>.<span class="ident">as_ptr</span>());
-            }
+            <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">RuntimeError</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">RubyException</span><span class="op">&gt;</span>::<span class="ident">raise</span>(
+                <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>,
+                <span class="string">&quot;Uninitialized Class&quot;</span>
+            );
             <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">interpreter</span>::<span class="ident">MrbApi</span>::<span class="ident">nil</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>).<span class="ident">inner</span>();
         }
     };
 }
 
-<span class="doccomment">/// Lookup a [`module::Spec`] for a Rust type `T`. If the spec does not exist,</span>
-<span class="doccomment">/// raise on the interpreter and return `nil`.</span>
+<span class="doccomment">/// Lookup a [`module::Spec`] for a Rust type `T`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This macro is `unsafe` and assumes it is being called from an `extern &quot;C&quot; fn`</span>
-<span class="doccomment">/// that is embedded in an mruby class, module, or function definition.</span>
+<span class="doccomment">/// If the spec does not exist, raise on the interpreter and return `nil`.</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">module_spec_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) <span class="op">=&gt;</span> {
@@ -244,13 +215,10 @@
         } <span class="kw">else</span> {
             <span class="comment">// The module spec does not exist or has not been deifned with</span>
             <span class="comment">// `State::def_module` yet.</span>
-            <span class="kw">let</span> <span class="ident">eclass</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>::<span class="ident">new</span>(<span class="string">&quot;RuntimeError&quot;</span>);
-            <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>::<span class="ident">new</span>(<span class="string">&quot;Uninitialized Module&quot;</span>);
-            <span class="kw">if</span> <span class="kw">let</span> (<span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">eclass</span>), <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Ok</span>(<span class="ident">message</span>)) <span class="op">=</span>
-                (<span class="ident">eclass</span>, <span class="ident">message</span>)
-            {
-                <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_raise</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>, <span class="ident">eclass</span>.<span class="ident">as_ptr</span>(), <span class="ident">message</span>.<span class="ident">as_ptr</span>());
-            }
+            <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">RuntimeError</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::<span class="ident">RubyException</span><span class="op">&gt;</span>::<span class="ident">raise</span>(
+                <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>,
+                <span class="string">&quot;Uninitialized Module&quot;</span>
+            );
             <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">interpreter</span>::<span class="ident">MrbApi</span>::<span class="ident">nil</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>).<span class="ident">inner</span>();
         }
     };

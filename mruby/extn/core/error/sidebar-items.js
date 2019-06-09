@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["patch",""]],"struct":[["ArgumentError",""],["Exception",""],["LoadError",""],["ScriptError",""]]});
+initSidebarItems({"fn":[["patch",""]],"struct":[["ArgumentError",""],["Exception",""],["LoadError",""],["RuntimeError",""],["ScriptError",""]],"trait":[["RubyException","Raise implementation for `Exception` structs."]]});
