@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ArenaIndex",""]],"trait":[["GarbageCollection",""]]});
+initSidebarItems({"struct":[["ArenaIndex","Arena savepoint that can be restored to ensure mruby objects are reaped."]],"trait":[["MrbGarbageCollection","Garbage collection primitives for an mruby interpreter."]]});
