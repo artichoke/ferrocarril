@@ -440,14 +440,20 @@
 <span id="440">440</span>
 <span id="441">441</span>
 <span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">trace</span>, <span class="ident">warn</span>};
+<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">error</span>, <span class="ident">trace</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">TryFromMrb</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">exception</span>::{<span class="ident">LastError</span>, <span class="ident">MrbExceptionHandler</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gc</span>::<span class="ident">GarbageCollection</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
@@ -477,7 +483,7 @@
         <span class="comment">// we call into via the Ruby VM.</span>
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">interp</span>();
         <span class="kw">let</span> <span class="ident">mrb</span> <span class="op">=</span> { <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span> };
-        <span class="kw">let</span> <span class="ident">arena</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">create_arena_savepoint</span>();
+        <span class="kw">let</span> <span class="ident">_arena</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">create_arena_savepoint</span>();
 
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">as_ref</span>().<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">Value</span>::<span class="ident">inner</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
         <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">MRB_FUNCALL_ARGC_MAX</span> {
@@ -503,13 +509,17 @@
             <span class="ident">T</span>::<span class="ident">try_from_mrb</span>(<span class="ident">interp</span>, <span class="ident">value</span>).<span class="ident">map_err</span>(<span class="ident">MrbError</span>::<span class="ident">ConvertToRust</span>)
         };
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">backtrace</span>) <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">current_exception</span>() {
-            <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;runtime error with exception backtrace: {}&quot;</span>, <span class="ident">backtrace</span>);
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="ident">backtrace</span>));
+        <span class="kw">match</span> <span class="ident">interp</span>.<span class="ident">last_error</span>() {
+            <span class="ident">LastError</span>::<span class="prelude-val">Some</span>(<span class="ident">exception</span>) <span class="op">=&gt;</span> {
+                <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;runtime error with exception backtrace: {}&quot;</span>, <span class="ident">exception</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="ident">exception</span>.<span class="ident">to_string</span>()))
+            }
+            <span class="ident">LastError</span>::<span class="ident">UnableToExtract</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
+                <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;failed to extract exception after runtime error: {}&quot;</span>, <span class="ident">err</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>)
+            }
+            <span class="ident">LastError</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">value</span>,
         }
-
-        <span class="ident">arena</span>.<span class="ident">restore</span>();
-        <span class="ident">value</span>
     }
 }
 

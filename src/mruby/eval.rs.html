@@ -315,11 +315,17 @@
 <span id="315">315</span>
 <span id="316">316</span>
 <span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">warn</span>};
+<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">exception</span>::{<span class="ident">LastError</span>, <span class="ident">MrbExceptionHandler</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>::{<span class="self">self</span>, <span class="ident">DescribeState</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
@@ -436,22 +442,26 @@
             <span class="comment">// considered live by the GC.</span>
             <span class="ident">sys</span>::<span class="ident">mrb_load_nstring_cxt</span>(<span class="ident">mrb</span>, <span class="ident">code</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>, <span class="ident">code</span>.<span class="ident">len</span>(), <span class="ident">ctx</span>)
         };
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">backtrace</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_exception</span>() {
-            <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;runtime error with exception backtrace: {}&quot;</span>, <span class="ident">backtrace</span>);
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="ident">backtrace</span>));
-        }
-
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">new</span>(<span class="self">self</span>, <span class="ident">result</span>);
-        <span class="comment">// Unreachable values are internal to the mruby interpreter and</span>
-        <span class="comment">// interacting with them via the C API is unspecified and may result in</span>
-        <span class="comment">// a segfault.</span>
-        <span class="comment">//</span>
-        <span class="comment">// See: https://github.com/mruby/mruby/issues/4460</span>
-        <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_unreachable</span>() {
-            <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">UnreachableValue</span>(<span class="ident">value</span>.<span class="ident">inner</span>().<span class="ident">tt</span>))
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
+
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">last_error</span>() {
+            <span class="ident">LastError</span>::<span class="prelude-val">Some</span>(<span class="ident">exception</span>) <span class="op">=&gt;</span> {
+                <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;runtime error with exception backtrace: {}&quot;</span>, <span class="ident">exception</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="ident">exception</span>.<span class="ident">to_string</span>()))
+            }
+            <span class="ident">LastError</span>::<span class="ident">UnableToExtract</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
+                <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;failed to extract exception after runtime error: {}&quot;</span>, <span class="ident">err</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>)
+            }
+            <span class="ident">LastError</span>::<span class="prelude-val">None</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_unreachable</span>() <span class="op">=&gt;</span> {
+                <span class="comment">// Unreachable values are internal to the mruby interpreter and</span>
+                <span class="comment">// interacting with them via the C API is unspecified and may</span>
+                <span class="comment">// result in a segfault.</span>
+                <span class="comment">//</span>
+                <span class="comment">// See: https://github.com/mruby/mruby/issues/4460</span>
+                <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">UnreachableValue</span>(<span class="ident">value</span>.<span class="ident">inner</span>().<span class="ident">tt</span>))
+            }
+            <span class="ident">LastError</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>),
         }
     }
 
