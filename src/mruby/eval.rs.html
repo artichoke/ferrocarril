@@ -328,7 +328,7 @@
 <span id="328">328</span>
 <span id="329">329</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">warn</span>};
+<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">error</span>, <span class="ident">trace</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">exception</span>::{<span class="ident">LastError</span>, <span class="ident">MrbExceptionHandler</span>};
@@ -439,7 +439,7 @@
         }
 
         <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">code</span>.<span class="ident">as_ref</span>();
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Evaling code on {}&quot;</span>, <span class="ident">mrb</span>.<span class="ident">debug</span>());
+        <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Evaling code on {}&quot;</span>, <span class="ident">mrb</span>.<span class="ident">debug</span>());
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> {
             <span class="comment">// Execute arbitrary ruby code, which may generate objects with C</span>
             <span class="comment">// APIs if backed by Rust functions.</span>

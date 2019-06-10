@@ -112,9 +112,6 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Nemesis server implementations.</span>
 
@@ -135,10 +132,19 @@
     <span class="ident">Rocket</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Backend</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">Backend</span>::<span class="ident">Rocket</span>
+    }
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">AssetRegistry</span>(<span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>);
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">MountRegistry</span>(<span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Mount</span><span class="op">&gt;</span>);
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Builder</span> {
     <span class="ident">assets</span>: <span class="ident">AssetRegistry</span>,
     <span class="ident">mounts</span>: <span class="ident">MountRegistry</span>,
@@ -155,11 +161,10 @@
         <span class="self">self</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_static_asset</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">S</span>, <span class="ident">asset</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">assets</span>
-            .<span class="number">0</span>
-            .<span class="ident">insert</span>(<span class="ident">path</span>.<span class="ident">as_ref</span>().<span class="ident">to_owned</span>(), <span class="ident">asset</span>.<span class="ident">as_ref</span>().<span class="ident">to_owned</span>());
-        <span class="self">self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_static_asset</span>(<span class="self">self</span>, <span class="ident">path</span>: <span class="ident">String</span>, <span class="ident">asset</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">assets</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">default</span>();
+        <span class="ident">assets</span>.<span class="ident">insert</span>(<span class="ident">path</span>, <span class="ident">asset</span>);
+        <span class="self">self</span>.<span class="ident">add_static_assets</span>(<span class="ident">assets</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_static_assets</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">assets</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
@@ -175,16 +180,6 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">serve</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">Backend</span>::<span class="ident">Rocket</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>;
         <span class="ident">rocket</span>::<span class="ident">launcher</span>(<span class="self">self</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Builder</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">assets</span>: <span class="ident">AssetRegistry</span>(<span class="ident">HashMap</span>::<span class="ident">default</span>()),
-            <span class="ident">mounts</span>: <span class="ident">MountRegistry</span>(<span class="ident">HashMap</span>::<span class="ident">default</span>()),
-            <span class="ident">backend</span>: <span class="ident">Backend</span>::<span class="ident">Rocket</span>,
-        }
     }
 }
 
@@ -208,7 +203,6 @@
             <span class="ident">path</span>: <span class="ident">mount_path</span>.<span class="ident">to_owned</span>(),
             <span class="ident">app</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">app</span>)),
             <span class="ident">interp_init</span>: <span class="prelude-val">None</span>,
-            <span class="comment">// TODO: expose a setter for exec mode.</span>
             <span class="ident">exec_mode</span>: <span class="ident">ExecMode</span>::<span class="ident">default</span>(),
         }
     }
