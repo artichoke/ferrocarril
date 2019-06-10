@@ -256,6 +256,76 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 <span class="kw">use</span> <span class="ident">mruby_vfs</span>::<span class="ident">FileSystem</span>;
@@ -280,6 +350,7 @@
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">add_self_method</span>(<span class="string">&quot;require&quot;</span>, <span class="ident">Kernel</span>::<span class="ident">require</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_rest</span>());
     <span class="ident">kernel</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="ident">interp</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">New</span>)<span class="question-mark">?</span>;
+    <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;kernel.rb&quot;</span>))<span class="question-mark">?</span>;
     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Patched Kernel#require onto interpreter&quot;</span>);
     <span class="prelude-val">Ok</span>(())
 }
@@ -398,6 +469,7 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Interpreter</span>, <span class="ident">Mrb</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">ValueLike</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
     <span class="comment">// Integration test for `Kernel::require`:</span>
@@ -513,6 +585,74 @@
             <span class="ident">result</span>, <span class="number">10</span>,
             <span class="string">&quot;defined Ruby and Rust sources from single require&quot;</span>
         );
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">shadow_unrelated</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">kernel_throw_catch</span>() {
+        <span class="comment">// https://ruby-doc.org/core-2.6.3/Kernel.html#method-i-catch</span>
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
+            .<span class="ident">eval</span>(<span class="string">&quot;catch(1) { 123 }&quot;</span>)
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">123</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
+            .<span class="ident">eval</span>(<span class="string">&quot;catch(1) { throw(1, 456) }&quot;</span>)
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">456</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
+            .<span class="ident">eval</span>(<span class="string">&quot;catch(1) { throw(1) }&quot;</span>)
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
+            .<span class="ident">eval</span>(<span class="string">&quot;catch(1) {|x| x + 2 }&quot;</span>)
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">3</span>);
+
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
+            .<span class="ident">eval</span>(
+                <span class="string">r#&quot;
+catch do |obj_A|
+  catch do |obj_B|
+    throw(obj_B, 123)
+    # puts &quot;This puts is not reached&quot;
+  end
+
+  # puts &quot;This puts is displayed&quot;
+  456
+end
+            &quot;#</span>,
+            )
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">456</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
+            .<span class="ident">eval</span>(
+                <span class="string">r#&quot;
+catch do |obj_A|
+  catch do |obj_B|
+    throw(obj_A, 123)
+    # puts &quot;This puts is still not reached&quot;
+  end
+
+  # puts &quot;Now this puts is also not reached&quot;
+  456
+end
+            &quot;#</span>,
+            )
+            .<span class="ident">unwrap</span>()
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">123</span>);
     }
 }
 </pre></div>
