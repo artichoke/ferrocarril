@@ -56,6 +56,7 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
@@ -65,7 +66,8 @@
     <span class="ident">interp</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Monitor</span><span class="op">&gt;</span>(<span class="string">&quot;Monitor&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
-    <span class="ident">interp</span>.<span class="ident">def_rb_source_file</span>(<span class="string">&quot;monitor.rb&quot;</span>, <span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;monitor.rb&quot;</span>))
+    <span class="ident">interp</span>.<span class="ident">def_rb_source_file</span>(<span class="string">&quot;monitor.rb&quot;</span>, <span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;monitor.rb&quot;</span>))<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Monitor</span>;
