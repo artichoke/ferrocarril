@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["patch",""]],"mod":[["delegate",""],["forwardable",""],["monitor",""]]});
+initSidebarItems({"fn":[["patch",""]],"mod":[["delegate",""],["forwardable",""],["monitor",""],["set",""]]});
