@@ -72,6 +72,7 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
+<span id="75">75</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
@@ -90,8 +91,9 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SortedSet</span>;
 
-<span class="comment">// Delegate tests from Ruby stdlib docs</span>
+<span class="comment">// Set tests from Ruby stdlib docs</span>
 <span class="comment">// https://ruby-doc.org/stdlib-2.6.3/libdoc/set/rdoc/Set.html</span>
+<span class="comment">// https://ruby-doc.org/stdlib-2.6.3/libdoc/set/rdoc/SortedSet.html</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
