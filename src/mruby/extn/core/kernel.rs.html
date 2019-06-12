@@ -325,7 +325,6 @@
 <span id="325">325</span>
 <span id="326">326</span>
 <span id="327">327</span>
-<span id="328">328</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 <span class="kw">use</span> <span class="ident">mruby_vfs</span>::<span class="ident">FileSystem</span>;
@@ -469,7 +468,6 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Interpreter</span>, <span class="ident">Mrb</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">ValueLike</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
     <span class="comment">// Integration test for `Kernel::require`:</span>
@@ -595,25 +593,25 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;catch(1) { 123 }&quot;</span>)
             .<span class="ident">unwrap</span>()
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">123</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;catch(1) { throw(1, 456) }&quot;</span>)
             .<span class="ident">unwrap</span>()
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">456</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;catch(1) { throw(1) }&quot;</span>)
             .<span class="ident">unwrap</span>()
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">None</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;catch(1) {|x| x + 2 }&quot;</span>)
             .<span class="ident">unwrap</span>()
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">3</span>);
 
@@ -632,7 +630,7 @@ end
             &quot;#</span>,
             )
             .<span class="ident">unwrap</span>()
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">456</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
@@ -650,7 +648,7 @@ end
             &quot;#</span>,
             )
             .<span class="ident">unwrap</span>()
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">i64</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+            .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="number">123</span>);
     }

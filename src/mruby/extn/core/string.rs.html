@@ -91,10 +91,6 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
-<span id="97">97</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::<span class="ident">Define</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
@@ -122,7 +118,6 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">string</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">ValueLike</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">string_equal_squiggle</span>() {
@@ -130,12 +125,9 @@
         <span class="ident">string</span>::<span class="ident">patch</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;string init&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">r#&quot;&quot;cat o&#39; 9 tails&quot; =~ /\d/&quot;#</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">value</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[]),
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="number">7</span>))
-        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">value</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;&gt;</span>(), <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="number">7</span>)));
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">r#&quot;&quot;cat o&#39; 9 tails&quot; =~ 9&quot;#</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">value</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[]), <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">value</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;&gt;</span>(), <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -147,7 +139,7 @@
             <span class="kw-2">&amp;</span><span class="ident">interp</span>
                 .<span class="ident">eval</span>(<span class="string">r&quot;&#39;hello there&#39;[/[aeiou](.)\1/]&quot;</span>)
                 .<span class="ident">unwrap</span>()
-                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+                .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>()
                 .<span class="ident">unwrap</span>(),
             <span class="string">&quot;ell&quot;</span>
         );
@@ -155,7 +147,7 @@
             <span class="kw-2">&amp;</span><span class="ident">interp</span>
                 .<span class="ident">eval</span>(<span class="string">r&quot;&#39;hello there&#39;[/[aeiou](.)\1/, 0]&quot;</span>)
                 .<span class="ident">unwrap</span>()
-                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+                .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>()
                 .<span class="ident">unwrap</span>(),
             <span class="string">&quot;ell&quot;</span>
         );
@@ -163,7 +155,7 @@
             <span class="kw-2">&amp;</span><span class="ident">interp</span>
                 .<span class="ident">eval</span>(<span class="string">r&quot;&#39;hello there&#39;[/[aeiou](.)\1/, 1]&quot;</span>)
                 .<span class="ident">unwrap</span>()
-                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+                .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>()
                 .<span class="ident">unwrap</span>(),
             <span class="string">&quot;l&quot;</span>
         );
@@ -171,7 +163,7 @@
             <span class="ident">interp</span>
                 .<span class="ident">eval</span>(<span class="string">r&quot;&#39;hello there&#39;[/[aeiou](.)\1/, 2]&quot;</span>)
                 .<span class="ident">unwrap</span>()
-                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+                .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>()
                 .<span class="ident">unwrap</span>(),
             <span class="prelude-val">None</span>
         );
@@ -179,7 +171,7 @@
             <span class="kw-2">&amp;</span><span class="ident">interp</span>
                 .<span class="ident">eval</span>(<span class="string">r&quot;&#39;hello there&#39;[/(?&lt;vowel&gt;[aeiou])(?&lt;non_vowel&gt;[^aeiou])/, &#39;non_vowel&#39;]&quot;</span>)
                 .<span class="ident">unwrap</span>()
-                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+                .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>()
                 .<span class="ident">unwrap</span>(),
             <span class="string">&quot;l&quot;</span>
         );
@@ -187,7 +179,7 @@
             <span class="kw-2">&amp;</span><span class="ident">interp</span>
                 .<span class="ident">eval</span>(<span class="string">r&quot;&#39;hello there&#39;[/(?&lt;vowel&gt;[aeiou])(?&lt;non_vowel&gt;[^aeiou])/, &#39;vowel&#39;]&quot;</span>)
                 .<span class="ident">unwrap</span>()
-                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;itself&quot;</span>, <span class="kw-2">&amp;</span>[])
+                .<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>()
                 .<span class="ident">unwrap</span>(),
             <span class="string">&quot;e&quot;</span>
         );
