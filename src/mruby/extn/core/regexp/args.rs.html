@@ -195,6 +195,24 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
@@ -259,6 +277,24 @@
             <span class="ident">options</span>,
             <span class="ident">encoding</span>,
         })
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pattern</span> {
+    <span class="kw">pub</span> <span class="ident">pattern</span>: <span class="ident">String</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Pattern</span> {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">extract</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">MrbError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">pattern</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">argspec</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+        <span class="ident">argspec</span>
+            .<span class="ident">write_all</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\0&quot;</span>, <span class="ident">sys</span>::<span class="ident">specifiers</span>::<span class="ident">OBJECT</span>,).<span class="ident">as_bytes</span>())
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">ArgSpec</span>)<span class="question-mark">?</span>;
+        <span class="ident">sys</span>::<span class="ident">mrb_get_args</span>(<span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>, <span class="ident">argspec</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>, <span class="kw-2">&amp;</span><span class="ident">pattern</span>);
+        <span class="kw">let</span> <span class="ident">pattern</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">pattern</span>))
+            .<span class="ident">map_err</span>(<span class="ident">MrbError</span>::<span class="ident">ConvertToRust</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">pattern</span> })
     }
 }
 
