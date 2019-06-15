@@ -30,7 +30,7 @@ type (which may be <code>Value</code> or another &quot;native&quot; type).</p>
 that are either pure Ruby, implemented with a Rust <a href="../mruby/file/trait.MrbFile.html"><code>MrbFile</code></a>, or
 both.</p>
 <p>mruby crate implements
-<a href="../mruby/extn/core/kernel/struct.Kernel.html"><code>Kernel#require</code> and <code>Kernel#relative_require</code></a> which
+<a href="../mruby/extn/core/kernel/struct.Kernel.html"><code>Kernel#require</code> and <code>Kernel#require_relative</code></a> which
 loads sources from the VFS. For Ruby sources, the source is loaded from the VFS
 as a <code>Vec&lt;u8&gt;</code> and evaled with <a href="../mruby/eval/trait.MrbEval.html#tymethod.eval_with_context"><code>MrbEval::eval_with_context</code></a>. For
 Rust sources, <a href="../mruby/file/trait.MrbFile.html#tymethod.require"><code>MrbFile::require</code></a> methods are stored as custom
