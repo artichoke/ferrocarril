@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["patch",""]],"mod":[["error",""],["kernel",""],["module",""],["regexp",""],["string",""],["thread",""]]});
+initSidebarItems({"fn":[["patch",""]],"mod":[["env",""],["error",""],["kernel",""],["module",""],["regexp",""],["string",""],["thread",""]]});
