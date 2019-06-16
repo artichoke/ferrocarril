@@ -484,7 +484,7 @@
 <span class="doccomment">//! `unsafe` Rust functions.</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">test</span>, <span class="ident">macro_use</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_embed</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>;
