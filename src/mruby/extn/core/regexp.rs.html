@@ -1265,8 +1265,55 @@
 <span id="1265">1265</span>
 <span id="1266">1266</span>
 <span id="1267">1267</span>
+<span id="1268">1268</span>
+<span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">onig</span>::{<span class="ident">Regex</span>, <span class="ident">RegexOptions</span>, <span class="ident">SearchOptions</span>, <span class="ident">Syntax</span>};
+<span class="kw">use</span> <span class="ident">onig</span>::{<span class="ident">Regex</span>, <span class="ident">RegexOptions</span>, <span class="ident">Region</span>, <span class="ident">SearchOptions</span>, <span class="ident">Syntax</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 
@@ -1375,6 +1422,9 @@
         <span class="ident">MatchData</span>::<span class="ident">named_captures</span>,
         <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>(),
     );
+    <span class="ident">match_data</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">add_method</span>(<span class="string">&quot;to_a&quot;</span>, <span class="ident">MatchData</span>::<span class="ident">captures</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>());
     <span class="ident">match_data</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
@@ -1410,7 +1460,7 @@
             <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;m&#39;</span>);
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">extended</span> {
-            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;e&#39;</span>);
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;x&#39;</span>);
         }
         <span class="ident">buf</span>
     }
@@ -1562,7 +1612,7 @@
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ALL_ENCODING_OPTS</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">FIXEDENCODING</span> <span class="op">|</span> <span class="self">Self</span>::<span class="ident">NOENCODING</span>;
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">regex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Regex</span><span class="op">&gt;</span> {
-        <span class="ident">Regex</span>::<span class="ident">with_options</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pattern</span>, <span class="self">self</span>.<span class="ident">options</span>.<span class="ident">flags</span>(), <span class="ident">Syntax</span>::<span class="ident">default</span>()).<span class="ident">ok</span>()
+        <span class="ident">Regex</span>::<span class="ident">with_options</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pattern</span>, <span class="self">self</span>.<span class="ident">options</span>.<span class="ident">flags</span>(), <span class="ident">Syntax</span>::<span class="ident">ruby</span>()).<span class="ident">ok</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">pattern</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">MrbError</span><span class="op">&gt;</span> {
@@ -1746,16 +1796,21 @@
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
+        <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">string</span> {
+            <span class="ident">string</span>.<span class="ident">to_owned</span>()
+        } <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+        };
 
         <span class="comment">// onig will panic if pos is beyond the end of string</span>
-        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>() <span class="op">&gt;</span> <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>() {
+        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>() <span class="op">&gt;</span> <span class="ident">string</span>.<span class="ident">len</span>() {
             <span class="kw">return</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>();
         }
         <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> {
             <span class="ident">regexp</span>.<span class="ident">search_with_options</span>(
-                <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">string</span>,
+                <span class="ident">string</span>.<span class="ident">as_str</span>(),
                 <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
-                <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>(),
+                <span class="ident">string</span>.<span class="ident">len</span>(),
                 <span class="ident">SearchOptions</span>::<span class="ident">SEARCH_OPTION_NONE</span>,
                 <span class="prelude-val">None</span>,
             )
@@ -1772,26 +1827,56 @@
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
-
-        <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> {
-            <span class="ident">regexp</span>.<span class="ident">search_with_options</span>(
-                <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">string</span>,
-                <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
-                <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>(),
-                <span class="ident">SearchOptions</span>::<span class="ident">SEARCH_OPTION_NONE</span>,
-                <span class="prelude-val">None</span>,
-            )
-        });
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_match</span>.<span class="ident">is_some</span>() {
-            <span class="ident">MatchData</span> {
-                <span class="ident">string</span>: <span class="ident">args</span>.<span class="ident">string</span>,
-                <span class="ident">regexp</span>: <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">clone</span>(),
-                <span class="ident">start_pos</span>: <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
-            }
+        <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">string</span> {
+            <span class="ident">string</span>.<span class="ident">to_owned</span>()
         } <span class="kw">else</span> {
             <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
         };
-        <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">data</span>.<span class="ident">try_into_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>))
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> {
+            <span class="ident">regexp</span>.<span class="ident">search_with_options</span>(
+                <span class="ident">string</span>.<span class="ident">as_str</span>(),
+                <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
+                <span class="ident">string</span>.<span class="ident">len</span>(),
+                <span class="ident">SearchOptions</span>::<span class="ident">SEARCH_OPTION_NONE</span>,
+                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">region</span>),
+            )
+        });
+        <span class="kw">let</span> <span class="ident">last_matched_string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">region</span>.<span class="ident">pos</span>(<span class="number">0</span>) {
+            <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">string</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">to_owned</span>()).<span class="ident">inner</span>()
+        } <span class="kw">else</span> {
+            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        };
+        <span class="kw">let</span> <span class="ident">global_last_match_string</span> <span class="op">=</span> <span class="string">&quot;$&amp;&quot;</span>;
+        <span class="kw">let</span> <span class="ident">global_match_string_name</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_intern</span>(
+            <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>,
+            <span class="ident">global_last_match_string</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>,
+            <span class="ident">global_last_match_string</span>.<span class="ident">len</span>(),
+        );
+        <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(
+            <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>,
+            <span class="ident">global_match_string_name</span>,
+            <span class="ident">last_matched_string</span>,
+        );
+        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_match</span>.<span class="ident">is_some</span>() {
+            <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">MatchData</span> {
+                <span class="ident">string</span>,
+                <span class="ident">regexp</span>: <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">clone</span>(),
+                <span class="ident">start_pos</span>: <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
+            };
+            <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">data</span>.<span class="ident">try_into_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>))
+        } <span class="kw">else</span> {
+            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        };
+        <span class="kw">let</span> <span class="ident">global_last_match_captures</span> <span class="op">=</span> <span class="string">&quot;$~&quot;</span>;
+        <span class="kw">let</span> <span class="ident">global_match_captures_name</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_intern</span>(
+            <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>,
+            <span class="ident">global_last_match_captures</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>,
+            <span class="ident">global_last_match_captures</span>.<span class="ident">len</span>(),
+        );
+        <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(<span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>, <span class="ident">global_match_captures_name</span>, <span class="ident">data</span>);
+        <span class="ident">data</span>
     }
 
     <span class="comment">// TODO: Implement support for extracting named captures and assigning to</span>
@@ -1809,12 +1894,17 @@
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
+        <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">string</span> {
+            <span class="ident">string</span>.<span class="ident">to_owned</span>()
+        } <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+        };
 
         <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> {
             <span class="ident">regexp</span>.<span class="ident">search_with_options</span>(
-                <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">string</span>,
+                <span class="ident">string</span>.<span class="ident">as_str</span>(),
                 <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
-                <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>(),
+                <span class="ident">string</span>.<span class="ident">len</span>(),
                 <span class="ident">SearchOptions</span>::<span class="ident">SEARCH_OPTION_NONE</span>,
                 <span class="prelude-val">None</span>,
             )
@@ -1834,22 +1924,13 @@
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
 
-        <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+        <span class="kw">let</span> <span class="ident">matched</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
-            <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
+            <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)
+                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;match&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>.<span class="ident">string</span>)]),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
-
-        <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> {
-            <span class="ident">regexp</span>.<span class="ident">search_with_options</span>(
-                <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">string</span>,
-                <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>(),
-                <span class="ident">args</span>.<span class="ident">string</span>.<span class="ident">len</span>(),
-                <span class="ident">SearchOptions</span>::<span class="ident">SEARCH_OPTION_NONE</span>,
-                <span class="prelude-val">None</span>,
-            )
-        });
-        <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="ident">is_match</span>.<span class="ident">is_some</span>()).<span class="ident">inner</span>()
+        <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="ident">matched</span>.<span class="ident">is_some</span>()).<span class="ident">inner</span>()
     }
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">names</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
@@ -1975,17 +2056,22 @@
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">idx</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
-        );
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>();
+        <span class="kw">let</span> <span class="ident">length</span> <span class="op">=</span> <span class="ident">borrow</span>
+            .<span class="ident">regexp</span>
+            .<span class="ident">regex</span>()
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> <span class="ident">regexp</span>.<span class="ident">captures</span>(<span class="ident">borrow</span>.<span class="ident">string</span>.<span class="ident">as_str</span>()))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">captures</span><span class="op">|</span> <span class="ident">captures</span>.<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">length</span>.<span class="ident">unwrap_or_default</span>()),
+            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        );
         <span class="kw">match</span> <span class="ident">args</span> {
             <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">Index</span>(<span class="ident">index</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">captures</span> <span class="op">=</span> <span class="ident">borrow</span>
@@ -2043,9 +2129,7 @@
                             <span class="prelude-val">Some</span>(<span class="ident">start</span>) <span class="op">=&gt;</span> {
                                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matches</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
                                 <span class="kw">for</span> <span class="ident">index</span> <span class="kw">in</span> <span class="ident">start</span>..(<span class="ident">start</span> <span class="op">+</span> <span class="ident">len</span>) {
-                                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">matched</span>) <span class="op">=</span> <span class="ident">captures</span>.<span class="ident">at</span>(<span class="ident">index</span>) {
-                                        <span class="ident">matches</span>.<span class="ident">push</span>(<span class="ident">matched</span>);
-                                    }
+                                    <span class="ident">matches</span>.<span class="ident">push</span>(<span class="ident">captures</span>.<span class="ident">at</span>(<span class="ident">index</span>));
                                 }
                                 <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">matches</span>).<span class="ident">inner</span>()
                             }
@@ -2061,17 +2145,22 @@
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">begin</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
 
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
-        );
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>();
+        <span class="kw">let</span> <span class="ident">length</span> <span class="op">=</span> <span class="ident">borrow</span>
+            .<span class="ident">regexp</span>
+            .<span class="ident">regex</span>()
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> <span class="ident">regexp</span>.<span class="ident">captures</span>(<span class="ident">borrow</span>.<span class="ident">string</span>.<span class="ident">as_str</span>()))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">captures</span><span class="op">|</span> <span class="ident">captures</span>.<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">length</span>.<span class="ident">unwrap_or_default</span>()),
+            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        );
         <span class="kw">match</span> <span class="ident">args</span> {
             <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">Index</span>(<span class="ident">index</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">captures</span> <span class="op">=</span> <span class="ident">borrow</span>
@@ -2126,17 +2215,22 @@
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">end</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
 
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
-        );
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>();
+        <span class="kw">let</span> <span class="ident">length</span> <span class="op">=</span> <span class="ident">borrow</span>
+            .<span class="ident">regexp</span>
+            .<span class="ident">regex</span>()
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">regexp</span><span class="op">|</span> <span class="ident">regexp</span>.<span class="ident">captures</span>(<span class="ident">borrow</span>.<span class="ident">string</span>.<span class="ident">as_str</span>()))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">captures</span><span class="op">|</span> <span class="ident">captures</span>.<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">length</span>.<span class="ident">unwrap_or_default</span>()),
+            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        );
         <span class="kw">match</span> <span class="ident">args</span> {
             <span class="ident">args</span>::<span class="ident">MatchIndex</span>::<span class="ident">Index</span>(<span class="ident">index</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">captures</span> <span class="op">=</span> <span class="ident">borrow</span>

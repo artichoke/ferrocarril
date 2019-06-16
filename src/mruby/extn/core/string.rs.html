@@ -183,46 +183,31 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">NativeEndian</span>, <span class="ident">ReadBytesExt</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Cursor</span>;
+
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">ArgumentError</span>, <span class="ident">RubyException</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 
-<span class="kw">mod</span> <span class="ident">args</span>;
-
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">patch</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">class_spec</span>::<span class="op">&lt;</span><span class="ident">RString</span><span class="op">&gt;</span>().<span class="ident">is_some</span>() {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+    }
     <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">interp</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">RString</span><span class="op">&gt;</span>(<span class="string">&quot;String&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
     <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;string.rb&quot;</span>))<span class="question-mark">?</span>;
     <span class="ident">string</span>
         .<span class="ident">borrow_mut</span>()
-        .<span class="ident">add_method</span>(<span class="string">&quot;scan&quot;</span>, <span class="ident">RString</span>::<span class="ident">scan</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_req</span>(<span class="number">1</span>));
-    <span class="ident">string</span>
-        .<span class="ident">borrow_mut</span>()
-        .<span class="ident">add_method</span>(<span class="string">&quot;-@&quot;</span>, <span class="ident">RString</span>::<span class="ident">unary_minus</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>());
+        .<span class="ident">add_method</span>(<span class="string">&quot;ord&quot;</span>, <span class="ident">RString</span>::<span class="ident">ord</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>());
     <span class="ident">string</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="ident">interp</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">New</span>)<span class="question-mark">?</span>;
     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Patched String onto interpreter&quot;</span>);
     <span class="prelude-val">Ok</span>(())
@@ -232,45 +217,26 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RString</span>;
 
 <span class="kw">impl</span> <span class="ident">RString</span> {
-    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">scan</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Scan</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
-
-        <span class="kw">let</span> <span class="ident">search</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">String</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
-        );
-
-        <span class="kw">let</span> <span class="ident">parts</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">regexp</span>.<span class="ident">regex</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">regex</span><span class="op">|</span> {
-            <span class="ident">regex</span>
-                .<span class="ident">find_iter</span>(<span class="ident">search</span>.<span class="ident">as_str</span>())
-                .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">start</span>, <span class="ident">end</span>)<span class="op">|</span> <span class="ident">search</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">to_owned</span>())
-                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
-        });
-        <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">parts</span>).<span class="ident">inner</span>()
-    }
-
-    <span class="doccomment">/// Returns a frozen, possibly pre-existing copy of the string.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The string will be deduplicated as long as it is not tainted, or has any</span>
-    <span class="doccomment">/// instance variables set on it.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// &lt;https://ruby-doc.org/core-2.6.3/String.html#method-i-2D-40&gt;</span>
-    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">unary_minus</span>(
-        <span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>,
-        <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">ord</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="ident">String</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
             <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
         );
-        <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">s</span>).<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;freeze&quot;</span>, <span class="kw-2">&amp;</span>[])
-        )
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">first</span>) <span class="op">=</span> <span class="ident">s</span>.<span class="ident">chars</span>().<span class="ident">next</span>() {
+            <span class="comment">// One UTF-8 character, which are at most 32 bits.</span>
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">4</span>];
+            <span class="ident">first</span>.<span class="ident">encode_utf8</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">Cursor</span>::<span class="ident">new</span>(<span class="ident">buf</span>);
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">ord</span>) <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">read_u32</span>::<span class="op">&lt;</span><span class="ident">NativeEndian</span><span class="op">&gt;</span>() {
+                <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">ord</span>).<span class="ident">inner</span>()
+            } <span class="kw">else</span> {
+                <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            }
+        } <span class="kw">else</span> {
+            <span class="ident">ArgumentError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;empty string&quot;</span>)
+        }
     }
 }
 <span class="comment">// Tests from String core docs in Ruby 2.6.3</span>
