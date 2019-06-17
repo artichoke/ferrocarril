@@ -7,3 +7,4 @@ ALIASES["mruby_sys"] = {};
 ALIASES["mruby_vfs"] = {};
 ALIASES["nemesis"] = {};
 ALIASES["rirb"] = {};
+ALIASES["spec_runner"] = {};
