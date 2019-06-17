@@ -191,6 +191,11 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
@@ -219,7 +224,7 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
+    <span class="comment">// use crate::MrbError;</span>
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_required_by_default</span>() {
@@ -347,42 +352,47 @@ end.join
 &quot;#</span>;
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span>.<span class="ident">is_err</span>());
-        <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">r#&quot;
-Thread.abort_on_exception = false
-Thread.new do
-  begin
-    Thread.new do
-      begin
+
+        <span class="comment">// TODO: re-enable the following test once upstream mruby bug is fixed:</span>
+        <span class="comment">// https://github.com/mruby/mruby/issues/4513</span>
+        <span class="comment">/*
+                let spec = r#&quot;
+        #Thread.abort_on_exception = false
         Thread.new do
-          Thread.current.abort_on_exception = true
-          raise &#39;inner&#39;
+          begin
+            Thread.new do
+              begin
+                Thread.new do
+                  Thread.current.abort_on_exception = true
+                  raise &#39;inner&#39;
+                end.join
+                raise &#39;outer&#39;
+              rescue StandardError
+                # swallow errors
+              end
+            end.join
+            raise &#39;failboat&#39;
+          rescue StandardError
+            # swallow errors
+          end
         end.join
-        raise &#39;outer&#39;
-      rescue StandardError
-        # swallow errors
-      end
-    end.join
-    raise &#39;failboat&#39;
-  rescue StandardError
-    # swallow errors
-  end
-end.join
-&quot;#</span>;
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>.<span class="ident">trim</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ());
-        <span class="kw">let</span> <span class="ident">expected_backtrace</span> <span class="op">=</span> <span class="string">r#&quot;
-(eval):8: inner (RuntimeError)
-(eval):8:in call
-/src/lib/thread.rb:122:in initialize
-(eval):6:in call
-/src/lib/thread.rb:122:in initialize
-(eval):4:in call
-/src/lib/thread.rb:122:in initialize
-(eval):2
-&quot;#</span>;
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">result</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">MrbError</span>::<span class="ident">Exec</span>(<span class="ident">expected_backtrace</span>.<span class="ident">trim</span>().<span class="ident">to_owned</span>()))
-        );
+        &quot;#;
+                let result = interp.eval(spec.trim()).map(|_| ());
+                let expected_backtrace = r#&quot;
+        (eval):8: inner (RuntimeError)
+        (eval):8:in call
+        /src/lib/thread.rb:122:in initialize
+        (eval):6:in call
+        /src/lib/thread.rb:122:in initialize
+        (eval):4:in call
+        /src/lib/thread.rb:122:in initialize
+        (eval):2
+        &quot;#;
+                assert_eq!(
+                    result,
+                    Err(MrbError::Exec(expected_backtrace.trim().to_owned()))
+                );
+                */</span>
     }
 }
 </pre></div>

@@ -436,7 +436,7 @@
                 <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">len</span>,
                 <span class="ident">num_captures</span>,
                 <span class="number">0_u8</span>,
-            ) <span class="op">==</span> <span class="number">1</span>
+            ) <span class="op">==</span> <span class="ident">sys</span>::<span class="ident">mrb_range_beg_len</span>::<span class="ident">MRB_RANGE_OK</span>
             {
                 <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">usize</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">len</span>))
                     .<span class="ident">map_err</span>(<span class="ident">MrbError</span>::<span class="ident">ConvertToRust</span>)<span class="question-mark">?</span>;
