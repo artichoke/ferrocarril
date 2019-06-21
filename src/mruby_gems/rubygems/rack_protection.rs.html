@@ -89,7 +89,7 @@
                 <span class="string">&quot;@default_options ||= DEFAULT_OPTIONS; @default_options.merge(options)&quot;</span>,
             );
             <span class="ident">string</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">replace</span>(
-                <span class="string">&quot;def default_options        DEFAULT_OPTIONS      end&quot;</span>,
+                <span class="string">&quot;def default_options\n        DEFAULT_OPTIONS\n      end&quot;</span>,
                 <span class="string">&quot;def default_options; @default_options ||= DEFAULT_OPTIONS; end&quot;</span>,
             );
             <span class="ident">string</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">replace</span>(<span class="string">&quot;defined? SecureRandom&quot;</span>, <span class="string">&quot;true&quot;</span>);
