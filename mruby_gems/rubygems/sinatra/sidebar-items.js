@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["init","Load the [`Sinatra`] gem into an interpreter."]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]]});
+initSidebarItems({"fn":[["init","Load the [`Rack`] gem into an interpreter."]]});

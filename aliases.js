@@ -1,5 +1,6 @@
 var ALIASES = {};
 ALIASES["foolsgold"] = {};
+ALIASES["hubris"] = {};
 ALIASES["mruby"] = {};
 ALIASES["mruby_bin"] = {};
 ALIASES["mruby_gems"] = {};

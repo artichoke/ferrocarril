@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["init","Load the [`Tilt`] gem into an interpreter."]]});

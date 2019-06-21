@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["init","Load the [`Mustermann`] gem into an interpreter."]]});

@@ -402,7 +402,7 @@
         <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">is_relative</span>() {
             <span class="ident">path</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="ident">base</span>);
         }
-        <span class="kw">let</span> <span class="ident">files</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">path</span>.<span class="ident">join</span>(<span class="ident">filename</span>), <span class="ident">path</span>.<span class="ident">join</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}.rb&quot;</span>, <span class="ident">filename</span>))];
+        <span class="kw">let</span> <span class="ident">files</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">path</span>.<span class="ident">join</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}.rb&quot;</span>, <span class="ident">filename</span>)), <span class="ident">path</span>.<span class="ident">join</span>(<span class="ident">filename</span>)];
         <span class="kw">for</span> <span class="ident">path</span> <span class="kw">in</span> <span class="ident">files</span> {
             <span class="comment">// canonicalize path (remove &#39;.&#39; and &#39;..&#39; components).</span>
             <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">PathAbs</span>::<span class="ident">new</span>(<span class="ident">path</span>) {
