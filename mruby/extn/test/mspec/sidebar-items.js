@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["ENFORCE_RUBY_SPECS",""]],"fn":[["init",""]],"struct":[["MSpec",""],["MSpecRunner",""]]});
