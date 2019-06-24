@@ -181,6 +181,12 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">trace</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -284,6 +290,8 @@
     <span class="kw">fn</span> <span class="ident">float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">Float</span>) <span class="op">-&gt;</span> <span class="ident">Value</span>;
 
     <span class="kw">fn</span> <span class="ident">string</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Value</span>;
+
+    <span class="kw">fn</span> <span class="ident">top_self</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">MrbApi</span> <span class="kw">for</span> <span class="ident">Mrb</span> {
@@ -309,6 +317,10 @@
 
     <span class="kw">fn</span> <span class="ident">string</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
         <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="self">self</span>, <span class="ident">s</span>.<span class="ident">as_ref</span>())
+    }
+
+    <span class="kw">fn</span> <span class="ident">top_self</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
+        <span class="ident">Value</span>::<span class="ident">new</span>(<span class="self">self</span>, <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_top_self</span>(<span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>) })
     }
 }
 

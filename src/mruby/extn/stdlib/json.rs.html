@@ -74,7 +74,7 @@
                 <span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;spec/json_doc_spec.rb&quot;</span>),
             )
             .<span class="ident">unwrap</span>();
-        <span class="ident">runner</span>.<span class="ident">run</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">runner</span>.<span class="ident">run</span>(), <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>));
     }
 }
 </pre></div>

@@ -370,9 +370,6 @@
 <span id="370">370</span>
 <span id="371">371</span>
 <span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">error</span>, <span class="ident">trace</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">c_void</span>, <span class="ident">CString</span>};
@@ -735,16 +732,13 @@ NestedEval.file
     <span class="kw">fn</span> <span class="ident">return_syntax_error</span>() {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">interp</span>
-            .<span class="ident">def_rb_source_file</span>(<span class="string">&quot;fail.rb&quot;</span>, <span class="string">&quot;def bad; &#39;as&#39;.scan(/./o); end&quot;</span>)
+            .<span class="ident">def_rb_source_file</span>(<span class="string">&quot;fail.rb&quot;</span>, <span class="string">&quot;def bad; &#39;as&#39;.scan(; end&quot;</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;def file&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;fail&#39;&quot;</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ());
+        <span class="comment">// TODO: require should reraise instead of wrapping in a RuntimeError</span>
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">MrbError</span>::<span class="ident">Exec</span>(
-            <span class="string">&quot;
-(eval):1: mruby exception: SyntaxError: syntax error (RuntimeError)
-(eval):1
-            &quot;</span>
-            .<span class="ident">trim</span>()
-            .<span class="ident">to_owned</span>(),
+            <span class="string">&quot;(eval):1: mruby exception: SyntaxError: syntax error (RuntimeError)\n(eval):1&quot;</span>
+                .<span class="ident">to_owned</span>(),
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Err</span>(<span class="ident">expected</span>));
     }

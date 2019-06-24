@@ -358,6 +358,49 @@
 <span id="358">358</span>
 <span id="359">359</span>
 <span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 <span class="kw">use</span> <span class="ident">mruby_vfs</span>::<span class="ident">FileSystem</span>;
@@ -371,6 +414,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>, <span class="ident">RUBY_LOAD_PATH</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">state</span>::<span class="ident">VfsMetadata</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Ruby</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
 <span class="kw">mod</span> <span class="ident">args</span>;
@@ -385,6 +430,12 @@
         <span class="ident">Kernel</span>::<span class="ident">require_relative</span>,
         <span class="ident">sys</span>::<span class="ident">mrb_args_rest</span>(),
     );
+    <span class="ident">kernel</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">add_self_method</span>(<span class="string">&quot;print&quot;</span>, <span class="ident">Kernel</span>::<span class="ident">print</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_rest</span>());
+    <span class="ident">kernel</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">add_self_method</span>(<span class="string">&quot;puts&quot;</span>, <span class="ident">Kernel</span>::<span class="ident">puts</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_rest</span>());
     <span class="ident">kernel</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="ident">interp</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">New</span>)<span class="question-mark">?</span>;
     <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="macro">include_str</span><span class="macro">!</span>(<span class="string">&quot;kernel.rb&quot;</span>))<span class="question-mark">?</span>;
     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Patched Kernel#require onto interpreter&quot;</span>);
@@ -511,6 +562,41 @@
             })
             .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">RUBY_LOAD_PATH</span>.<span class="ident">to_owned</span>());
         <span class="self">Self</span>::<span class="ident">require_impl</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>.<span class="ident">filename</span>.<span class="ident">as_str</span>(), <span class="ident">base</span>.<span class="ident">as_str</span>())
+    }
+
+    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+
+        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">rest</span> {
+            <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">value</span>.<span class="ident">to_s</span>());
+        }
+        <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+    }
+
+    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">puts</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+        <span class="kw">fn</span> <span class="ident">do_puts</span>(<span class="ident">value</span>: <span class="ident">Value</span>) {
+            <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">ruby_type</span>() <span class="op">==</span> <span class="ident">Ruby</span>::<span class="ident">Array</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">array</span>) <span class="op">=</span> <span class="ident">value</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;&gt;</span>() {
+                    <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">array</span> {
+                        <span class="ident">do_puts</span>(<span class="ident">value</span>);
+                    }
+                }
+            } <span class="kw">else</span> {
+                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">value</span>.<span class="ident">to_s</span>());
+            }
+        }
+
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+
+        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">rest</span>.<span class="ident">is_empty</span>() {
+            <span class="macro">println</span><span class="macro">!</span>();
+        }
+        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">rest</span> {
+            <span class="ident">do_puts</span>(<span class="ident">value</span>);
+        }
+        <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
     }
 }
 

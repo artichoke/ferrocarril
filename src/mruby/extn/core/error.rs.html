@@ -213,6 +213,22 @@
 <span id="213">213</span>
 <span id="214">214</span>
 <span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">warn</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">c_void</span>, <span class="ident">CString</span>};
@@ -267,6 +283,12 @@
     <span class="ident">interp</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">RuntimeError</span><span class="op">&gt;</span>(<span class="string">&quot;RuntimeError&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+    <span class="ident">interp</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;</span>(<span class="string">&quot;SyntaxError&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+    <span class="ident">interp</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">TypeError</span><span class="op">&gt;</span>(<span class="string">&quot;TypeError&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
     <span class="prelude-val">Ok</span>(())
 }
 
@@ -382,6 +404,16 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RuntimeError</span>;
 
 <span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">RuntimeError</span> {}
+
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SyntaxError</span>;
+
+<span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">SyntaxError</span> {}
+
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TypeError</span>;
+
+<span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">TypeError</span> {}
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {

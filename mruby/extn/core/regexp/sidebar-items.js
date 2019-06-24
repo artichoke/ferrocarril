@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["MatchData",""],["Regexp",""]]});
+initSidebarItems({"enum":[["Encoding",""]],"fn":[["init",""]],"struct":[["MatchData",""],["Options",""],["Regexp",""]]});
