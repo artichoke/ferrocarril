@@ -86,7 +86,7 @@
                 .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">SourceNotFound</span>(<span class="ident">path</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
             <span class="ident">string</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">replace</span>(
                 <span class="string">&quot;define_method(:default_options) { super().merge(options) }&quot;</span>,
-                <span class="string">&quot;@default_options ||= DEFAULT_OPTIONS; @default_options.merge(options)&quot;</span>,
+                <span class="string">&quot;define_method(:default_options) { @default_options ||= DEFAULT_OPTIONS; @default_options.merge(options) }&quot;</span>,
             );
             <span class="ident">string</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">replace</span>(
                 <span class="string">&quot;def default_options\n        DEFAULT_OPTIONS\n      end&quot;</span>,

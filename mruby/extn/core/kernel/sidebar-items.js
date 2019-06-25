@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["patch",""]],"struct":[["Kernel",""]]});
+initSidebarItems({"fn":[["patch",""]],"struct":[["Kernel",""],["Warning",""]]});

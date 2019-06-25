@@ -138,24 +138,10 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Create or retrieve an interpreter for a request.</span>
 
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">gc</span>::<span class="ident">MrbGarbageCollection</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::{<span class="ident">Interpreter</span>, <span class="ident">Mrb</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
 <span class="kw">use</span> <span class="ident">mruby_gems</span>::<span class="ident">rubygems</span>::<span class="ident">rack</span>;
@@ -255,46 +241,34 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Keep track of the request count for an interpreter and potentially tear</span>
     <span class="doccomment">/// it down if it has served too many requests.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Maybe execute a garbage collection on the interpreter. Returns true if</span>
-    <span class="doccomment">/// a GC was performed, false otherwise.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">app</span>: <span class="kw-2">&amp;</span><span class="ident">RackApp</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ExecMode</span>::<span class="ident">SingleUse</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">ExecMode</span>::<span class="ident">PerAppPerWorker</span> { <span class="ident">max_requests</span> } <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">Key</span>::<span class="ident">PerWorker</span> {
-                    <span class="ident">app</span>: <span class="prelude-val">Some</span>(<span class="ident">app</span>.<span class="ident">mount_path</span>().<span class="ident">to_owned</span>()),
-                };
-                {
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">STORAGE</span>.<span class="ident">borrow_mut</span>();
-                    <span class="kw">let</span> <span class="ident">counter</span> <span class="op">=</span> <span class="ident">borrow</span>
-                        .<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)
-                        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">record</span><span class="op">|</span> {
-                            <span class="kw">let</span> <span class="ident">counter</span> <span class="op">=</span> <span class="ident">record</span>.<span class="number">0</span>;
-                            <span class="ident">record</span>.<span class="number">0</span> <span class="op">+=</span> <span class="number">1</span>;
-                            <span class="ident">counter</span>
-                        })
-                        .<span class="ident">unwrap_or_default</span>();
-                    <span class="macro">info</span><span class="macro">!</span>(
-                        <span class="string">&quot;Finalizing request {} for app at {}&quot;</span>,
-                        <span class="ident">counter</span>,
-                        <span class="ident">app</span>.<span class="ident">mount_path</span>()
-                    );
-                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">max_requests</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">counter</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">counter</span> <span class="op">%</span> <span class="ident">max_requests</span> <span class="op">==</span> <span class="number">0</span> {
-                        <span class="comment">// Recycle the interpreter if it has been used for</span>
-                        <span class="comment">// `max_requests` app invocations.</span>
-                        <span class="ident">borrow</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
-                        <span class="macro">info</span><span class="macro">!</span>(
-                            <span class="string">&quot;Recycling interpreter at {} after {} requests&quot;</span>,
-                            <span class="ident">app</span>.<span class="ident">mount_path</span>(),
-                            <span class="ident">counter</span>
-                        );
-                        <span class="bool-val">false</span>
-                    } <span class="kw">else</span> {
-                        <span class="ident">interp</span>.<span class="ident">incremental_gc</span>();
-                        <span class="bool-val">true</span>
-                    }
-                }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">app</span>: <span class="kw-2">&amp;</span><span class="ident">RackApp</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ExecMode</span>::<span class="ident">PerAppPerWorker</span> { <span class="ident">max_requests</span> } <span class="op">=</span> <span class="self">self</span> {
+            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">Key</span>::<span class="ident">PerWorker</span> {
+                <span class="ident">app</span>: <span class="prelude-val">Some</span>(<span class="ident">app</span>.<span class="ident">mount_path</span>().<span class="ident">to_owned</span>()),
+            };
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">STORAGE</span>.<span class="ident">borrow_mut</span>();
+            <span class="kw">let</span> <span class="ident">counter</span> <span class="op">=</span> <span class="ident">borrow</span>
+                .<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">record</span><span class="op">|</span> {
+                    <span class="kw">let</span> <span class="ident">counter</span> <span class="op">=</span> <span class="ident">record</span>.<span class="number">0</span>;
+                    <span class="ident">record</span>.<span class="number">0</span> <span class="op">+=</span> <span class="number">1</span>;
+                    <span class="ident">counter</span>
+                })
+                .<span class="ident">unwrap_or_default</span>();
+            <span class="macro">info</span><span class="macro">!</span>(
+                <span class="string">&quot;Finalizing request {} for app at {}&quot;</span>,
+                <span class="ident">counter</span>,
+                <span class="ident">app</span>.<span class="ident">mount_path</span>()
+            );
+            <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">max_requests</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">counter</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">counter</span> <span class="op">%</span> <span class="ident">max_requests</span> <span class="op">==</span> <span class="number">0</span> {
+                <span class="comment">// Recycle the interpreter if it has been used for</span>
+                <span class="comment">// `max_requests` app invocations.</span>
+                <span class="ident">borrow</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
+                <span class="macro">info</span><span class="macro">!</span>(
+                    <span class="string">&quot;Recycling interpreter at {} after {} requests&quot;</span>,
+                    <span class="ident">app</span>.<span class="ident">mount_path</span>(),
+                    <span class="ident">counter</span>
+                );
             }
         }
     }

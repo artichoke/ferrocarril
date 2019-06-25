@@ -254,6 +254,8 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">mruby_vfs</span>::{<span class="ident">FakeFileSystem</span>, <span class="ident">FileSystem</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::{<span class="ident">Any</span>, <span class="ident">TypeId</span>};
@@ -317,6 +319,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">vfs</span>: <span class="ident">FakeFileSystem</span><span class="op">&lt;</span><span class="ident">VfsMetadata</span><span class="op">&gt;</span>,
     <span class="comment">// TODO: make this private</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">context_stack</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EvalContext</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">num_set_regexp_capture_globals</span>: <span class="ident">usize</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">State</span> {
@@ -337,6 +340,7 @@
             <span class="ident">modules</span>: <span class="ident">HashMap</span>::<span class="ident">new</span>(),
             <span class="ident">vfs</span>,
             <span class="ident">context_stack</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">num_set_regexp_capture_globals</span>: <span class="number">0</span>,
         }
     }
 

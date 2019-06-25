@@ -88,14 +88,6 @@
 <span id="88">88</span>
 <span id="89">89</span>
 <span id="90">90</span>
-<span id="91">91</span>
-<span id="92">92</span>
-<span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
-<span id="97">97</span>
-<span id="98">98</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Convert a</span>
 <span class="doccomment">//! [`Nemesis::Response`](https://github.com/lopopolo/ferrocarril/blob/master/nemesis/ruby/lib/nemesis/response.rb)</span>
@@ -105,7 +97,6 @@
 <span class="doccomment">//! [`Rack::Response`](https://github.com/rack/rack/blob/2.0.7/lib/rack/response.rb).</span>
 
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">warn</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
@@ -128,21 +119,20 @@
     <span class="doccomment">/// Convert from a Rack `[status, headers, body]` response tuple to a Rust</span>
     <span class="doccomment">/// representation. This code converts a response tuple using the Ruby class</span>
     <span class="doccomment">/// `Nemesis::Response`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rack_tuple</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">response</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rack_tuple</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">response</span>: <span class="kw-2">&amp;</span>[<span class="ident">Value</span>]) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">response</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="self">Self</span>::<span class="ident">RACK_RESPONSE_TUPLE_LEN</span> {
             <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;malformed rack response: {:?}&quot;</span>, <span class="ident">response</span>);
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">RackResponse</span>);
         }
-        <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">interp</span>
+        <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">borrow</span>()
             .<span class="ident">class_spec</span>::<span class="op">&lt;</span><span class="ident">nemesis</span>::<span class="ident">Response</span><span class="op">&gt;</span>()
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">spec</span><span class="op">|</span> <span class="ident">spec</span>.<span class="ident">borrow</span>().<span class="ident">value</span>(<span class="ident">interp</span>))
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">spec</span><span class="op">|</span> <span class="ident">spec</span>.<span class="ident">borrow</span>().<span class="ident">new_instance</span>(<span class="ident">interp</span>, <span class="ident">response</span>))
             .<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="ident">Error</span>::<span class="ident">Mrb</span>(<span class="ident">MrbError</span>::<span class="ident">NotDefined</span>(<span class="string">&quot;Nemesis::Response&quot;</span>.<span class="ident">to_owned</span>())))<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">class</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;new&quot;</span>, <span class="ident">response</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">status</span>: <span class="self">Self</span>::<span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>)<span class="question-mark">?</span>,
-            <span class="ident">headers</span>: <span class="self">Self</span>::<span class="ident">headers</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>, <span class="ident">interp</span>)<span class="question-mark">?</span>,
-            <span class="ident">body</span>: <span class="self">Self</span>::<span class="ident">body</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>, <span class="ident">interp</span>)<span class="question-mark">?</span>,
+            <span class="ident">headers</span>: <span class="self">Self</span>::<span class="ident">headers</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span>: <span class="self">Self</span>::<span class="ident">body</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>)<span class="question-mark">?</span>,
         })
     }
 
@@ -151,15 +141,12 @@
         <span class="ident">u16</span>::<span class="ident">try_from</span>(<span class="ident">status</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="ident">Status</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">headers</span>(<span class="ident">response</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>, <span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">itself</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="ident">interp</span>, <span class="string">&quot;itself&quot;</span>)
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_sym&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_proc&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>;
+    <span class="kw">fn</span> <span class="ident">headers</span>(<span class="ident">response</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="comment">// The header must respond to `each`, and yield values of key and value.</span>
         <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">response</span>
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;headers&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;header&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
             .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;each&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
-            .<span class="ident">funcall_with_block</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;map&quot;</span>, <span class="kw-2">&amp;</span>[], <span class="ident">itself</span>)<span class="question-mark">?</span>
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_a&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
             .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_h&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">headers</span>
@@ -171,17 +158,14 @@
         <span class="prelude-val">Ok</span>(<span class="ident">headers</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">body</span>(<span class="ident">response</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>, <span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">itself</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="ident">interp</span>, <span class="string">&quot;itself&quot;</span>)
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_sym&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
-            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_proc&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>;
+    <span class="kw">fn</span> <span class="ident">body</span>(<span class="ident">response</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="comment">// The Body must respond to each and must only yield String values. The</span>
         <span class="comment">// Body itself should not be an instance of String, as this will break</span>
         <span class="comment">// in Ruby 1.9.</span>
         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;body&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">parts</span> <span class="op">=</span> <span class="ident">body</span>
             .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;each&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>
-            .<span class="ident">funcall_with_block</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;map&quot;</span>, <span class="kw-2">&amp;</span>[], <span class="ident">itself</span>)<span class="question-mark">?</span>;
+            .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;to_a&quot;</span>, <span class="kw-2">&amp;</span>[])<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">parts</span>
             .<span class="ident">into_iter</span>()
             .<span class="ident">flat_map</span>(<span class="ident">convert</span>::<span class="ident">identity</span>)
