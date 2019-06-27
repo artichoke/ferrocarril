@@ -37,7 +37,6 @@
 <span id="37">37</span>
 <span id="38">38</span>
 <span id="39">39</span>
-<span id="40">40</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">warn</span>;
 
@@ -68,8 +67,7 @@
         <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;rb warning: {}&quot;</span>, <span class="ident">message</span>);
         <span class="kw">let</span> <span class="ident">mrb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>;
         <span class="kw">let</span> <span class="ident">kernel</span> <span class="op">=</span> <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">stderr</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_intern_cstr</span>(<span class="ident">mrb</span>, <span class="string">b&quot;$stderr\0&quot;</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>);
-            <span class="kw">let</span> <span class="ident">stderr</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_gv_get</span>(<span class="ident">mrb</span>, <span class="ident">stderr</span>);
+            <span class="kw">let</span> <span class="ident">stderr</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_gv_get</span>(<span class="ident">mrb</span>, <span class="self">self</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$stderr&quot;</span>));
             <span class="kw">if</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_value_is_nil</span>(<span class="ident">stderr</span>) {
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
             }

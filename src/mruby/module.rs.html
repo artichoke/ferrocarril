@@ -283,7 +283,7 @@
                     <span class="ident">sys</span>::<span class="ident">mrb_const_defined_at</span>(
                         <span class="ident">mrb</span>,
                         <span class="ident">sys</span>::<span class="ident">mrb_sys_obj_value</span>(<span class="ident">scope</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>),
-                        <span class="ident">sys</span>::<span class="ident">mrb_intern_cstr</span>(<span class="ident">mrb</span>, <span class="self">self</span>.<span class="ident">cstring</span>.<span class="ident">as_ptr</span>()),
+                        <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">as_str</span>()),
                     )
                 };
                 <span class="kw">if</span> <span class="ident">defined</span> <span class="op">==</span> <span class="number">0</span> {
@@ -304,7 +304,7 @@
                 <span class="ident">sys</span>::<span class="ident">mrb_const_defined_at</span>(
                     <span class="ident">mrb</span>,
                     <span class="ident">sys</span>::<span class="ident">mrb_sys_obj_value</span>((<span class="kw-2">*</span><span class="ident">mrb</span>).<span class="ident">object_class</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>),
-                    <span class="ident">sys</span>::<span class="ident">mrb_intern_cstr</span>(<span class="ident">mrb</span>, <span class="self">self</span>.<span class="ident">cstring</span>.<span class="ident">as_ptr</span>()),
+                    <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">as_str</span>()),
                 )
             };
             <span class="kw">if</span> <span class="ident">defined</span> <span class="op">==</span> <span class="number">0</span> {
