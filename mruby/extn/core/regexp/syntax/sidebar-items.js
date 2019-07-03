@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["escape","Escapes all regular expression meta characters in `text`."],["escape_into","Escapes all meta characters in `text` and writes the result into `buf`."],["is_meta_character","Returns true if the give character has significance in a regex."]]});

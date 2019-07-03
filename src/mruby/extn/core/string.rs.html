@@ -183,6 +183,27 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">NativeEndian</span>, <span class="ident">ReadBytesExt</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Cursor</span>;
@@ -190,12 +211,14 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">ArgumentError</span>, <span class="ident">RubyException</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">ArgumentError</span>, <span class="ident">RubyException</span>, <span class="ident">RuntimeError</span>, <span class="ident">TypeError</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
+
+<span class="kw">mod</span> <span class="ident">scan</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">patch</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">class_spec</span>::<span class="op">&lt;</span><span class="ident">RString</span><span class="op">&gt;</span>().<span class="ident">is_some</span>() {
@@ -208,6 +231,9 @@
     <span class="ident">string</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">add_method</span>(<span class="string">&quot;ord&quot;</span>, <span class="ident">RString</span>::<span class="ident">ord</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_none</span>());
+    <span class="ident">string</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">add_method</span>(<span class="string">&quot;scan&quot;</span>, <span class="ident">RString</span>::<span class="ident">scan</span>, <span class="ident">sys</span>::<span class="ident">mrb_args_req</span>(<span class="number">1</span>));
     <span class="ident">string</span>.<span class="ident">borrow</span>().<span class="ident">define</span>(<span class="ident">interp</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">MrbError</span>::<span class="ident">New</span>)<span class="question-mark">?</span>;
     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Patched String onto interpreter&quot;</span>);
     <span class="prelude-val">Ok</span>(())
@@ -238,7 +264,23 @@
             <span class="ident">ArgumentError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;empty string&quot;</span>)
         }
     }
+
+    <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">scan</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
+            <span class="ident">scan</span>::<span class="ident">Args</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">scan</span>::<span class="ident">method</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>, <span class="ident">value</span>));
+
+        <span class="kw">match</span> <span class="ident">result</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">result</span>) <span class="op">=&gt;</span> <span class="ident">result</span>.<span class="ident">inner</span>(),
+            <span class="prelude-val">Err</span>(<span class="ident">scan</span>::<span class="ident">Error</span>::<span class="ident">WrongType</span>) <span class="op">=&gt;</span> {
+                <span class="ident">TypeError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;wrong argument type (expected Regexp)&quot;</span>)
+            }
+            <span class="prelude-val">Err</span>(<span class="ident">scan</span>::<span class="ident">Error</span>::<span class="ident">Fatal</span>) <span class="op">=&gt;</span> <span class="ident">RuntimeError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;fatal String#scan error&quot;</span>),
+        }
+    }
 }
+
 <span class="comment">// Tests from String core docs in Ruby 2.6.3</span>
 <span class="comment">// https://ruby-doc.org/core-2.6.3/String.html</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

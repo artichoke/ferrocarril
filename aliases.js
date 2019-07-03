@@ -9,3 +9,4 @@ ALIASES["mruby_vfs"] = {};
 ALIASES["nemesis"] = {};
 ALIASES["rirb"] = {};
 ALIASES["spec_runner"] = {};
+ALIASES["string_scan_bench"] = {};

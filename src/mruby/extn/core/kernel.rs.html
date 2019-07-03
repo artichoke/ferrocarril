@@ -442,10 +442,13 @@
 <span id="442">442</span>
 <span id="443">443</span>
 <span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 <span class="kw">use</span> <span class="ident">mruby_vfs</span>::<span class="ident">FileSystem</span>;
 <span class="kw">use</span> <span class="ident">path_abs</span>::<span class="ident">PathAbs</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Write</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
@@ -639,6 +642,7 @@
         <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">rest</span> {
             <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">value</span>.<span class="ident">to_s</span>());
         }
+        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">stdout</span>().<span class="ident">flush</span>();
         <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
     }
 

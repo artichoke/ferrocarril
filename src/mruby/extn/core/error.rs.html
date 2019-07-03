@@ -229,6 +229,14 @@
 <span id="229">229</span>
 <span id="230">230</span>
 <span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">warn</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">c_void</span>, <span class="ident">CString</span>};
@@ -280,6 +288,9 @@
     <span class="ident">interp</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">ArgumentError</span><span class="op">&gt;</span>(<span class="string">&quot;ArgumentError&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+    <span class="ident">interp</span>
+        .<span class="ident">borrow_mut</span>()
+        .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">IndexError</span><span class="op">&gt;</span>(<span class="string">&quot;IndexError&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
     <span class="ident">interp</span>
         .<span class="ident">borrow_mut</span>()
         .<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">RuntimeError</span><span class="op">&gt;</span>(<span class="string">&quot;RuntimeError&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
@@ -399,6 +410,11 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ArgumentError</span>;
 
 <span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">ArgumentError</span> {}
+
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IndexError</span>;
+
+<span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">IndexError</span> {}
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RuntimeError</span>;
