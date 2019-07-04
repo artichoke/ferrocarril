@@ -198,17 +198,15 @@
 <span id="198">198</span>
 <span id="199">199</span>
 <span id="200">200</span>
-<span id="201">201</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::{<span class="ident">RustBackedValue</span>, <span class="ident">TryFromMrb</span>};
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">RustBackedValue</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">EnclosingRubyScope</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">sys</span>::{<span class="self">self</span>, <span class="ident">DescribeState</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicI64</span>, <span class="ident">Ordering</span>};
@@ -286,7 +284,7 @@
             <span class="ident">total_requests</span>,
             <span class="ident">mrb</span>.<span class="ident">debug</span>()
         );
-        <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+        <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>).<span class="ident">inner</span>()
     }
 }
 
@@ -357,7 +355,7 @@
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>).<span class="ident">inner</span>()
         );
         <span class="kw">let</span> <span class="ident">trace_id</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>().<span class="ident">trace_id</span>;
         <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Retrieved trace id {} in {:?}&quot;</span>, <span class="ident">trace_id</span>, <span class="ident">interp</span>);
@@ -371,7 +369,7 @@
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">borrow</span>();
         <span class="ident">borrow</span>
             .<span class="ident">value</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>)
-            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">interp</span>.<span class="ident">nil</span>())
+            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>))
             .<span class="ident">inner</span>()
     }
 }

@@ -669,8 +669,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">exception</span>::{<span class="ident">LastError</span>, <span class="ident">MrbExceptionHandler</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gc</span>::<span class="ident">MrbGarbageCollection</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">types</span>;
@@ -1064,177 +1064,177 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gc</span>::<span class="ident">MrbGarbageCollection</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Interpreter</span>, <span class="ident">MrbApi</span>};
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">ValueLike</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">to_s_true</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">true</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">true</span>);
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">string</span>, <span class="string">&quot;true&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">debug_true</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">true</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">true</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s_debug</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;Boolean&lt;true&gt;&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inspect_true</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">true</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">true</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">inspect</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;true&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">to_s_false</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">string</span>, <span class="string">&quot;false&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">debug_false</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s_debug</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;Boolean&lt;false&gt;&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inspect_false</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">inspect</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;false&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">to_s_nil</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">string</span>, <span class="string">&quot;&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">debug_nil</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s_debug</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;NilClass&lt;nil&gt;&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inspect_nil</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">inspect</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;nil&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">to_s_fixnum</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">fixnum</span>(<span class="number">255</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">255</span>);
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">string</span>, <span class="string">&quot;255&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">debug_fixnum</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">fixnum</span>(<span class="number">255</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">255</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s_debug</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;Fixnum&lt;255&gt;&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inspect_fixnum</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">fixnum</span>(<span class="number">255</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">255</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">inspect</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">&quot;255&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">to_s_string</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;interstate&quot;</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;interstate&quot;</span>);
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">string</span>, <span class="string">&quot;interstate&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">debug_string</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;interstate&quot;</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;interstate&quot;</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s_debug</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">r#&quot;String&lt;&quot;interstate&quot;&gt;&quot;#</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inspect_string</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;interstate&quot;</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;interstate&quot;</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">inspect</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">r#&quot;&quot;interstate&quot;&quot;#</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">to_s_empty_string</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;&quot;</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;&quot;</span>);
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">string</span>, <span class="string">&quot;&quot;</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">debug_empty_string</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;&quot;</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;&quot;</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s_debug</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">r#&quot;String&lt;&quot;&quot;&gt;&quot;#</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inspect_empty_string</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;&quot;</span>);
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;&quot;</span>);
         <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">inspect</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">debug</span>, <span class="string">r#&quot;&quot;&quot;&quot;#</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">is_dead</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">arena</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">create_arena_savepoint</span>();
         <span class="kw">let</span> <span class="ident">live</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;&#39;dead&#39;&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;value&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">live</span>.<span class="ident">is_dead</span>());
@@ -1251,7 +1251,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">immediate_is_dead</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">arena</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">create_arena_savepoint</span>();
         <span class="kw">let</span> <span class="ident">live</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;27&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;value&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">live</span>.<span class="ident">is_dead</span>());
@@ -1266,18 +1266,18 @@
         <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">live</span>.<span class="ident">is_dead</span>());
         <span class="comment">// Fixnums are immediate even if they are created directly without an</span>
         <span class="comment">// interpreter.</span>
-        <span class="kw">let</span> <span class="ident">fixnum</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">fixnum</span>(<span class="number">99</span>);
+        <span class="kw">let</span> <span class="ident">fixnum</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="number">99</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">fixnum</span>.<span class="ident">is_dead</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">funcall</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
-        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">nil</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;nil?&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">expect</span>(<span class="string">&quot;nil?&quot;</span>));
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;foo&quot;</span>);
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;foo&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">s</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;nil?&quot;</span>, <span class="kw-2">&amp;</span>[]).<span class="ident">expect</span>(<span class="string">&quot;nil?&quot;</span>));
-        <span class="kw">let</span> <span class="ident">delim</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;&quot;</span>);
+        <span class="kw">let</span> <span class="ident">delim</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;&quot;</span>);
         <span class="kw">let</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">s</span>
             .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;split&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">delim</span>])
             .<span class="ident">expect</span>(<span class="string">&quot;split&quot;</span>);
@@ -1286,18 +1286,18 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">funcall_different_types</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
-        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;foo&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;foo&quot;</span>);
         <span class="kw">let</span> <span class="ident">eql</span> <span class="op">=</span> <span class="ident">nil</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;==&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">s</span>]);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">eql</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">funcall_type_error</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
-        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;foo&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;foo&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;+&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">nil</span>]);
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">result</span>,
@@ -1307,9 +1307,9 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">funcall_method_not_exists</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
-        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">nil</span>();
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;foo&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">nil</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>);
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;foo&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">nil</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">bool</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;garbage_method_name&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">s</span>]);
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">result</span>,

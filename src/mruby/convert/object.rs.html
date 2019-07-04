@@ -252,8 +252,6 @@
 <span id="252">252</span>
 <span id="253">253</span>
 <span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">warn</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -264,11 +262,10 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::<span class="ident">ClassLike</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">types</span>::{<span class="ident">Ruby</span>, <span class="ident">Rust</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="self">self</span>, <span class="ident">Value</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 
 <span class="doccomment">/// Provides converters to and from [`Value`] with ruby type of [`Ruby::Data`].</span>
 <span class="doccomment">///</span>
@@ -413,7 +410,6 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">object</span>::<span class="ident">RustBackedValue</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>};
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
 
@@ -451,7 +447,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">convert_obj_roundtrip</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Container</span><span class="op">&gt;</span>(
             <span class="string">&quot;Container&quot;</span>,
             <span class="prelude-val">None</span>,
@@ -480,7 +476,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">convert_obj_not_data</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Container</span><span class="op">&gt;</span>(
             <span class="string">&quot;Container&quot;</span>,
             <span class="prelude-val">None</span>,

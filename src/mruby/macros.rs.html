@@ -107,11 +107,6 @@
 <span id="107">107</span>
 <span id="108">108</span>
 <span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// This module defines macros for working with interpreters and `Value`s. This</span>
 <span class="comment">// source module is included first in `lib.rs`, which means the macros are</span>
@@ -128,7 +123,7 @@
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">interpreter_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mrb</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> {
-        <span class="kw">match</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">interpreter</span>::<span class="ident">Interpreter</span>::<span class="ident">from_user_data</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mrb</span>) {
+        <span class="kw">match</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">ffi</span>::<span class="ident">from_user_data</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mrb</span>) {
             <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span>::<span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// Unable to retrieve interpreter from user data pointer in</span>
                 <span class="comment">// `mrb_state`.</span>
@@ -179,12 +174,7 @@
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">unwrap_value_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> {
-        <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>,
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span>,
-            <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">interpreter</span>::<span class="ident">MrbApi</span>::<span class="ident">nil</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>).<span class="ident">inner</span>()
-        )
-        .<span class="ident">inner</span>()
+        <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span>, <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_nil_value</span>()).<span class="ident">inner</span>()
     };
 }
 
@@ -203,7 +193,7 @@
                 <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>,
                 <span class="string">&quot;Uninitialized Class&quot;</span>
             );
-            <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">interpreter</span>::<span class="ident">MrbApi</span>::<span class="ident">nil</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>).<span class="ident">inner</span>();
+            <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
         }
     };
 }
@@ -223,7 +213,7 @@
                 <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>,
                 <span class="string">&quot;Uninitialized Module&quot;</span>
             );
-            <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">interpreter</span>::<span class="ident">MrbApi</span>::<span class="ident">nil</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">interp</span>).<span class="ident">inner</span>();
+            <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
         }
     };
 }

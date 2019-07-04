@@ -903,6 +903,22 @@
 <span id="903">903</span>
 <span id="904">904</span>
 <span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">onig</span>::{<span class="ident">Regex</span>, <span class="ident">RegexOptions</span>, <span class="ident">Region</span>, <span class="ident">SearchOptions</span>, <span class="ident">Syntax</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
@@ -916,11 +932,10 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">RubyException</span>, <span class="ident">RuntimeError</span>, <span class="ident">SyntaxError</span>, <span class="ident">TypeError</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">matchdata</span>::<span class="ident">MatchData</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Ruby</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 
 <span class="kw">mod</span> <span class="ident">args</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">initialize</span>;
@@ -1334,7 +1349,7 @@
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="ident">initialize</span>::<span class="ident">Args</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">match</span> <span class="ident">initialize</span>::<span class="ident">method</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>, <span class="ident">args</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">value</span>.<span class="ident">inner</span>(),
@@ -1366,7 +1381,7 @@
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="ident">args</span>::<span class="ident">Pattern</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">pattern</span> <span class="op">=</span> <span class="ident">syntax</span>::<span class="ident">escape</span>(<span class="ident">args</span>.<span class="ident">pattern</span>.<span class="ident">as_str</span>());
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">pattern</span>).<span class="ident">inner</span>()];
@@ -1378,14 +1393,22 @@
         <span class="kw-2">mut</span> <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
     ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
+        );
         <span class="kw">let</span> <span class="ident">pattern</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">rest</span>.<span class="ident">is_empty</span>() {
             <span class="string">&quot;(?!)&quot;</span>.<span class="ident">to_owned</span>()
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">patterns</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">rest</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
                 <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">rest</span>.<span class="ident">remove</span>(<span class="number">0</span>);
                 <span class="kw">if</span> <span class="ident">arg</span>.<span class="ident">ruby_type</span>() <span class="op">==</span> <span class="ident">Ruby</span>::<span class="ident">Array</span> {
-                    <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">arg</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;&gt;</span>(), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>())
+                    <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+                        <span class="ident">interp</span>,
+                        <span class="ident">arg</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;&gt;</span>(),
+                        <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
+                    )
                 } <span class="kw">else</span> {
                     <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">arg</span>]
                 }
@@ -1427,17 +1450,21 @@
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">is_match</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
+        );
 
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">string</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>)) <span class="op">=&gt;</span> <span class="ident">string</span>.<span class="ident">to_owned</span>(),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">TypeError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;No implicit conversion into String&quot;</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>(),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>(),
         };
 
         <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>();
@@ -1445,7 +1472,7 @@
             <span class="kw">let</span> <span class="ident">strlen</span> <span class="op">=</span> <span class="ident">i64</span>::<span class="ident">try_from</span>(<span class="ident">string</span>.<span class="ident">len</span>()).<span class="ident">unwrap_or_default</span>();
             <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">strlen</span> <span class="op">+</span> <span class="ident">pos</span>;
             <span class="kw">if</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+                <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
             }
             <span class="ident">usize</span>::<span class="ident">try_from</span>(<span class="ident">pos</span>).<span class="ident">expect</span>(<span class="string">&quot;positive i64 must be usize&quot;</span>)
         } <span class="kw">else</span> {
@@ -1467,12 +1494,16 @@
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">match_</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
+        );
 
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">string</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>)) <span class="op">=&gt;</span> <span class="ident">string</span>.<span class="ident">to_owned</span>(),
@@ -1481,9 +1512,9 @@
                 <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(
                     <span class="ident">mrb</span>,
                     <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$~&quot;</span>),
-                    <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>(),
+                    <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>(),
                 );
-                <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+                <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
             }
         };
 
@@ -1492,7 +1523,7 @@
             <span class="kw">let</span> <span class="ident">strlen</span> <span class="op">=</span> <span class="ident">i64</span>::<span class="ident">try_from</span>(<span class="ident">string</span>.<span class="ident">len</span>()).<span class="ident">unwrap_or_default</span>();
             <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">strlen</span> <span class="op">+</span> <span class="ident">pos</span>;
             <span class="kw">if</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+                <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
             }
             <span class="ident">usize</span>::<span class="ident">try_from</span>(<span class="ident">pos</span>).<span class="ident">expect</span>(<span class="string">&quot;positive i64 must be usize&quot;</span>)
         } <span class="kw">else</span> {
@@ -1500,7 +1531,7 @@
         };
         <span class="comment">// onig will panic if pos is beyond the end of string</span>
         <span class="kw">if</span> <span class="ident">pos</span> <span class="op">&gt;</span> <span class="ident">string</span>.<span class="ident">len</span>() {
-            <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+            <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>.<span class="ident">search_with_options</span>(
@@ -1513,7 +1544,7 @@
         <span class="kw">let</span> <span class="ident">last_matched_string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">region</span>.<span class="ident">pos</span>(<span class="number">0</span>) {
             <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">string</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">to_owned</span>()).<span class="ident">inner</span>()
         } <span class="kw">else</span> {
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         };
         <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(
             <span class="ident">mrb</span>,
@@ -1540,12 +1571,12 @@
             <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">MatchData</span>::<span class="ident">new</span>(<span class="ident">string</span>.<span class="ident">as_str</span>(), <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">clone</span>(), <span class="number">0</span>, <span class="ident">string</span>.<span class="ident">len</span>());
             <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">data</span>.<span class="ident">try_into_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>))
         } <span class="kw">else</span> {
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         };
         <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(<span class="ident">mrb</span>, <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$~&quot;</span>), <span class="ident">data</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">block</span> {
             <span class="kw">if</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_value_is_nil</span>(<span class="ident">data</span>) {
-                <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+                <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
             } <span class="kw">else</span> {
                 <span class="ident">sys</span>::<span class="ident">mrb_yield</span>(<span class="ident">mrb</span>, <span class="ident">block</span>.<span class="ident">inner</span>(), <span class="ident">data</span>)
             }
@@ -1562,17 +1593,21 @@
         <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
     ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
+        );
 
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">string</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>)) <span class="op">=&gt;</span> <span class="ident">string</span>.<span class="ident">to_owned</span>(),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">TypeError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;No implicit conversion into String&quot;</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>(),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>(),
         };
 
         <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">pos</span>.<span class="ident">unwrap_or_default</span>();
@@ -1591,7 +1626,7 @@
         };
         <span class="comment">// onig will panic if pos is beyond the end of string</span>
         <span class="kw">if</span> <span class="ident">pos</span> <span class="op">&gt;</span> <span class="ident">string</span>.<span class="ident">len</span>() {
-            <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>();
+            <span class="kw">return</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>();
         }
         <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>.<span class="ident">search_with_options</span>(
             <span class="ident">string</span>.<span class="ident">as_str</span>(),
@@ -1601,10 +1636,10 @@
             <span class="prelude-val">None</span>,
         );
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pos</span>) <span class="op">=</span> <span class="ident">is_match</span> {
-            <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">i64</span>::<span class="ident">try_from</span>(<span class="ident">pos</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
-            <span class="ident">interp</span>.<span class="ident">fixnum</span>(<span class="ident">pos</span>).<span class="ident">inner</span>()
+            <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">i64</span>::<span class="ident">try_from</span>(<span class="ident">pos</span>), <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>());
+            <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">pos</span>).<span class="ident">inner</span>()
         } <span class="kw">else</span> {
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         }
     }
 
@@ -1613,21 +1648,25 @@
         <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
     ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
+            <span class="ident">interp</span>,
+            <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
+        );
 
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">other</span>) <span class="op">=</span> <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">rest</span>[<span class="number">0</span>]) {
             <span class="ident">other</span>
         } <span class="kw">else</span> {
-            <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>();
+            <span class="kw">return</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>();
         };
         <span class="kw">let</span> <span class="ident">regborrow</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>();
         <span class="kw">let</span> <span class="ident">othborrow</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">borrow</span>();
-        <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="ident">regborrow</span>.<span class="ident">pattern</span> <span class="op">==</span> <span class="ident">othborrow</span>.<span class="ident">pattern</span>).<span class="ident">inner</span>()
+        <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">regborrow</span>.<span class="ident">pattern</span> <span class="op">==</span> <span class="ident">othborrow</span>.<span class="ident">pattern</span>).<span class="ident">inner</span>()
     }
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">equal_equal_equal</span>(
@@ -1635,27 +1674,24 @@
         <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
     ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
         <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>()
-        );
+        <span class="kw">let</span> <span class="ident">no</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>();
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">args</span>::<span class="ident">Match</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>), <span class="ident">no</span>);
 
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>()
+            <span class="ident">no</span>
         );
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">string</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">string</span>)) <span class="op">=&gt;</span> <span class="ident">string</span>.<span class="ident">to_owned</span>(),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>(),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">no</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> {
                 <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(
                     <span class="ident">mrb</span>,
                     <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$~&quot;</span>),
-                    <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>(),
+                    <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>(),
                 );
-                <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>();
+                <span class="kw">return</span> <span class="ident">no</span>;
             }
         };
 
@@ -1664,7 +1700,7 @@
             <span class="kw">let</span> <span class="ident">strlen</span> <span class="op">=</span> <span class="ident">i64</span>::<span class="ident">try_from</span>(<span class="ident">string</span>.<span class="ident">len</span>()).<span class="ident">unwrap_or_default</span>();
             <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">strlen</span> <span class="op">+</span> <span class="ident">pos</span>;
             <span class="kw">if</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+                <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
             }
             <span class="ident">usize</span>::<span class="ident">try_from</span>(<span class="ident">pos</span>).<span class="ident">expect</span>(<span class="string">&quot;positive i64 must be usize&quot;</span>)
         } <span class="kw">else</span> {
@@ -1672,8 +1708,9 @@
         };
         <span class="comment">// onig will panic if pos is beyond the end of string</span>
         <span class="kw">if</span> <span class="ident">pos</span> <span class="op">&gt;</span> <span class="ident">string</span>.<span class="ident">len</span>() {
-            <span class="kw">return</span> <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>();
+            <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
         }
+        <span class="comment">// TODO: this is really inefficent. We do the Regex match twice.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="ident">is_match</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">regex</span>.<span class="ident">search_with_options</span>(
             <span class="ident">string</span>.<span class="ident">as_str</span>(),
@@ -1685,7 +1722,7 @@
         <span class="kw">let</span> <span class="ident">last_matched_string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">region</span>.<span class="ident">pos</span>(<span class="number">0</span>) {
             <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">string</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">to_owned</span>()).<span class="ident">inner</span>()
         } <span class="kw">else</span> {
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         };
         <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(
             <span class="ident">mrb</span>,
@@ -1710,17 +1747,12 @@
             }
 
             <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">MatchData</span>::<span class="ident">new</span>(<span class="ident">string</span>.<span class="ident">as_str</span>(), <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">clone</span>(), <span class="number">0</span>, <span class="ident">string</span>.<span class="ident">len</span>());
-            <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-                <span class="ident">interp</span>,
-                <span class="ident">data</span>.<span class="ident">try_into_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>),
-                <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="bool-val">false</span>).<span class="ident">inner</span>()
-            )
-            .<span class="ident">inner</span>()
+            <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">data</span>.<span class="ident">try_into_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>), <span class="ident">no</span>).<span class="ident">inner</span>()
         } <span class="kw">else</span> {
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         };
         <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(<span class="ident">mrb</span>, <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$~&quot;</span>), <span class="ident">data</span>);
-        <span class="ident">interp</span>.<span class="ident">bool</span>(<span class="op">!</span><span class="ident">sys</span>::<span class="ident">mrb_sys_value_is_nil</span>(<span class="ident">data</span>)).<span class="ident">inner</span>()
+        <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="op">!</span><span class="ident">sys</span>::<span class="ident">mrb_sys_value_is_nil</span>(<span class="ident">data</span>)).<span class="ident">inner</span>()
     }
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">names</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
@@ -1740,7 +1772,7 @@
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
 
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>();
@@ -1759,7 +1791,7 @@
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>();
         <span class="ident">Value</span>::<span class="ident">from_mrb</span>(
@@ -1774,7 +1806,7 @@
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">literal_pattern</span>.<span class="ident">to_string</span>();
         <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">s</span>).<span class="ident">inner</span>()
@@ -1786,7 +1818,7 @@
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">regexp</span>.<span class="ident">borrow</span>().<span class="ident">pattern</span>.<span class="ident">to_string</span>();
         <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">s</span>).<span class="ident">inner</span>()
@@ -1798,7 +1830,7 @@
         <span class="kw">let</span> <span class="ident">regexp</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
             <span class="string">&quot;/{}/{}{}&quot;</span>,

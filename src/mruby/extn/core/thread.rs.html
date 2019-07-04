@@ -194,13 +194,10 @@
 <span id="194">194</span>
 <span id="195">195</span>
 <span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
     <span class="ident">interp</span>
@@ -223,12 +220,11 @@
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
     <span class="comment">// use crate::MrbError;</span>
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_required_by_default</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>
             .<span class="ident">eval</span>(<span class="string">&quot;Object.const_defined?(:Thread)&quot;</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;thread&quot;</span>);
@@ -237,7 +233,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_current_is_main</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">&quot;Thread.current == Thread.main&quot;</span>;
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>).<span class="ident">expect</span>(<span class="string">&quot;spec&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="kw">unsafe</span> { <span class="ident">bool</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">result</span>) }.<span class="ident">expect</span>(<span class="string">&quot;convert&quot;</span>));
@@ -248,7 +244,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_join_value</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">&quot;Thread.new { 2 + 3 }.join.value == 5&quot;</span>;
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>).<span class="ident">expect</span>(<span class="string">&quot;spec&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="kw">unsafe</span> { <span class="ident">bool</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">result</span>) }.<span class="ident">expect</span>(<span class="string">&quot;convert&quot;</span>));
@@ -259,7 +255,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_main_is_running</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">&quot;Thread.current.status == &#39;run&#39;&quot;</span>;
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>).<span class="ident">expect</span>(<span class="string">&quot;spec&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="kw">unsafe</span> { <span class="ident">bool</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">result</span>) }.<span class="ident">expect</span>(<span class="string">&quot;convert&quot;</span>));
@@ -270,7 +266,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_spawn</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">&quot;Thread.new { Thread.current }.join.value != Thread.current&quot;</span>;
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>).<span class="ident">expect</span>(<span class="string">&quot;spec&quot;</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="kw">unsafe</span> { <span class="ident">bool</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">result</span>) }.<span class="ident">expect</span>(<span class="string">&quot;convert&quot;</span>));
@@ -287,7 +283,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_locals</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">r#&quot;
 Thread.current[:local] = 42
 Thread.new { Thread.current.keys.empty? }.join.value
@@ -318,7 +314,7 @@ Thread.current.thread_variable_get(:local) == 42
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">thread_abort_on_exception</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="string">r#&quot;
 Thread.abort_on_exception = true
 Thread.new { raise &#39;failboat&#39; }.join

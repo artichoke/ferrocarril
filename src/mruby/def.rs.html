@@ -426,8 +426,6 @@
 <span id="426">426</span>
 <span id="427">427</span>
 <span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">c_void</span>, <span class="ident">CString</span>};
@@ -436,9 +434,9 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">class</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
 
 <span class="doccomment">/// Typedef for an mruby free function for an [`mrb_value`](sys::mrb_value) with</span>
@@ -517,7 +515,7 @@
     <span class="doccomment">/// struct Fixnum;</span>
     <span class="doccomment">/// struct Inner;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let interp = Interpreter::create().expect(&quot;mrb init&quot;);</span>
+    <span class="doccomment">/// let interp = crate::interpreter().expect(&quot;mrb init&quot;);</span>
     <span class="doccomment">/// let mut api = interp.borrow_mut();</span>
     <span class="doccomment">/// if let Some(scope) = api.class_spec::&lt;Fixnum&gt;().map(EnclosingRubyScope::class) {</span>
     <span class="doccomment">///     api.def_class::&lt;Inner&gt;(&quot;Inner&quot;, Some(scope), None);</span>
@@ -552,7 +550,7 @@
     <span class="doccomment">/// struct Kernel;</span>
     <span class="doccomment">/// struct Inner;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let interp = Interpreter::create().expect(&quot;mrb init&quot;);</span>
+    <span class="doccomment">/// let interp = crate::interpreter().expect(&quot;mrb init&quot;);</span>
     <span class="doccomment">/// let mut api = interp.borrow_mut();</span>
     <span class="doccomment">/// if let Some(scope) = api.module_spec::&lt;Kernel&gt;().map(EnclosingRubyScope::module) {</span>
     <span class="doccomment">///     api.def_class::&lt;Inner&gt;(&quot;Inner&quot;, Some(scope), None);</span>
@@ -687,7 +685,6 @@
     <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>, <span class="ident">EnclosingRubyScope</span>};
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">fqname</span>() {
@@ -699,7 +696,7 @@
         <span class="kw">struct</span> <span class="ident">ClassUnderClass</span>; <span class="comment">// A::C::F</span>
 
         <span class="comment">// Setup: define module and class hierarchy</span>
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>();
             <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">api</span>.<span class="ident">def_module</span>::<span class="op">&lt;</span><span class="ident">Root</span><span class="op">&gt;</span>(<span class="string">&quot;A&quot;</span>, <span class="prelude-val">None</span>);
@@ -783,7 +780,6 @@
         <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">TryFromMrb</span>;
         <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>};
         <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-        <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
         <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 
         <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -801,7 +797,7 @@
                     }
                 }
             }
-            <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+            <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
             <span class="kw">let</span> (<span class="ident">cls</span>, <span class="ident">module</span>) <span class="op">=</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>();
                 <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="ident">api</span>.<span class="ident">def_class</span>::<span class="op">&lt;</span><span class="ident">Class</span><span class="op">&gt;</span>(<span class="string">&quot;DefineMethodTestClass&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);

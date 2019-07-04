@@ -138,9 +138,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">matchdata</span>::<span class="ident">MatchData</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">regexp</span>::{<span class="ident">syntax</span>, <span class="ident">Encoding</span>, <span class="ident">Options</span>, <span class="ident">Regexp</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gc</span>::<span class="ident">MrbGarbageCollection</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Mrb</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
@@ -248,7 +248,7 @@
     }
     <span class="kw">if</span> <span class="op">!</span><span class="ident">was_match</span> {
         <span class="kw">unsafe</span> {
-            <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(<span class="ident">mrb</span>, <span class="ident">last_match_sym</span>, <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>());
+            <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(<span class="ident">mrb</span>, <span class="ident">last_match_sym</span>, <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>());
         }
     }
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">block</span>.<span class="ident">is_some</span>() {

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["State",""],["VfsMetadata",""]]});
+initSidebarItems({"struct":[["State",""]]});

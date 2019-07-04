@@ -283,6 +283,58 @@
 <span id="283">283</span>
 <span id="284">284</span>
 <span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">clippy</span>::<span class="ident">all</span>, <span class="ident">clippy</span>::<span class="ident">pedantic</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
@@ -308,7 +360,7 @@
 <span class="doccomment">//! use mruby::eval::MrbEval;</span>
 <span class="doccomment">//! use mruby::interpreter::Interpreter;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let interp = Interpreter::create().unwrap();</span>
+<span class="doccomment">//! let interp = crate::interpreter().unwrap();</span>
 <span class="doccomment">//! let result = interp.eval(&quot;10 * 10&quot;).unwrap();</span>
 <span class="doccomment">//! let result = result.try_into::&lt;i64&gt;();</span>
 <span class="doccomment">//! assert_eq!(result, Ok(100));</span>
@@ -343,7 +395,7 @@
 <span class="doccomment">//! use mruby::interpreter::Interpreter;</span>
 <span class="doccomment">//! use mruby::load::MrbLoadSources;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let mut interp = Interpreter::create().unwrap();</span>
+<span class="doccomment">//! let mut interp = crate::interpreter().unwrap();</span>
 <span class="doccomment">//! let code = &quot;</span>
 <span class="doccomment">//! def source_location</span>
 <span class="doccomment">//!   __FILE__</span>
@@ -433,7 +485,7 @@
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let mut interp = Interpreter::create().unwrap();</span>
+<span class="doccomment">//! let mut interp = crate::interpreter().unwrap();</span>
 <span class="doccomment">//! interp.def_file_for_type::&lt;_, Container&gt;(&quot;container.rb&quot;).unwrap();</span>
 <span class="doccomment">//! interp.eval(&quot;require &#39;container&#39;&quot;).unwrap();</span>
 <span class="doccomment">//! let result = interp.eval(&quot;Container.new(15).value * 24&quot;).unwrap();</span>
@@ -480,9 +532,11 @@
 <span class="doccomment">//! The infallible converters are safe Rust functions. The fallibile converters are</span>
 <span class="doccomment">//! `unsafe` Rust functions.</span>
 
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
@@ -494,31 +548,81 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">eval</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">exception</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">extn</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ffi</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">file</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">fs</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">gc</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">interpreter</span>;
+<span class="kw">mod</span> <span class="ident">interpreter</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">load</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">method</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">state</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">top_self</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">value</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">warn</span>;
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">interpreter</span>::<span class="ident">interpreter</span>;
+<span class="doccomment">/// Re-exported bindings from [`mruby_sys`].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Useful for referring to [`mruby_sys`] from macros defined in mruby crate.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">mruby_sys</span> <span class="kw">as</span> <span class="ident">sys</span>;
 
+<span class="doccomment">/// Interpreter instance.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The interpreter [`State`](state::State) is wrapped in an `Rc&lt;RefCell&lt;_&gt;&gt;`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The [`Rc`] enables the State to be cloned so it can be stored in the</span>
+<span class="doccomment">/// [`sys::mrb_state`],</span>
+<span class="doccomment">/// [extracted in `extern &quot;C&quot;` functions](ffi::from_user_data), and used in</span>
+<span class="doccomment">/// [`Value`](value::Value) instances.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The [`RefCell`] enables mutable access to the underlying</span>
+<span class="doccomment">/// [`State`](state::State), even across an FFI boundary.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Functionality is added to the interpreter via traits, for example,</span>
+<span class="doccomment">/// [garbage collection](gc::MrbGarbageCollection) or [eval](eval::MrbEval).</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Mrb</span> <span class="op">=</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">state</span>::<span class="ident">State</span><span class="op">&gt;&gt;</span>;
+
+<span class="doccomment">/// Errors returned by mruby crate.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MrbError</span> {
+    <span class="doccomment">/// Failed to create an [argspec](sys::args) `CString`.</span>
     <span class="ident">ArgSpec</span>,
+    <span class="doccomment">/// Failed to convert from a Rust type to a [`sys::mrb_value`].</span>
     <span class="ident">ConvertToRuby</span>(<span class="ident">convert</span>::<span class="ident">Error</span><span class="op">&lt;</span><span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Rust</span>, <span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Ruby</span><span class="op">&gt;</span>),
+    <span class="doccomment">/// Failed to convert from a [`sys::mrb_value`] to a Rust type.</span>
     <span class="ident">ConvertToRust</span>(<span class="ident">convert</span>::<span class="ident">Error</span><span class="op">&lt;</span><span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Ruby</span>, <span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Rust</span><span class="op">&gt;</span>),
+    <span class="doccomment">/// Exception raised during eval.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`MrbEval`](eval::MrbEval).</span>
     <span class="comment">// TODO: this should really be an `Exception` instead of a `String`.</span>
     <span class="ident">Exec</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// Unable to initalize interpreter.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`sys::mrb_open`], [`interpreter`](interpreter::interpreter).</span>
     <span class="ident">New</span>,
+    <span class="doccomment">/// Class or module with this name is not defined in the mruby VM.</span>
     <span class="ident">NotDefined</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// Unable to load Ruby source file with this path from the embedded</span>
+    <span class="doccomment">/// sources.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`rust_embed`](https://docs.rs/rust-embed/).</span>
     <span class="ident">SourceNotFound</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// Arg count exceeds maximum allowed my mruby.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Affects [`sys::mrb_funcall`], [`sys::mrb_funcall_argv`],</span>
+    <span class="doccomment">/// [`sys::mrb_funcall_with_block`], [`sys::mrb_yield`], and</span>
+    <span class="doccomment">/// [`sys::mrb_yield_argv`].</span>
     <span class="ident">TooManyArgs</span> { <span class="ident">given</span>: <span class="ident">usize</span>, <span class="ident">max</span>: <span class="ident">usize</span> },
+    <span class="doccomment">/// Attempted to extract an [`Mrb`] from a [`sys::mrb_state`] but could not.</span>
     <span class="ident">Uninitialized</span>,
+    <span class="doccomment">/// Eval or funcall returned an interpreter-internal value.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`Value::is_unreachable`](value::Value::is_unreachable).</span>
     <span class="ident">UnreachableValue</span>(<span class="ident">sys</span>::<span class="ident">mrb_vtype</span>),
+    <span class="doccomment">/// [`io::Error`] when interacting with virtual filesystem.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`mruby_vfs`].</span>
     <span class="ident">Vfs</span>(<span class="ident">io</span>::<span class="ident">Error</span>),
 }
 

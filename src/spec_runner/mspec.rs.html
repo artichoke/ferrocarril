@@ -72,15 +72,15 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
-<span id="75">75</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
 
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">top_self</span>::<span class="ident">MrbTopSelf</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
@@ -138,13 +138,11 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
-
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">mspec</span>::<span class="ident">Runner</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">mspec_framework_loads</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="comment">// should not panic</span>
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">Runner</span>::<span class="ident">new</span>(<span class="ident">interp</span>).<span class="ident">run</span>(), <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>));
     }

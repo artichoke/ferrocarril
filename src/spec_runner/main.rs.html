@@ -43,8 +43,6 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">clippy</span>::<span class="ident">all</span>, <span class="ident">clippy</span>::<span class="ident">pedantic</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
@@ -57,12 +55,10 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">process</span>;
 
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
-
 <span class="kw">mod</span> <span class="ident">mspec</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">main</span>() {
-    <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>() {
+    <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>() {
         <span class="prelude-val">Ok</span>(<span class="ident">interp</span>) <span class="op">=&gt;</span> <span class="ident">interp</span>,
         <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
             <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">err</span>);

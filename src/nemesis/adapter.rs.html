@@ -69,14 +69,12 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
-<span id="72">72</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">request</span>::<span class="ident">Request</span>;

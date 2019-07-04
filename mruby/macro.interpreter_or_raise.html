@@ -2,7 +2,7 @@
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">interpreter_or_raise</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mrb</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> { ... };
 }</pre></div>
-</div><div class='docblock'><p>Extract an <a href="../mruby/interpreter/type.Mrb.html"><code>Mrb</code></a> instance from the userdata on a
+</div><div class='docblock'><p>Extract an <a href="../mruby/type.Mrb.html"><code>Mrb</code></a> instance from the userdata on a
 <a href="../mruby_sys/ffi/struct.mrb_state.html" title="`sys::mrb_state`"><code>sys::mrb_state</code></a>.</p>
 <p>If there is an error when extracting the Rust wrapper around the
 interpreter, attempt to raise a <code>RuntimeError</code> and return <code>nil</code>.</p>

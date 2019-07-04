@@ -147,6 +147,18 @@
 <span id="147">147</span>
 <span id="148">148</span>
 <span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Convert a [`rocket::Request`] to a</span>
 <span class="doccomment">//! [Rack environment](https://www.rubydoc.info/github/rack/rack/file/SPEC#label-The+Environment).</span>
@@ -155,8 +167,8 @@
 <span class="doccomment">//! [`Rack::Handler::Webrick`](https://github.com/rack/rack/blob/2.0.7/lib/rack/handler/webrick.rb).</span>
 
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Mrb</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">Mrb</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Error</span>;
 
@@ -222,9 +234,9 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
     <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-    <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::{<span class="ident">Interpreter</span>, <span class="ident">MrbApi</span>};
-    <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::<span class="ident">ValueLike</span>;
+    <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
     <span class="kw">use</span> <span class="ident">mruby_gems</span>::<span class="ident">rubygems</span>::<span class="ident">rack</span>;
 
     <span class="comment">// This module hard codes Rack constant names to avoid retrieving them via</span>
@@ -232,67 +244,79 @@
     <span class="comment">// real ones in Ruby source.</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">rack_constants_match</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">rack</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">rack</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;rack&#39;; Rack&quot;</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_VERSION&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_VERSION&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.version&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;VERSION&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;VERSION&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">3</span>])
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;HTTP_VERSION&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;HTTP_VERSION&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;HTTP_VERSION&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;REQUEST_METHOD&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+                <span class="string">&quot;const_get&quot;</span>,
+                <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;REQUEST_METHOD&quot;</span>)]
+            ),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;REQUEST_METHOD&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;SCRIPT_NAME&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;SCRIPT_NAME&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;SCRIPT_NAME&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;PATH_INFO&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;PATH_INFO&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;PATH_INFO&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;QUERY_STRING&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;QUERY_STRING&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;QUERY_STRING&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;SERVER_NAME&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;SERVER_NAME&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;SERVER_NAME&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;SERVER_PORT&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;SERVER_PORT&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;SERVER_PORT&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_URL_SCHEME&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+                <span class="string">&quot;const_get&quot;</span>,
+                <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_URL_SCHEME&quot;</span>)]
+            ),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.url_scheme&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_INPUT&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_INPUT&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.input&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_ERRORS&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_ERRORS&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.errors&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_MULTITHREAD&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+                <span class="string">&quot;const_get&quot;</span>,
+                <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_MULTITHREAD&quot;</span>)]
+            ),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.multithread&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_MULTIPROCESS&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+                <span class="string">&quot;const_get&quot;</span>,
+                <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_MULTIPROCESS&quot;</span>)]
+            ),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.multiprocess&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">interp</span>.<span class="ident">string</span>(<span class="string">&quot;RACK_RUNONCE&quot;</span>)]),
+            <span class="ident">rack</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">String</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;const_get&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;RACK_RUNONCE&quot;</span>)]),
             <span class="prelude-val">Ok</span>(<span class="string">&quot;rack.run_once&quot;</span>.<span class="ident">to_owned</span>())
         );
     }

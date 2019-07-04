@@ -202,21 +202,18 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">NativeEndian</span>, <span class="ident">ReadBytesExt</span>};
+<span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Cursor</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">ArgumentError</span>, <span class="ident">RubyException</span>, <span class="ident">RuntimeError</span>, <span class="ident">TypeError</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
-<span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 
 <span class="kw">mod</span> <span class="ident">scan</span>;
 
@@ -248,7 +245,7 @@
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="ident">String</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
         );
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">first</span>) <span class="op">=</span> <span class="ident">s</span>.<span class="ident">chars</span>().<span class="ident">next</span>() {
             <span class="comment">// One UTF-8 character, which are at most 32 bits.</span>
@@ -258,7 +255,7 @@
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">ord</span>) <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">read_u32</span>::<span class="op">&lt;</span><span class="ident">NativeEndian</span><span class="op">&gt;</span>() {
                 <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">ord</span>).<span class="ident">inner</span>()
             } <span class="kw">else</span> {
-                <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+                <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
             }
         } <span class="kw">else</span> {
             <span class="ident">ArgumentError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;empty string&quot;</span>)
@@ -288,12 +285,11 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">string</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">string_equal_squiggle</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">string</span>::<span class="ident">patch</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;string init&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">r#&quot;&quot;cat o&#39; 9 tails&quot; =~ /\d/&quot;#</span>).<span class="ident">unwrap</span>();
@@ -304,7 +300,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">string_idx</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">string</span>::<span class="ident">patch</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;string init&quot;</span>);
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(
@@ -359,7 +355,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">string_scan</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">string</span>::<span class="ident">patch</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;string init&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;abababa&quot;</span>);
@@ -401,7 +397,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">string_unary_minus</span>() {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">Interpreter</span>::<span class="ident">create</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">expect</span>(<span class="string">&quot;mrb init&quot;</span>);
         <span class="ident">string</span>::<span class="ident">patch</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>).<span class="ident">expect</span>(<span class="string">&quot;string init&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;-&#39;abababa&#39;&quot;</span>).<span class="ident">expect</span>(<span class="string">&quot;eval&quot;</span>);
