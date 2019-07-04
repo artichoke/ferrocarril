@@ -227,6 +227,16 @@
 <span id="227">227</span>
 <span id="228">228</span>
 <span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::{<span class="ident">Any</span>, <span class="ident">TypeId</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -297,27 +307,32 @@
     <span class="doccomment">/// The recommended pattern for using `def_class` looks like this:</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// #[macro_use]</span>
+    <span class="doccomment">/// extern crate mruby;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// use mruby::convert::FromMrb;</span>
     <span class="doccomment">/// use mruby::def::{ClassLike, Define};</span>
-    <span class="doccomment">/// use mruby::interpreter::{Interpreter, MrbApi};</span>
-    <span class="doccomment">/// use mruby::interpreter_or_raise;</span>
     <span class="doccomment">/// use mruby::sys;</span>
+    <span class="doccomment">/// use mruby::value::Value;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// extern &quot;C&quot; fn value(mrb: *mut sys::mrb_state, _slf: sys::mrb_value) -&gt; sys::mrb_value</span>
     <span class="doccomment">/// {</span>
     <span class="doccomment">///     let interp = unsafe { interpreter_or_raise!(mrb) };</span>
-    <span class="doccomment">///     interp.fixnum(29).inner()</span>
+    <span class="doccomment">///     Value::from_mrb(&amp;interp, 29).inner()</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let interp = crate::interpreter().expect(&quot;mrb init&quot;);</span>
-    <span class="doccomment">/// let spec = {</span>
-    <span class="doccomment">///     let mut api = interp.borrow_mut();</span>
-    <span class="doccomment">///     let spec = api.def_class::&lt;()&gt;(&quot;Container&quot;, None, None);</span>
-    <span class="doccomment">///     spec.borrow_mut().add_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
-    <span class="doccomment">///     spec.borrow_mut().add_self_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
-    <span class="doccomment">///     spec.borrow_mut().mrb_value_is_rust_backed(true);</span>
-    <span class="doccomment">///     spec</span>
-    <span class="doccomment">/// };</span>
-    <span class="doccomment">/// spec.borrow().define(&amp;interp).expect(&quot;class install&quot;);</span>
+    <span class="doccomment">/// fn main() {</span>
+    <span class="doccomment">///     let interp = mruby::interpreter().expect(&quot;mrb init&quot;);</span>
+    <span class="doccomment">///     let spec = {</span>
+    <span class="doccomment">///         let mut api = interp.borrow_mut();</span>
+    <span class="doccomment">///         let spec = api.def_class::&lt;()&gt;(&quot;Container&quot;, None, None);</span>
+    <span class="doccomment">///         spec.borrow_mut().add_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
+    <span class="doccomment">///         spec.borrow_mut().add_self_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
+    <span class="doccomment">///         spec.borrow_mut().mrb_value_is_rust_backed(true);</span>
+    <span class="doccomment">///         spec</span>
+    <span class="doccomment">///     };</span>
+    <span class="doccomment">///     spec.borrow().define(&amp;interp).expect(&quot;class install&quot;);</span>
+    <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">def_class</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Any</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
@@ -361,26 +376,31 @@
     <span class="doccomment">/// The recommended pattern for using `def_module` looks like this:</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// #[macro_use]</span>
+    <span class="doccomment">/// extern crate mruby;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// use mruby::convert::FromMrb;</span>
     <span class="doccomment">/// use mruby::def::{ClassLike, Define};</span>
-    <span class="doccomment">/// use mruby::interpreter::{Interpreter, MrbApi};</span>
-    <span class="doccomment">/// use mruby::interpreter_or_raise;</span>
     <span class="doccomment">/// use mruby::sys;</span>
+    <span class="doccomment">/// use mruby::value::Value;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// extern &quot;C&quot; fn value(mrb: *mut sys::mrb_state, _slf: sys::mrb_value) -&gt; sys::mrb_value</span>
     <span class="doccomment">/// {</span>
     <span class="doccomment">///     let interp = unsafe { interpreter_or_raise!(mrb) };</span>
-    <span class="doccomment">///     interp.fixnum(29).inner()</span>
+    <span class="doccomment">///     Value::from_mrb(&amp;interp, 29).inner()</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let interp = crate::interpreter().expect(&quot;mrb init&quot;);</span>
-    <span class="doccomment">/// let spec = {</span>
-    <span class="doccomment">///     let mut api = interp.borrow_mut();</span>
-    <span class="doccomment">///     let spec = api.def_module::&lt;()&gt;(&quot;Container&quot;, None);</span>
-    <span class="doccomment">///     spec.borrow_mut().add_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
-    <span class="doccomment">///     spec.borrow_mut().add_self_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
-    <span class="doccomment">///     spec</span>
-    <span class="doccomment">/// };</span>
-    <span class="doccomment">/// spec.borrow().define(&amp;interp).expect(&quot;class install&quot;);</span>
+    <span class="doccomment">/// fn main() {</span>
+    <span class="doccomment">///     let interp = mruby::interpreter().expect(&quot;mrb init&quot;);</span>
+    <span class="doccomment">///     let spec = {</span>
+    <span class="doccomment">///         let mut api = interp.borrow_mut();</span>
+    <span class="doccomment">///         let spec = api.def_module::&lt;()&gt;(&quot;Container&quot;, None);</span>
+    <span class="doccomment">///         spec.borrow_mut().add_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
+    <span class="doccomment">///         spec.borrow_mut().add_self_method(&quot;value&quot;, value, sys::mrb_args_none());</span>
+    <span class="doccomment">///         spec</span>
+    <span class="doccomment">///     };</span>
+    <span class="doccomment">///     spec.borrow().define(&amp;interp).expect(&quot;class install&quot;);</span>
+    <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">def_module</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Any</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,

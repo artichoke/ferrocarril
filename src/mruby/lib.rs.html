@@ -335,6 +335,7 @@
 <span id="335">335</span>
 <span id="336">336</span>
 <span id="337">337</span>
+<span id="338">338</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">clippy</span>::<span class="ident">all</span>, <span class="ident">clippy</span>::<span class="ident">pedantic</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
@@ -358,9 +359,8 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust</span>
 <span class="doccomment">//! use mruby::eval::MrbEval;</span>
-<span class="doccomment">//! use mruby::interpreter::Interpreter;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let interp = crate::interpreter().unwrap();</span>
+<span class="doccomment">//! let interp = mruby::interpreter().unwrap();</span>
 <span class="doccomment">//! let result = interp.eval(&quot;10 * 10&quot;).unwrap();</span>
 <span class="doccomment">//! let result = result.try_into::&lt;i64&gt;();</span>
 <span class="doccomment">//! assert_eq!(result, Ok(100));</span>
@@ -392,10 +392,9 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust</span>
 <span class="doccomment">//! use mruby::eval::MrbEval;</span>
-<span class="doccomment">//! use mruby::interpreter::Interpreter;</span>
 <span class="doccomment">//! use mruby::load::MrbLoadSources;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let mut interp = crate::interpreter().unwrap();</span>
+<span class="doccomment">//! let mut interp = mruby::interpreter().unwrap();</span>
 <span class="doccomment">//! let code = &quot;</span>
 <span class="doccomment">//! def source_location</span>
 <span class="doccomment">//!   __FILE__</span>
@@ -433,16 +432,17 @@
 <span class="doccomment">//! provided by the [`onig`] crate.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust</span>
-<span class="doccomment">//! use mruby::convert::{RustBackedValue, TryFromMrb};</span>
+<span class="doccomment">//! #[macro_use]</span>
+<span class="doccomment">//! extern crate mruby;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! use mruby::convert::{FromMrb, RustBackedValue, TryFromMrb};</span>
 <span class="doccomment">//! use mruby::def::{rust_data_free, ClassLike, Define};</span>
 <span class="doccomment">//! use mruby::eval::MrbEval;</span>
 <span class="doccomment">//! use mruby::file::MrbFile;</span>
-<span class="doccomment">//! use mruby::interpreter::{Interpreter, Mrb, MrbApi};</span>
 <span class="doccomment">//! use mruby::load::MrbLoadSources;</span>
 <span class="doccomment">//! use mruby::sys;</span>
 <span class="doccomment">//! use mruby::value::Value;</span>
-<span class="doccomment">//! use mruby::{interpreter_or_raise, unwrap_or_raise, unwrap_value_or_raise};</span>
-<span class="doccomment">//! use mruby::MrbError;</span>
+<span class="doccomment">//! use mruby::{Mrb, MrbError};</span>
 <span class="doccomment">//! use std::io::Write;</span>
 <span class="doccomment">//! use std::mem;</span>
 <span class="doccomment">//!</span>
@@ -465,10 +465,10 @@
 <span class="doccomment">//!         let cont = unwrap_or_raise!(</span>
 <span class="doccomment">//!             interp,</span>
 <span class="doccomment">//!             Self::try_from_ruby(&amp;interp, &amp;Value::new(&amp;interp, slf)),</span>
-<span class="doccomment">//!             interp.nil().inner()</span>
+<span class="doccomment">//!             Value::from_mrb(&amp;interp, None::&lt;Value&gt;).inner()</span>
 <span class="doccomment">//!         );</span>
 <span class="doccomment">//!         let borrow = cont.borrow();</span>
-<span class="doccomment">//!         interp.fixnum(borrow.inner).inner()</span>
+<span class="doccomment">//!         Value::from_mrb(&amp;interp, borrow.inner).inner()</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
@@ -485,11 +485,13 @@
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let mut interp = crate::interpreter().unwrap();</span>
-<span class="doccomment">//! interp.def_file_for_type::&lt;_, Container&gt;(&quot;container.rb&quot;).unwrap();</span>
-<span class="doccomment">//! interp.eval(&quot;require &#39;container&#39;&quot;).unwrap();</span>
-<span class="doccomment">//! let result = interp.eval(&quot;Container.new(15).value * 24&quot;).unwrap();</span>
-<span class="doccomment">//! assert_eq!(result.try_into::&lt;i64&gt;(), Ok(360));</span>
+<span class="doccomment">//! fn main() {</span>
+<span class="doccomment">//!     let interp = mruby::interpreter().unwrap();</span>
+<span class="doccomment">//!     interp.def_file_for_type::&lt;_, Container&gt;(&quot;container.rb&quot;).unwrap();</span>
+<span class="doccomment">//!     interp.eval(&quot;require &#39;container&#39;&quot;).unwrap();</span>
+<span class="doccomment">//!     let result = interp.eval(&quot;Container.new(15).value * 24&quot;).unwrap();</span>
+<span class="doccomment">//!     assert_eq!(result.try_into::&lt;i64&gt;(), Ok(360));</span>
+<span class="doccomment">//! }</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Converters Between Ruby and Rust Types</span>

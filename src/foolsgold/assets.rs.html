@@ -23,17 +23,13 @@
 <span id="23">23</span>
 <span id="24">24</span>
 <span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">nemesis</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 
-<span class="comment">// TODO: resolve path relative to CARGO_MANIFEST_DIR</span>
-<span class="comment">// https://github.com/pyros2097/rust-embed/pull/59</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RustEmbed</span>)]</span>
-<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;foolsgold/static/&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;$CARGO_MANIFEST_DIR/static&quot;</span>]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Assets</span>;
 
 <span class="kw">impl</span> <span class="ident">Assets</span> {

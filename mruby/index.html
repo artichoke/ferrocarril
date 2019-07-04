@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `mruby` crate."><meta name="keywords" content="rust, rustlang, rust-lang, mruby"><title>mruby - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../mruby/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate mruby</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all mruby's items</p></a><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'mruby', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/mruby/lib.rs.html#1-337' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>mruby</a></span></h1><div class='docblock'><h1 id="mruby" class="section-header"><a href="#mruby">mruby</a></h1>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `mruby` crate."><meta name="keywords" content="rust, rustlang, rust-lang, mruby"><title>mruby - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../mruby/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate mruby</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all mruby's items</p></a><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'mruby', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/mruby/lib.rs.html#1-338' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>mruby</a></span></h1><div class='docblock'><h1 id="mruby" class="section-header"><a href="#mruby">mruby</a></h1>
 <p>mruby crate provides a safe interface over the raw mruby bindings in
 <a href="../mruby_sys/index.html"><code>mruby-sys</code></a>. mruby crate aims to expose as much of the mruby API
 as possible.</p>
@@ -11,9 +11,8 @@ trait. Side effects from eval are persisted across invocations.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
 
-<span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>().<span class="ident">unwrap</span>();
 <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;10 * 10&quot;</span>).<span class="ident">unwrap</span>();
 <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>();
 <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="prelude-val">Ok</span>(<span class="number">100</span>));</pre></div>
@@ -38,10 +37,9 @@ metadata on <a href="../mruby_vfs/fake/struct.FileSystem.html"><code>File</code>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::<span class="ident">Interpreter</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
 
-<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>().<span class="ident">unwrap</span>();
 <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="string">&quot;
 def source_location
   __FILE__
@@ -74,16 +72,17 @@ that the <code>mrb_value</code> continues to point to valid memory.</li>
 provided by the [<code>onig</code>] crate.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::{<span class="ident">RustBackedValue</span>, <span class="ident">TryFromMrb</span>};
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">mruby</span>;
+
+<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">RustBackedValue</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::{<span class="ident">rust_data_free</span>, <span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">eval</span>::<span class="ident">MrbEval</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>::{<span class="ident">Interpreter</span>, <span class="ident">Mrb</span>, <span class="ident">MrbApi</span>};
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
-<span class="kw">use</span> <span class="ident">mruby</span>::{<span class="ident">interpreter_or_raise</span>, <span class="ident">unwrap_or_raise</span>, <span class="ident">unwrap_value_or_raise</span>};
-<span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">MrbError</span>;
+<span class="kw">use</span> <span class="ident">mruby</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 
@@ -106,10 +105,10 @@ provided by the [<code>onig</code>] crate.</p>
         <span class="kw">let</span> <span class="ident">cont</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
             <span class="ident">interp</span>,
             <span class="self">Self</span>::<span class="ident">try_from_ruby</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="kw-2">&amp;</span><span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">slf</span>)),
-            <span class="ident">interp</span>.<span class="ident">nil</span>().<span class="ident">inner</span>()
+            <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>).<span class="ident">inner</span>()
         );
         <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">cont</span>.<span class="ident">borrow</span>();
-        <span class="ident">interp</span>.<span class="ident">fixnum</span>(<span class="ident">borrow</span>.<span class="ident">inner</span>).<span class="ident">inner</span>()
+        <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">borrow</span>.<span class="ident">inner</span>).<span class="ident">inner</span>()
     }
 }
 
@@ -126,11 +125,13 @@ provided by the [<code>onig</code>] crate.</p>
     }
 }
 
-<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interp</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">interpreter</span>().<span class="ident">unwrap</span>();
-<span class="ident">interp</span>.<span class="ident">def_file_for_type</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Container</span><span class="op">&gt;</span>(<span class="string">&quot;container.rb&quot;</span>).<span class="ident">unwrap</span>();
-<span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;container&#39;&quot;</span>).<span class="ident">unwrap</span>();
-<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Container.new(15).value * 24&quot;</span>).<span class="ident">unwrap</span>();
-<span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>(), <span class="prelude-val">Ok</span>(<span class="number">360</span>));</pre></div>
+<span class="kw">fn</span> <span class="ident">main</span>() {
+    <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="ident">mruby</span>::<span class="ident">interpreter</span>().<span class="ident">unwrap</span>();
+    <span class="ident">interp</span>.<span class="ident">def_file_for_type</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Container</span><span class="op">&gt;</span>(<span class="string">&quot;container.rb&quot;</span>).<span class="ident">unwrap</span>();
+    <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;container&#39;&quot;</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;Container.new(15).value * 24&quot;</span>).<span class="ident">unwrap</span>();
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>.<span class="ident">try_into</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>(), <span class="prelude-val">Ok</span>(<span class="number">360</span>));
+}</pre></div>
 <h2 id="converters-between-ruby-and-rust-types" class="section-header"><a href="#converters-between-ruby-and-rust-types">Converters Between Ruby and Rust Types</a></h2>
 <p>The <a href="../mruby/convert/index.html"><code>convert</code> module</a> provides implementations for conversions
 between <code>mrb_value</code> Ruby types and native Rust types like <code>i64</code> and

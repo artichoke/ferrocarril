@@ -58,8 +58,6 @@
 <span id="58">58</span>
 <span id="59">59</span>
 <span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">def</span>::<span class="ident">EnclosingRubyScope</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">file</span>::<span class="ident">MrbFile</span>;
@@ -75,9 +73,7 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RustEmbed</span>)]</span>
-<span class="comment">// TODO: resolve path relative to CARGO_MANIFEST_DIR</span>
-<span class="comment">// https://github.com/pyros2097/rust-embed/pull/59</span>
-<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;nemesis/ruby/lib&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;$CARGO_MANIFEST_DIR/ruby/lib&quot;</span>]</span>
 <span class="kw">struct</span> <span class="ident">Nemesis</span>;
 
 <span class="kw">impl</span> <span class="ident">Nemesis</span> {

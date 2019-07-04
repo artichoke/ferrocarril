@@ -74,8 +74,6 @@
 <span id="74">74</span>
 <span id="75">75</span>
 <span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">Mrb</span>;
@@ -92,9 +90,7 @@
 
 <span class="doccomment">/// Gem</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RustEmbed</span>)]</span>
-<span class="comment">// TODO: resolve path relative to CARGO_MANIFEST_DIR</span>
-<span class="comment">// https://github.com/pyros2097/rust-embed/pull/59</span>
-<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;mruby-gems/vendor/ruby/2.6.0/gems/sinatra-2.0.5/lib&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;$CARGO_MANIFEST_DIR/vendor/ruby/2.6.0/gems/sinatra-2.0.5/lib&quot;</span>]</span>
 <span class="kw">struct</span> <span class="ident">Sinatra</span>;
 
 <span class="kw">impl</span> <span class="ident">Sinatra</span> {

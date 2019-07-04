@@ -54,8 +54,6 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">load</span>::<span class="ident">MrbLoadSources</span>;
 <span class="kw">use</span> <span class="ident">mruby</span>::<span class="ident">Mrb</span>;
@@ -72,9 +70,7 @@
 
 <span class="doccomment">/// Gem</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RustEmbed</span>)]</span>
-<span class="comment">// TODO: resolve path relative to CARGO_MANIFEST_DIR</span>
-<span class="comment">// https://github.com/pyros2097/rust-embed/pull/59</span>
-<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;mruby-gems/vendor/ruby/2.6.0/gems/rack-2.0.7/lib&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">folder</span> <span class="op">=</span> <span class="string">&quot;$CARGO_MANIFEST_DIR/vendor/ruby/2.6.0/gems/rack-2.0.7/lib&quot;</span>]</span>
 <span class="kw">struct</span> <span class="ident">Rack</span>;
 
 <span class="kw">impl</span> <span class="ident">Rack</span> {

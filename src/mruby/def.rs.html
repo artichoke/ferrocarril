@@ -424,8 +424,6 @@
 <span id="424">424</span>
 <span id="425">425</span>
 <span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">c_void</span>, <span class="ident">CString</span>};
@@ -510,12 +508,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```rust</span>
     <span class="doccomment">/// use mruby::def::EnclosingRubyScope;</span>
-    <span class="doccomment">/// use mruby::interpreter::Interpreter;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// struct Fixnum;</span>
     <span class="doccomment">/// struct Inner;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let interp = crate::interpreter().expect(&quot;mrb init&quot;);</span>
+    <span class="doccomment">/// let interp = mruby::interpreter().expect(&quot;mrb init&quot;);</span>
     <span class="doccomment">/// let mut api = interp.borrow_mut();</span>
     <span class="doccomment">/// if let Some(scope) = api.class_spec::&lt;Fixnum&gt;().map(EnclosingRubyScope::class) {</span>
     <span class="doccomment">///     api.def_class::&lt;Inner&gt;(&quot;Inner&quot;, Some(scope), None);</span>
@@ -545,12 +542,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```rust</span>
     <span class="doccomment">/// use mruby::def::EnclosingRubyScope;</span>
-    <span class="doccomment">/// use mruby::interpreter::Interpreter;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// struct Kernel;</span>
     <span class="doccomment">/// struct Inner;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// let interp = crate::interpreter().expect(&quot;mrb init&quot;);</span>
+    <span class="doccomment">/// let interp = mruby::interpreter().expect(&quot;mrb init&quot;);</span>
     <span class="doccomment">/// let mut api = interp.borrow_mut();</span>
     <span class="doccomment">/// if let Some(scope) = api.module_spec::&lt;Kernel&gt;().map(EnclosingRubyScope::module) {</span>
     <span class="doccomment">///     api.def_class::&lt;Inner&gt;(&quot;Inner&quot;, Some(scope), None);</span>
