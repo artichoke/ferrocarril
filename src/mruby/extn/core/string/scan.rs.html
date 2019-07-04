@@ -129,6 +129,8 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">warnings</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
@@ -136,7 +138,9 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::{<span class="ident">FromMrb</span>, <span class="ident">RustBackedValue</span>, <span class="ident">TryFromMrb</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">matchdata</span>::<span class="ident">MatchData</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">regexp</span>::{<span class="ident">syntax</span>, <span class="ident">Encoding</span>, <span class="ident">Options</span>, <span class="ident">Regexp</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">regexp</span>::<span class="ident">enc</span>::<span class="ident">Encoding</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">regexp</span>::<span class="ident">opts</span>::<span class="ident">Options</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">regexp</span>::{<span class="ident">syntax</span>, <span class="ident">Regexp</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">gc</span>::<span class="ident">MrbGarbageCollection</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};

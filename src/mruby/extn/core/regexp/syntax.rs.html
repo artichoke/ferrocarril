@@ -44,6 +44,39 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// This module is forked from Rust regex crate @ 172898a.</span>
 <span class="comment">//</span>
@@ -51,6 +84,8 @@
 <span class="comment">//</span>
 <span class="comment">// MIT Licence</span>
 <span class="comment">// Copyright (c) 2014 The Rust Project Developers</span>
+
+<span class="doccomment">//! Helpers for parsing Regexp patterns.</span>
 
 <span class="doccomment">/// Escapes all regular expression meta characters in `text`.</span>
 <span class="doccomment">///</span>
@@ -70,12 +105,23 @@
     <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="ident">text</span>.<span class="ident">chars</span>() {
         <span class="kw">if</span> <span class="ident">is_meta_character</span>(<span class="ident">c</span>) {
             <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;\\&#39;</span>);
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">c</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">escape</span>) <span class="op">=</span> <span class="ident">is_non_supported_non_printable_character</span>(<span class="ident">c</span>) {
+            <span class="ident">buf</span>.<span class="ident">push_str</span>(<span class="ident">escape</span>.<span class="ident">as_str</span>());
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">is_non_printable_character</span>(<span class="ident">c</span>) {
+            <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="ident">c</span>.<span class="ident">escape_default</span>() {
+                <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">c</span>);
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="string">&#39; &#39;</span> {
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;\\&#39;</span>);
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39; &#39;</span>);
+        } <span class="kw">else</span> {
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">c</span>);
         }
-        <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">c</span>);
     }
 }
 
-<span class="doccomment">/// Returns true if the give character has significance in a regex.</span>
+<span class="doccomment">/// Returns true if the given character has significance in a regex.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// These are the only characters that are allowed to be escaped, with one</span>
 <span class="doccomment">/// exception: an ASCII space character may be escaped when extended mode (with</span>
@@ -89,6 +135,26 @@
         <span class="string">&#39;\\&#39;</span> <span class="op">|</span> <span class="string">&#39;/&#39;</span> <span class="op">|</span> <span class="string">&#39;.&#39;</span> <span class="op">|</span> <span class="string">&#39;+&#39;</span> <span class="op">|</span> <span class="string">&#39;*&#39;</span> <span class="op">|</span> <span class="string">&#39;?&#39;</span> <span class="op">|</span> <span class="string">&#39;(&#39;</span> <span class="op">|</span> <span class="string">&#39;)&#39;</span> <span class="op">|</span> <span class="string">&#39;|&#39;</span> <span class="op">|</span> <span class="string">&#39;[&#39;</span> <span class="op">|</span> <span class="string">&#39;]&#39;</span> <span class="op">|</span> <span class="string">&#39;{&#39;</span> <span class="op">|</span> <span class="string">&#39;}&#39;</span> <span class="op">|</span> <span class="string">&#39;^&#39;</span>
         <span class="op">|</span> <span class="string">&#39;$&#39;</span> <span class="op">|</span> <span class="string">&#39;#&#39;</span> <span class="op">|</span> <span class="string">&#39;&amp;&#39;</span> <span class="op">|</span> <span class="string">&#39;-&#39;</span> <span class="op">|</span> <span class="string">&#39;~&#39;</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+    }
+}
+
+<span class="doccomment">/// Returns true if the given character is non-printable and needs to be quoted.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_non_printable_character</span>(<span class="ident">c</span>: <span class="ident">char</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">let</span> <span class="ident">form_feed</span> <span class="op">=</span> <span class="number">0x0C</span> <span class="kw">as</span> <span class="ident">char</span>; <span class="comment">// &quot;\f&quot;</span>
+    <span class="kw">match</span> <span class="ident">c</span> {
+        <span class="string">&#39;\n&#39;</span> <span class="op">|</span> <span class="string">&#39;\r&#39;</span> <span class="op">|</span> <span class="string">&#39;\t&#39;</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+        <span class="ident">c</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="ident">form_feed</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+    }
+}
+
+<span class="doccomment">/// Returns true if the given character is non-printable and Rust does not support</span>
+<span class="doccomment">/// the escape sequence.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_non_supported_non_printable_character</span>(<span class="ident">c</span>: <span class="ident">char</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">form_feed</span> <span class="op">=</span> <span class="number">0x0C</span> <span class="kw">as</span> <span class="ident">char</span>; <span class="comment">// &quot;\f&quot;</span>
+    <span class="kw">match</span> <span class="ident">c</span> {
+        <span class="ident">c</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="ident">form_feed</span> <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;\\f&quot;</span>.<span class="ident">to_owned</span>()),
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
     }
 }
 </pre></div>
