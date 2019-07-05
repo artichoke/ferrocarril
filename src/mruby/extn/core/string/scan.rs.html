@@ -131,8 +131,24 @@
 <span id="131">131</span>
 <span id="132">132</span>
 <span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">warnings</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 
@@ -218,9 +234,27 @@
         <span class="kw">for</span> <span class="ident">captures</span> <span class="kw">in</span> <span class="ident">regexp</span>.<span class="ident">regex</span>.<span class="ident">captures_iter</span>(<span class="ident">s</span>.<span class="ident">as_str</span>()) {
             <span class="ident">was_match</span> <span class="op">=</span> <span class="bool-val">true</span>;
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">groups</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-            <span class="kw">for</span> <span class="ident">index</span> <span class="kw">in</span> <span class="number">1</span>..=<span class="ident">len</span> {
-                <span class="ident">groups</span>.<span class="ident">push</span>(<span class="ident">captures</span>.<span class="ident">at</span>(<span class="ident">index</span>));
+            <span class="kw">let</span> <span class="ident">num_regexp_globals_to_set</span> <span class="op">=</span> {
+                <span class="kw">let</span> <span class="ident">num_previously_set_globals</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">num_set_regexp_capture_globals</span>;
+                <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">num_previously_set_globals</span>, <span class="ident">captures</span>.<span class="ident">len</span>())
+            };
+            <span class="kw">for</span> <span class="ident">group</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_regexp_globals_to_set</span> {
+                <span class="kw">let</span> <span class="ident">sym</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">group</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$&amp;&quot;</span>)
+                } <span class="kw">else</span> {
+                    <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;${}&quot;</span>, <span class="ident">group</span>))
+                };
+
+                <span class="kw">let</span> <span class="ident">capture</span> <span class="op">=</span> <span class="ident">captures</span>.<span class="ident">at</span>(<span class="ident">group</span>);
+                <span class="kw">if</span> <span class="ident">group</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                    <span class="ident">groups</span>.<span class="ident">push</span>(<span class="ident">captures</span>.<span class="ident">at</span>(<span class="ident">group</span>));
+                }
+                <span class="kw">unsafe</span> {
+                    <span class="ident">sys</span>::<span class="ident">mrb_gv_set</span>(<span class="ident">mrb</span>, <span class="ident">sym</span>, <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="ident">interp</span>, <span class="ident">capture</span>).<span class="ident">inner</span>());
+                }
             }
+            <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">num_set_regexp_capture_globals</span> <span class="op">=</span> <span class="ident">captures</span>.<span class="ident">len</span>();
+
             <span class="kw">let</span> <span class="ident">matched</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="ident">interp</span>, <span class="ident">groups</span>);
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pos</span>) <span class="op">=</span> <span class="ident">captures</span>.<span class="ident">pos</span>(<span class="number">0</span>) {
                 <span class="ident">matchdata</span>.<span class="ident">borrow_mut</span>().<span class="ident">set_region</span>(<span class="ident">pos</span>.<span class="number">0</span>, <span class="ident">pos</span>.<span class="number">1</span>);

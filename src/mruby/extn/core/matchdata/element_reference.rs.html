@@ -219,7 +219,7 @@
             <span class="ident">first</span>,
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">start</span>,
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">len</span>,
-            <span class="ident">num_captures</span>,
+            <span class="ident">num_captures</span> <span class="op">+</span> <span class="number">1</span>,
             <span class="number">0_u8</span>,
         );
         <span class="kw">if</span> <span class="ident">check_range</span> <span class="op">==</span> <span class="ident">sys</span>::<span class="ident">mrb_range_beg_len</span>::<span class="ident">MRB_RANGE_OK</span> {
