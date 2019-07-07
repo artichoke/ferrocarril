@@ -234,9 +234,6 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::{<span class="ident">Any</span>, <span class="ident">TypeId</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -255,14 +252,11 @@
 <span class="comment">// NOTE: MrbState assumes that it it is stored in `mrb_state-&gt;ud` wrapped in a</span>
 <span class="comment">// [`Rc`] with type [`Mrb`] as created by [`crate::interpreter`].</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">State</span> {
-    <span class="comment">// TODO: Make this private</span>
     <span class="kw">pub</span> <span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>,
-    <span class="comment">// TODO: Make this private</span>
     <span class="kw">pub</span> <span class="ident">ctx</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrbc_context</span>,
     <span class="ident">classes</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">TypeId</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">class</span>::<span class="ident">Spec</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
     <span class="ident">modules</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">TypeId</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">module</span>::<span class="ident">Spec</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">vfs</span>: <span class="ident">MrbFilesystem</span>,
-    <span class="comment">// TODO: make this private</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">context_stack</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EvalContext</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">num_set_regexp_capture_globals</span>: <span class="ident">usize</span>,
     <span class="ident">symbol_cache</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">sys</span>::<span class="ident">mrb_sym</span><span class="op">&gt;</span>,

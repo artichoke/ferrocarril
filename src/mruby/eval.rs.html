@@ -731,7 +731,7 @@ NestedEval.file
             .<span class="ident">def_rb_source_file</span>(<span class="string">&quot;fail.rb&quot;</span>, <span class="string">&quot;def bad; &#39;as&#39;.scan(; end&quot;</span>)
             .<span class="ident">expect</span>(<span class="string">&quot;def file&quot;</span>);
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="string">&quot;require &#39;fail&#39;&quot;</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ());
-        <span class="comment">// TODO: require should reraise instead of wrapping in a RuntimeError</span>
+        <span class="comment">// TODO: require should not wrap exceptions in RuntimeError, see GH-154.</span>
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="ident">MrbError</span>::<span class="ident">Exec</span>(
             <span class="string">&quot;(eval):1: mruby exception: SyntaxError: syntax error (RuntimeError)\n(eval):1&quot;</span>
                 .<span class="ident">to_owned</span>(),

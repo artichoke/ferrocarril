@@ -349,8 +349,8 @@ end.join
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">eval</span>(<span class="ident">spec</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span>.<span class="ident">is_err</span>());
 
-        <span class="comment">// TODO: re-enable the following test once upstream mruby bug is fixed:</span>
-        <span class="comment">// https://github.com/mruby/mruby/issues/4513</span>
+        <span class="comment">// TODO: re-enable the once upstream bug is fixed, see GH-155.</span>
+        <span class="comment">// Upstream bug: https://github.com/mruby/mruby/issues/4513</span>
         <span class="comment">/*
                 let spec = r#&quot;
         #Thread.abort_on_exception = false

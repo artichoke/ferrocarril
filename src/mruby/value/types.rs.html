@@ -221,6 +221,7 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
+<span id="224">224</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -264,6 +265,7 @@
     <span class="ident">CPointer</span>,
     <span class="ident">Data</span>,
     <span class="ident">Exception</span>,
+    <span class="ident">Fiber</span>,
     <span class="ident">Fixnum</span>,
     <span class="ident">Float</span>,
     <span class="ident">Hash</span>,
@@ -288,6 +290,7 @@
             <span class="ident">Ruby</span>::<span class="ident">CPointer</span> <span class="op">=&gt;</span> <span class="string">&quot;C Pointer&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Data</span> <span class="op">=&gt;</span> <span class="string">&quot;Rust-backed Ruby instance&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Exception</span> <span class="op">=&gt;</span> <span class="string">&quot;Exception&quot;</span>,
+            <span class="ident">Ruby</span>::<span class="ident">Fiber</span> <span class="op">=&gt;</span> <span class="string">&quot;Fiber&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Fixnum</span> <span class="op">=&gt;</span> <span class="string">&quot;Fixnum&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Float</span> <span class="op">=&gt;</span> <span class="string">&quot;Float&quot;</span>,
             <span class="ident">Ruby</span>::<span class="ident">Hash</span> <span class="op">=&gt;</span> <span class="string">&quot;Hash&quot;</span>,
@@ -337,7 +340,7 @@
             <span class="comment">// internal use: #undef; should not happen</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_UNDEF</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Unreachable</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_FLOAT</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Float</span>,
-            <span class="comment">// `MRB_TT_CPTR` wraps a `void *` pointer.</span>
+            <span class="comment">// `MRB_TT_CPTR` wraps a borrowed `void *` pointer.</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_CPTR</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">CPointer</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_OBJECT</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Object</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_CLASS</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Class</span>,
@@ -370,16 +373,15 @@
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_STRING</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">String</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_RANGE</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Range</span>,
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_EXCEPTION</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Exception</span>,
-            <span class="comment">// TODO: how to surface this?</span>
+            <span class="comment">// TODO: Implement File, see GH-4.</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_FILE</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;mruby type file&quot;</span>),
-            <span class="comment">// TODO: how to surface this?</span>
+            <span class="comment">// ENV is currently implemented as a singleton object in Ruby.</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_ENV</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;mruby type env&quot;</span>),
             <span class="comment">// `MRB_TT_DATA` is a type tag for wrapped C pointers. It is used</span>
-            <span class="comment">// to indicate that an `mrb_value` has a pointer to an external data</span>
-            <span class="comment">// structure stored in its `value.p` field.</span>
-            <span class="comment">// TODO: how to handle this?</span>
+            <span class="comment">// to indicate that an `mrb_value` has an owned pointer to an</span>
+            <span class="comment">// external data structure stored in its `value.p` field.</span>
             <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_DATA</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Data</span>,
-            <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_FIBER</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;mruby type fiber&quot;</span>),
+            <span class="ident">sys</span>::<span class="ident">mrb_vtype</span>::<span class="ident">MRB_TT_FIBER</span> <span class="op">=&gt;</span> <span class="ident">Ruby</span>::<span class="ident">Fiber</span>,
             <span class="comment">// MRB_TT_ISTRUCT is an &quot;inline structure&quot;, or a mrb_value that</span>
             <span class="comment">// stores data in a char* buffer inside an mrb_value. These</span>
             <span class="comment">// mrb_values cannot have a finalizer and cannot have instance</span>

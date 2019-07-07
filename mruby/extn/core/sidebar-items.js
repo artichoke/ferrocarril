@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["patch",""]],"mod":[["array",""],["env",""],["error",""],["kernel",""],["matchdata","ruby/spec compliant implementation of `MatchData`."],["module",""],["regexp","ruby/spec compliant implementation of `Regexp`."],["string",""],["thread",""]]});
+initSidebarItems({"fn":[["patch",""]],"mod":[["array",""],["env",""],["error",""],["hash",""],["kernel",""],["matchdata","ruby/spec compliant implementation of `MatchData`."],["module",""],["regexp","ruby/spec compliant implementation of `Regexp`."],["string",""],["thread",""]]});

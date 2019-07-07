@@ -285,7 +285,7 @@
     }
 }
 
-<span class="comment">// TODO: Add tests for this function.</span>
+<span class="comment">// TODO: Add tests for this parse_pattern, see GH-157.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_pattern</span>(<span class="ident">pattern</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">mut</span> <span class="ident">opts</span>: <span class="ident">Options</span>) <span class="op">-&gt;</span> (<span class="ident">String</span>, <span class="ident">Options</span>) {
     <span class="kw">let</span> <span class="ident">orig_opts</span> <span class="op">=</span> <span class="ident">opts</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">pattern</span>.<span class="ident">chars</span>();
