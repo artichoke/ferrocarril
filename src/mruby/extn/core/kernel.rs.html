@@ -452,9 +452,6 @@
 <span id="452">452</span>
 <span id="453">453</span>
 <span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
 <span class="kw">use</span> <span class="ident">path_abs</span>::<span class="ident">PathAbs</span>;
@@ -582,10 +579,7 @@
                 <span class="ident">api</span>.<span class="ident">vfs</span>.<span class="ident">read_file</span>(<span class="ident">path</span>.<span class="ident">as_path</span>())
             };
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">contents</span>) <span class="op">=</span> <span class="ident">contents</span> {
-                <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(
-                    <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="ident">interp</span>),
-                    <span class="ident">interp</span>.<span class="ident">eval_with_context</span>(<span class="ident">contents</span>, <span class="ident">context</span>)
-                );
+                <span class="ident">interp</span>.<span class="ident">unchecked_eval_with_context</span>(<span class="ident">contents</span>, <span class="ident">context</span>);
             } <span class="kw">else</span> {
                 <span class="comment">// this branch should be unreachable because the `Mrb`</span>
                 <span class="comment">// interpreter is not `Send` so it can only be owned and</span>
