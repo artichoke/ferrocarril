@@ -169,6 +169,10 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Regexp#match`](https://ruby-doc.org/core-2.6.3/Regexp.html#method-i-match)</span>
 
@@ -201,18 +205,21 @@
     <span class="kw">const</span> <span class="ident">ARGSPEC</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;o&amp;|o?\0&quot;</span>;
 
     <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">extract</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;</span>();
-        <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;</span>();
-        <span class="kw">let</span> <span class="ident">has_pos</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_bool</span><span class="op">&gt;</span>();
-        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">uninitialized</span>::<span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">string</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">mem</span>::<span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;&gt;</span>::<span class="ident">uninit</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">mem</span>::<span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;&gt;</span>::<span class="ident">uninit</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">has_pos</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">mem</span>::<span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_bool</span><span class="op">&gt;&gt;</span>::<span class="ident">uninit</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">mem</span>::<span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">sys</span>::<span class="ident">mrb_value</span><span class="op">&gt;&gt;</span>::<span class="ident">uninit</span>();
         <span class="ident">sys</span>::<span class="ident">mrb_get_args</span>(
             <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>,
             <span class="self">Self</span>::<span class="ident">ARGSPEC</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">i8</span>,
-            <span class="kw-2">&amp;</span><span class="ident">string</span>,
-            <span class="kw-2">&amp;</span><span class="ident">block</span>,
-            <span class="kw-2">&amp;</span><span class="ident">pos</span>,
-            <span class="kw-2">&amp;</span><span class="ident">has_pos</span>,
+            <span class="ident">string</span>.<span class="ident">as_mut_ptr</span>(),
+            <span class="ident">block</span>.<span class="ident">as_mut_ptr</span>(),
+            <span class="ident">pos</span>.<span class="ident">as_mut_ptr</span>(),
+            <span class="ident">has_pos</span>.<span class="ident">as_mut_ptr</span>(),
         );
+        <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">assume_init</span>();
+        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">block</span>.<span class="ident">assume_init</span>();
+        <span class="kw">let</span> <span class="ident">has_pos</span> <span class="op">=</span> <span class="ident">has_pos</span>.<span class="ident">assume_init</span>() <span class="op">!=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">string</span>) <span class="op">=</span>
             <span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="ident">interp</span>, <span class="ident">string</span>))
         {
@@ -220,12 +227,12 @@
         } <span class="kw">else</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">StringType</span>);
         };
-        <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">has_pos</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="prelude-val">None</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span>
-                <span class="ident">i64</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">pos</span>)).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="ident">PosType</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">has_pos</span> {
+            <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">i64</span>::<span class="ident">try_from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">pos</span>.<span class="ident">assume_init</span>()))
+                .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="ident">PosType</span>)<span class="question-mark">?</span>;
             <span class="prelude-val">Some</span>(<span class="ident">pos</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
         };
         <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_value_is_nil</span>(<span class="ident">block</span>) {
             <span class="prelude-val">None</span>
@@ -266,8 +273,9 @@
     <span class="kw">let</span> <span class="ident">byte_offset</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">chars</span>().<span class="ident">take</span>(<span class="ident">pos</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>().<span class="ident">len</span>();
 
     <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">borrow</span>();
+    <span class="kw">let</span> <span class="ident">regex</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="ident">borrow</span>.<span class="ident">regex</span>).<span class="ident">as_ref</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="ident">Fatal</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">match_target</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">string</span>[<span class="ident">byte_offset</span>..];
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">captures</span>) <span class="op">=</span> <span class="ident">borrow</span>.<span class="ident">regex</span>.<span class="ident">captures</span>(<span class="ident">match_target</span>) {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">captures</span>) <span class="op">=</span> <span class="ident">regex</span>.<span class="ident">captures</span>(<span class="ident">match_target</span>) {
         <span class="kw">let</span> <span class="ident">num_regexp_globals_to_set</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">num_previously_set_globals</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">num_set_regexp_capture_globals</span>;
             <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">num_previously_set_globals</span>, <span class="ident">captures</span>.<span class="ident">len</span>())
@@ -286,7 +294,7 @@
         }
         <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">num_set_regexp_capture_globals</span> <span class="op">=</span> <span class="ident">captures</span>.<span class="ident">len</span>();
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matchdata</span> <span class="op">=</span> <span class="ident">MatchData</span>::<span class="ident">new</span>(<span class="ident">string</span>.<span class="ident">as_str</span>(), <span class="ident">data</span>.<span class="ident">borrow</span>().<span class="ident">clone</span>(), <span class="number">0</span>, <span class="ident">string</span>.<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matchdata</span> <span class="op">=</span> <span class="ident">MatchData</span>::<span class="ident">new</span>(<span class="ident">string</span>.<span class="ident">as_str</span>(), <span class="ident">borrow</span>.<span class="ident">clone</span>(), <span class="number">0</span>, <span class="ident">string</span>.<span class="ident">len</span>());
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">match_pos</span>) <span class="op">=</span> <span class="ident">captures</span>.<span class="ident">pos</span>(<span class="number">0</span>) {
             <span class="kw">let</span> <span class="ident">pre_match</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">match_target</span>[..<span class="ident">match_pos</span>.<span class="number">0</span>];
             <span class="kw">let</span> <span class="ident">post_match</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">match_target</span>[<span class="ident">match_pos</span>.<span class="number">1</span>..];
