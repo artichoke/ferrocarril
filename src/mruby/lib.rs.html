@@ -336,6 +336,8 @@
 <span id="336">336</span>
 <span id="337">337</span>
 <span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">clippy</span>::<span class="ident">all</span>, <span class="ident">clippy</span>::<span class="ident">pedantic</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
@@ -450,25 +452,27 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! impl Container {</span>
 <span class="doccomment">//!     unsafe extern &quot;C&quot; fn initialize(mrb: *mut sys::mrb_state, mut slf: sys::mrb_value) -&gt; sys::mrb_value {</span>
-<span class="doccomment">//!         let interp = interpreter_or_raise!(mrb);</span>
+<span class="doccomment">//!         let interp = unwrap_interpreter!(mrb);</span>
 <span class="doccomment">//!         let api = interp.borrow();</span>
 <span class="doccomment">//!         let int = mem::uninitialized::&lt;sys::mrb_int&gt;();</span>
 <span class="doccomment">//!         let mut argspec = vec![];</span>
 <span class="doccomment">//!         argspec.write_all(format!(&quot;{}\0&quot;, sys::specifiers::INTEGER).as_bytes()).unwrap();</span>
 <span class="doccomment">//!         sys::mrb_get_args(mrb, argspec.as_ptr() as *const i8, &amp;int);</span>
 <span class="doccomment">//!         let cont = Self { inner: int };</span>
-<span class="doccomment">//!         unwrap_value_or_raise!(interp, cont.try_into_ruby(&amp;interp, Some(slf)))</span>
+<span class="doccomment">//!         cont</span>
+<span class="doccomment">//!             .try_into_ruby(&amp;interp, Some(slf))</span>
+<span class="doccomment">//!             .unwrap_or_else(|_| Value::from_mrb(&amp;interp, None::&lt;Value&gt;))</span>
+<span class="doccomment">//!             .inner()</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     unsafe extern &quot;C&quot; fn value(mrb: *mut sys::mrb_state, slf: sys::mrb_value) -&gt; sys::mrb_value {</span>
-<span class="doccomment">//!         let interp = interpreter_or_raise!(mrb);</span>
-<span class="doccomment">//!         let cont = unwrap_or_raise!(</span>
-<span class="doccomment">//!             interp,</span>
-<span class="doccomment">//!             Self::try_from_ruby(&amp;interp, &amp;Value::new(&amp;interp, slf)),</span>
+<span class="doccomment">//!         let interp = unwrap_interpreter!(mrb);</span>
+<span class="doccomment">//!         if let Ok(cont) = Self::try_from_ruby(&amp;interp, &amp;Value::new(&amp;interp, slf)) {</span>
+<span class="doccomment">//!             let borrow = cont.borrow();</span>
+<span class="doccomment">//!             Value::from_mrb(&amp;interp, borrow.inner).inner()</span>
+<span class="doccomment">//!         } else {</span>
 <span class="doccomment">//!             Value::from_mrb(&amp;interp, None::&lt;Value&gt;).inner()</span>
-<span class="doccomment">//!         );</span>
-<span class="doccomment">//!         let borrow = cont.borrow();</span>
-<span class="doccomment">//!         Value::from_mrb(&amp;interp, borrow.inner).inner()</span>
+<span class="doccomment">//!         }</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>

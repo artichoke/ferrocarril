@@ -208,57 +208,16 @@
 <span id="208">208</span>
 <span id="209">209</span>
 <span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">warn</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">c_void</span>, <span class="ident">CString</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CString</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Mrb</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MrbError</span>;
-
-<span class="kw">struct</span> <span class="ident">ProtectArgs</span> {
-    <span class="ident">e_class</span>: <span class="ident">String</span>,
-    <span class="ident">message</span>: <span class="ident">String</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">ProtectArgs</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">e_class</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">e_class</span>: <span class="ident">e_class</span>.<span class="ident">to_owned</span>(),
-            <span class="ident">message</span>: <span class="ident">message</span>.<span class="ident">to_owned</span>(),
-        }
-    }
-}
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">patch</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="ident">interp</span>
@@ -315,75 +274,64 @@
     <span class="doccomment">/// **Warning**: This function calls [`sys::mrb_sys_raise`] which modifies</span>
     <span class="doccomment">/// the stack with `longjmp`. mruby expects raise to be called at some stack</span>
     <span class="doccomment">/// frame below an eval. If this is not the case, mruby will segfault.</span>
-    <span class="kw">fn</span> <span class="ident">raise</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">run_protected</span>(
-            <span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>,
-            <span class="ident">data</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
-        ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-            <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_cptr_ptr</span>(<span class="ident">data</span>);
-            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="ident">ptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ProtectArgs</span>);
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">raise</span>(<span class="ident">interp</span>: <span class="ident">Mrb</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
+        <span class="self">Self</span>::<span class="ident">raisef</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>(<span class="ident">interp</span>, <span class="ident">message</span>, <span class="macro">vec</span><span class="macro">!</span>[])
+    }
 
-            <span class="kw">let</span> <span class="ident">e_class_cstring</span> <span class="op">=</span> <span class="ident">CString</span>::<span class="ident">new</span>(<span class="ident">args</span>.<span class="ident">e_class</span>.<span class="ident">as_str</span>());
-            <span class="kw">let</span> <span class="ident">e_class</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">e_class</span>) <span class="op">=</span> <span class="ident">e_class_cstring</span> {
-                <span class="ident">e_class</span>
-            } <span class="kw">else</span> {
-                <span class="macro">warn</span><span class="macro">!</span>(
-                    <span class="string">&quot;unable to raise {} with message {}&quot;</span>,
-                    <span class="ident">args</span>.<span class="ident">e_class</span>, <span class="ident">args</span>.<span class="ident">message</span>
-                );
-                <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
-            };
-            <span class="kw">let</span> <span class="ident">message_cstring</span> <span class="op">=</span> <span class="ident">CString</span>::<span class="ident">new</span>(<span class="ident">args</span>.<span class="ident">message</span>.<span class="ident">as_str</span>());
-            <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">message_cstring</span> {
-                <span class="ident">message</span>
-            } <span class="kw">else</span> {
-                <span class="macro">warn</span><span class="macro">!</span>(
-                    <span class="string">&quot;unable to raise {} with message {}&quot;</span>,
-                    <span class="ident">args</span>.<span class="ident">e_class</span>, <span class="ident">args</span>.<span class="ident">message</span>
-                );
-                <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
-            };
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_raise</span>(<span class="ident">mrb</span>, <span class="ident">e_class</span>.<span class="ident">as_ptr</span>(), <span class="ident">message</span>.<span class="ident">as_ptr</span>());
-            <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;raised {} with message {}&quot;</span>, <span class="ident">args</span>.<span class="ident">e_class</span>, <span class="ident">args</span>.<span class="ident">message</span>);
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        }
-        <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">run_ensure</span>(
-            <span class="ident">_mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>,
-            <span class="ident">_data</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
-        ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        }
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">raisef</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>(<span class="ident">interp</span>: <span class="ident">Mrb</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">format</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span>
+    <span class="kw">where</span>
+        <span class="ident">Value</span>: <span class="ident">FromMrb</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    {
         <span class="comment">// Ensure the borrow is out of scope by the time we eval code since</span>
         <span class="comment">// Rust-backed files and types may need to mutably borrow the `Mrb` to</span>
         <span class="comment">// get access to the underlying `MrbState`.</span>
-        <span class="kw">let</span> (<span class="ident">mrb</span>, <span class="ident">_ctx</span>) <span class="op">=</span> {
-            <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>();
-            (<span class="ident">borrow</span>.<span class="ident">mrb</span>, <span class="ident">borrow</span>.<span class="ident">ctx</span>)
-        };
+        <span class="kw">let</span> <span class="ident">mrb</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">mrb</span>;
 
         <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">spec</span>) <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>().<span class="ident">class_spec</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() {
             <span class="ident">spec</span>
         } <span class="kw">else</span> {
-            <span class="kw">return</span> <span class="kw">unsafe</span> { <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>() };
+            <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
         };
-        <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">message</span>(<span class="ident">message</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">ProtectArgs</span>::<span class="ident">new</span>(<span class="ident">spec</span>.<span class="ident">borrow</span>().<span class="ident">name</span>(), <span class="ident">message</span>.<span class="ident">as_str</span>()));
-        <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_cptr_value</span>(<span class="ident">mrb</span>, <span class="ident">Rc</span>::<span class="ident">into_raw</span>(<span class="ident">args</span>) <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>);
-            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_ensure</span>(
-                <span class="ident">mrb</span>,
-                <span class="prelude-val">Some</span>(<span class="ident">run_protected</span>),
-                <span class="ident">data</span>,
-                <span class="prelude-val">Some</span>(<span class="ident">run_ensure</span>),
-                <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>(),
-            );
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_raise_current_exception</span>(<span class="ident">mrb</span>);
-            <span class="ident">value</span>
-        }
-    }
+        <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">borrow</span>();
+        <span class="kw">let</span> <span class="ident">eclass</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">rclass</span>) <span class="op">=</span> <span class="ident">borrow</span>.<span class="ident">rclass</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>) {
+            <span class="ident">rclass</span>
+        } <span class="kw">else</span> {
+            <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;unable to raise {}&quot;</span>, <span class="ident">borrow</span>.<span class="ident">name</span>());
+            <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
+        };
+        <span class="comment">// message is a &amp;&#39;static str so it should never leak</span>
+        <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">CString</span>::<span class="ident">new</span>(<span class="ident">message</span>);
+        <span class="kw">let</span> <span class="ident">message_cstring</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">message</span> {
+            <span class="ident">message</span>
+        } <span class="kw">else</span> {
+            <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;unable to raise {}&quot;</span>, <span class="ident">borrow</span>.<span class="ident">name</span>());
+            <span class="kw">return</span> <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>();
+        };
+        <span class="kw">let</span> <span class="ident">message_ptr</span> <span class="op">=</span> <span class="ident">message_cstring</span>.<span class="ident">as_ptr</span>();
 
-    <span class="kw">fn</span> <span class="ident">message</span>(<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="ident">message</span>.<span class="ident">to_owned</span>()
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">formatargs</span> <span class="op">=</span> <span class="ident">format</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">item</span>).<span class="ident">inner</span>())
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
+        <span class="comment">// `mrb_sys_raise` will call longjmp which will unwind the stack.</span>
+        <span class="comment">// Anything we haven&#39;t cleaned up at this point will leak, so drop</span>
+        <span class="comment">// everything.</span>
+        <span class="ident">drop</span>(<span class="ident">borrow</span>);
+        <span class="ident">drop</span>(<span class="ident">spec</span>);
+        <span class="ident">drop</span>(<span class="ident">interp</span>);
+        <span class="kw">match</span> <span class="ident">formatargs</span>.<span class="ident">len</span>() {
+            <span class="number">0</span> <span class="op">=&gt;</span> {
+                <span class="ident">drop</span>(<span class="ident">formatargs</span>);
+                <span class="ident">sys</span>::<span class="ident">mrb_raise</span>(<span class="ident">mrb</span>, <span class="ident">eclass</span>, <span class="ident">message_ptr</span>)
+            }
+            <span class="number">1</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">arg1</span> <span class="op">=</span> <span class="ident">formatargs</span>.<span class="ident">remove</span>(<span class="number">0</span>);
+                <span class="ident">drop</span>(<span class="ident">formatargs</span>);
+                <span class="ident">sys</span>::<span class="ident">mrb_raisef</span>(<span class="ident">mrb</span>, <span class="ident">eclass</span>, <span class="ident">message_ptr</span>, <span class="ident">arg1</span>)
+            }
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;unsupported raisef format arg count. See mruby/src/extn/core/error.rs.&quot;</span>),
+        }
+        <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;mrb_raise will unwind the stack with longjmp&quot;</span>);
     }
 }
 
@@ -399,11 +347,7 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LoadError</span>;
 
-<span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">LoadError</span> {
-    <span class="kw">fn</span> <span class="ident">message</span>(<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot load such file -- {}&quot;</span>, <span class="ident">message</span>)
-    }
-}
+<span class="kw">impl</span> <span class="ident">RubyException</span> <span class="kw">for</span> <span class="ident">LoadError</span> {}
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">module_name_repetitions</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ArgumentError</span>;
@@ -446,8 +390,8 @@
 
     <span class="kw">impl</span> <span class="ident">Run</span> {
         <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-            <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-            <span class="ident">RuntimeError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="string">&quot;something went wrong&quot;</span>)
+            <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+            <span class="ident">RuntimeError</span>::<span class="ident">raise</span>(<span class="ident">interp</span>, <span class="string">&quot;something went wrong&quot;</span>)
         }
     }
 

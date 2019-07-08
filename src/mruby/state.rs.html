@@ -311,7 +311,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// extern &quot;C&quot; fn value(mrb: *mut sys::mrb_state, _slf: sys::mrb_value) -&gt; sys::mrb_value</span>
     <span class="doccomment">/// {</span>
-    <span class="doccomment">///     let interp = unsafe { interpreter_or_raise!(mrb) };</span>
+    <span class="doccomment">///     let interp = unsafe { unwrap_interpreter!(mrb) };</span>
     <span class="doccomment">///     Value::from_mrb(&amp;interp, 29).inner()</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">///</span>
@@ -380,7 +380,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// extern &quot;C&quot; fn value(mrb: *mut sys::mrb_state, _slf: sys::mrb_value) -&gt; sys::mrb_value</span>
     <span class="doccomment">/// {</span>
-    <span class="doccomment">///     let interp = unsafe { interpreter_or_raise!(mrb) };</span>
+    <span class="doccomment">///     let interp = unsafe { unwrap_interpreter!(mrb) };</span>
     <span class="doccomment">///     Value::from_mrb(&amp;interp, 29).inner()</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">///</span>

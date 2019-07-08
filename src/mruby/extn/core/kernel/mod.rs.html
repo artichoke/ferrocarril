@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `mruby/src/extn/core/kernel.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kernel.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../mruby/index.html'><div class='logo-container'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `mruby/src/extn/core/kernel/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../../light.css" id="themeStyle"><script src="../../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../../mruby/index.html'><div class='logo-container'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../../settings.html"><img src="../../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -389,87 +389,22 @@
 <span id="389">389</span>
 <span id="390">390</span>
 <span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
-<span id="408">408</span>
-<span id="409">409</span>
-<span id="410">410</span>
-<span id="411">411</span>
-<span id="412">412</span>
-<span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
-<span id="419">419</span>
-<span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">trace</span>;
-<span class="kw">use</span> <span class="ident">path_abs</span>::<span class="ident">PathAbs</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Write</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>::<span class="ident">FromMrb</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">def</span>::{<span class="ident">ClassLike</span>, <span class="ident">Define</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::{<span class="ident">EvalContext</span>, <span class="ident">MrbEval</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">LoadError</span>, <span class="ident">RubyException</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fs</span>::<span class="ident">RUBY_LOAD_PATH</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extn</span>::<span class="ident">core</span>::<span class="ident">error</span>::{<span class="ident">ArgumentError</span>, <span class="ident">LoadError</span>, <span class="ident">RubyException</span>, <span class="ident">RuntimeError</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sys</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::<span class="ident">types</span>::<span class="ident">Ruby</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">value</span>::{<span class="ident">Value</span>, <span class="ident">ValueLike</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Mrb</span>, <span class="ident">MrbError</span>};
 
 <span class="kw">mod</span> <span class="ident">args</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">require</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">patch</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MrbError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">warning</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">def_module</span>::<span class="op">&lt;</span><span class="ident">Warning</span><span class="op">&gt;</span>(<span class="string">&quot;Warning&quot;</span>, <span class="prelude-val">None</span>);
@@ -508,16 +443,14 @@
 
 <span class="kw">impl</span> <span class="ident">Warning</span> {
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">warn</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
         <span class="kw">let</span> <span class="ident">stderr</span> <span class="op">=</span> <span class="ident">sys</span>::<span class="ident">mrb_gv_get</span>(<span class="ident">mrb</span>, <span class="ident">interp</span>.<span class="ident">borrow_mut</span>().<span class="ident">sym_intern</span>(<span class="string">&quot;$stderr&quot;</span>));
         <span class="kw">if</span> <span class="op">!</span><span class="ident">sys</span>::<span class="ident">mrb_sys_value_is_nil</span>(<span class="ident">stderr</span>) {
-            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-                <span class="ident">interp</span>,
-                <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-                <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-            );
+            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>);
             <span class="kw">let</span> <span class="ident">stderr</span> <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">stderr</span>);
-            <span class="macro">unwrap_value_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">stderr</span>.<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;print&quot;</span>, <span class="ident">args</span>.<span class="ident">rest</span>));
+            <span class="comment">// TODO: introduce a `unchecked_funcall` to propagate errors.</span>
+            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">stderr</span>
+                .<span class="ident">funcall</span>::<span class="op">&lt;</span><span class="ident">Value</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="string">&quot;print&quot;</span>, <span class="ident">args</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">args</span>.<span class="ident">rest</span>).<span class="ident">unwrap_or_default</span>());
         }
         <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
     }
@@ -526,129 +459,76 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Kernel</span>;
 
 <span class="kw">impl</span> <span class="ident">Kernel</span> {
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">require_impl</span>(<span class="ident">interp</span>: <span class="kw-2">&amp;</span><span class="ident">Mrb</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">base</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="comment">// Track whether any iterations of the loop successfully required some</span>
-        <span class="comment">// Ruby sources.</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">success</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="ident">filename</span>);
-        <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">is_relative</span>() {
-            <span class="ident">path</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="ident">base</span>);
-        }
-        <span class="kw">let</span> <span class="ident">files</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">path</span>.<span class="ident">join</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}.rb&quot;</span>, <span class="ident">filename</span>)), <span class="ident">path</span>.<span class="ident">join</span>(<span class="ident">filename</span>)];
-        <span class="kw">for</span> <span class="ident">path</span> <span class="kw">in</span> <span class="ident">files</span> {
-            <span class="comment">// canonicalize path (remove &#39;.&#39; and &#39;..&#39; components).</span>
-            <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">PathAbs</span>::<span class="ident">new</span>(<span class="ident">path</span>) {
-                <span class="prelude-val">Ok</span>(<span class="ident">path</span>) <span class="op">=&gt;</span> <span class="ident">path</span>,
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">continue</span>,
-            };
-            <span class="kw">let</span> <span class="ident">is_file</span> <span class="op">=</span> {
-                <span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>();
-                <span class="ident">api</span>.<span class="ident">vfs</span>.<span class="ident">is_file</span>(<span class="ident">path</span>.<span class="ident">as_path</span>())
-            };
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">is_file</span> {
-                <span class="comment">// If no paths are files in the VFS, then the require does</span>
-                <span class="comment">// nothing.</span>
-                <span class="kw">continue</span>;
-            }
-            <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> {
-                <span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>();
-                <span class="ident">api</span>.<span class="ident">vfs</span>.<span class="ident">metadata</span>(<span class="ident">path</span>.<span class="ident">as_path</span>()).<span class="ident">unwrap_or_default</span>()
-            };
-            <span class="comment">// If a file is already required, short circuit.</span>
-            <span class="kw">if</span> <span class="ident">metadata</span>.<span class="ident">is_already_required</span>() {
-                <span class="kw">return</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>();
-            }
-            <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">filename</span>) <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_path</span>().<span class="ident">to_str</span>() {
-                <span class="ident">EvalContext</span>::<span class="ident">new</span>(<span class="ident">filename</span>)
-            } <span class="kw">else</span> {
-                <span class="ident">EvalContext</span>::<span class="ident">new</span>(<span class="string">&quot;(require)&quot;</span>)
-            };
-            <span class="comment">// Require Rust MrbFile first because an MrbFile may define classes</span>
-            <span class="comment">// and module with `MrbLoadSources` and Ruby files can require</span>
-            <span class="comment">// arbitrary other files, including some child sources that may</span>
-            <span class="comment">// depend on these module definitions. This behavior is enforced</span>
-            <span class="comment">// with a test in crate mruby-gems. See mruby-gems/src/lib.rs.</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">require</span>) <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">require</span> {
-                <span class="comment">// dynamic, Rust-backed `MrbFile` require</span>
-                <span class="ident">interp</span>.<span class="ident">push_context</span>(<span class="ident">context</span>.<span class="ident">clone</span>());
-                <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(<span class="ident">interp</span>, <span class="ident">require</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="ident">interp</span>)), <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>());
-                <span class="ident">interp</span>.<span class="ident">pop_context</span>();
-            }
-            <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> {
-                <span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>();
-                <span class="ident">api</span>.<span class="ident">vfs</span>.<span class="ident">read_file</span>(<span class="ident">path</span>.<span class="ident">as_path</span>())
-            };
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">contents</span>) <span class="op">=</span> <span class="ident">contents</span> {
-                <span class="ident">interp</span>.<span class="ident">unchecked_eval_with_context</span>(<span class="ident">contents</span>, <span class="ident">context</span>);
-            } <span class="kw">else</span> {
-                <span class="comment">// this branch should be unreachable because the `Mrb`</span>
-                <span class="comment">// interpreter is not `Send` so it can only be owned and</span>
-                <span class="comment">// accessed by one thread.</span>
-                <span class="kw">return</span> <span class="ident">LoadError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">filename</span>);
-            }
-            <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">metadata</span>.<span class="ident">mark_required</span>();
-            <span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">interp</span>.<span class="ident">borrow</span>();
-            <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-                <span class="ident">interp</span>,
-                <span class="ident">api</span>.<span class="ident">vfs</span>.<span class="ident">set_metadata</span>(<span class="ident">path</span>.<span class="ident">as_path</span>(), <span class="ident">metadata</span>),
-                <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-            );
-            <span class="ident">success</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            <span class="macro">trace</span><span class="macro">!</span>(
-                <span class="string">r#&quot;Successful require of &quot;{}&quot; at {:?} on {:?}&quot;#</span>,
-                <span class="ident">filename</span>,
-                <span class="ident">path</span>,
-                <span class="ident">api</span>
-            );
-        }
-        <span class="kw">if</span> <span class="ident">success</span> {
-            <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="ident">interp</span>, <span class="ident">success</span>).<span class="ident">inner</span>()
-        } <span class="kw">else</span> {
-            <span class="ident">LoadError</span>::<span class="ident">raise</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">filename</span>)
-        }
-    }
-
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">require</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">Require</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        );
-        <span class="self">Self</span>::<span class="ident">require_impl</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>.<span class="ident">filename</span>.<span class="ident">as_str</span>(), <span class="ident">RUBY_LOAD_PATH</span>)
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">require</span>::<span class="ident">Args</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">require</span>::<span class="ident">method</span>::<span class="ident">require</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>));
+        <span class="kw">match</span> <span class="ident">result</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=</span> <span class="ident">req</span>.<span class="ident">rust</span> {
+                    <span class="ident">req</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>))
+                } <span class="kw">else</span> {
+                    <span class="prelude-val">Ok</span>(())
+                };
+                <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_ok</span>() {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">contents</span>) <span class="op">=</span> <span class="ident">req</span>.<span class="ident">ruby</span> {
+                        <span class="ident">interp</span>.<span class="ident">unchecked_eval_with_context</span>(<span class="ident">contents</span>, <span class="ident">EvalContext</span>::<span class="ident">new</span>(<span class="ident">req</span>.<span class="ident">file</span>));
+                    }
+                    <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">true</span>).<span class="ident">inner</span>()
+                } <span class="kw">else</span> {
+                    <span class="ident">LoadError</span>::<span class="ident">raisef</span>(<span class="ident">interp</span>, <span class="string">&quot;cannot load such file -- %S&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">req</span>.<span class="ident">file</span>])
+                }
+            }
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">AlreadyRequired</span>) <span class="op">=&gt;</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>(),
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">CannotLoad</span>(<span class="ident">file</span>)) <span class="op">=&gt;</span> {
+                <span class="ident">LoadError</span>::<span class="ident">raisef</span>(<span class="ident">interp</span>, <span class="string">&quot;cannot load such file -- %S&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">file</span>])
+            }
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">Fatal</span>) <span class="op">=&gt;</span> <span class="ident">RuntimeError</span>::<span class="ident">raise</span>(<span class="ident">interp</span>, <span class="string">&quot;fatal Kernel#require error&quot;</span>),
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">NoImplicitConversionToString</span>) <span class="op">=&gt;</span> {
+                <span class="ident">ArgumentError</span>::<span class="ident">raise</span>(<span class="ident">interp</span>, <span class="string">&quot;No implicit conversion to String&quot;</span>)
+            }
+        }
     }
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">require_relative</span>(
         <span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>,
         <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>,
     ) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">Require</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        );
-        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="ident">interp</span>
-            .<span class="ident">peek_context</span>()
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">context</span><span class="op">|</span> {
-                <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="ident">context</span>.<span class="ident">filename</span>)
-                    .<span class="ident">parent</span>()
-                    .<span class="ident">and_then</span>(<span class="ident">Path</span>::<span class="ident">to_str</span>)
-                    .<span class="ident">map</span>(<span class="ident">str</span>::<span class="ident">to_owned</span>)
-            })
-            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">RUBY_LOAD_PATH</span>.<span class="ident">to_owned</span>());
-        <span class="self">Self</span>::<span class="ident">require_impl</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>.<span class="ident">filename</span>.<span class="ident">as_str</span>(), <span class="ident">base</span>.<span class="ident">as_str</span>())
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">require</span>::<span class="ident">Args</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>);
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">require</span>::<span class="ident">method</span>::<span class="ident">require_relative</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="ident">args</span>));
+        <span class="kw">match</span> <span class="ident">result</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=</span> <span class="ident">req</span>.<span class="ident">rust</span> {
+                    <span class="ident">req</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>))
+                } <span class="kw">else</span> {
+                    <span class="prelude-val">Ok</span>(())
+                };
+                <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_ok</span>() {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">contents</span>) <span class="op">=</span> <span class="ident">req</span>.<span class="ident">ruby</span> {
+                        <span class="ident">interp</span>.<span class="ident">unchecked_eval_with_context</span>(<span class="ident">contents</span>, <span class="ident">EvalContext</span>::<span class="ident">new</span>(<span class="ident">req</span>.<span class="ident">file</span>));
+                    }
+                    <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">true</span>).<span class="ident">inner</span>()
+                } <span class="kw">else</span> {
+                    <span class="ident">LoadError</span>::<span class="ident">raisef</span>(<span class="ident">interp</span>, <span class="string">&quot;cannot load such file -- %S&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">req</span>.<span class="ident">file</span>])
+                }
+            }
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">AlreadyRequired</span>) <span class="op">=&gt;</span> <span class="ident">Value</span>::<span class="ident">from_mrb</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>, <span class="bool-val">false</span>).<span class="ident">inner</span>(),
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">CannotLoad</span>(<span class="ident">file</span>)) <span class="op">=&gt;</span> {
+                <span class="ident">LoadError</span>::<span class="ident">raisef</span>(<span class="ident">interp</span>, <span class="string">&quot;cannot load such file -- %S&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">file</span>])
+            }
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">Fatal</span>) <span class="op">=&gt;</span> <span class="ident">RuntimeError</span>::<span class="ident">raise</span>(<span class="ident">interp</span>, <span class="string">&quot;fatal Kernel#require error&quot;</span>),
+            <span class="prelude-val">Err</span>(<span class="ident">require</span>::<span class="ident">Error</span>::<span class="ident">NoImplicitConversionToString</span>) <span class="op">=&gt;</span> {
+                <span class="ident">ArgumentError</span>::<span class="ident">raise</span>(<span class="ident">interp</span>, <span class="string">&quot;No implicit conversion to String&quot;</span>)
+            }
+        }
     }
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        );
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>);
 
-        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">rest</span> {
+        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">args</span>.<span class="ident">rest</span>).<span class="ident">unwrap_or_default</span>() {
             <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">value</span>.<span class="ident">to_s</span>());
         }
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">stdout</span>().<span class="ident">flush</span>();
@@ -668,31 +548,25 @@
             }
         }
 
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        );
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">rest</span> <span class="op">=</span> <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>)
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">args</span>.<span class="ident">rest</span>)
+            .<span class="ident">unwrap_or_default</span>();
 
-        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">rest</span>.<span class="ident">is_empty</span>() {
+        <span class="kw">if</span> <span class="ident">rest</span>.<span class="ident">is_empty</span>() {
             <span class="macro">println</span><span class="macro">!</span>();
         }
-        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">rest</span> {
+        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">rest</span> {
             <span class="ident">do_puts</span>(<span class="ident">value</span>);
         }
         <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
     }
 
     <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">warn</span>(<span class="ident">mrb</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">sys</span>::<span class="ident">mrb_state</span>, <span class="ident">_slf</span>: <span class="ident">sys</span>::<span class="ident">mrb_value</span>) <span class="op">-&gt;</span> <span class="ident">sys</span>::<span class="ident">mrb_value</span> {
-        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">interpreter_or_raise</span><span class="macro">!</span>(<span class="ident">mrb</span>);
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">unwrap_or_raise</span><span class="macro">!</span>(
-            <span class="ident">interp</span>,
-            <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>),
-            <span class="ident">sys</span>::<span class="ident">mrb_sys_nil_value</span>()
-        );
+        <span class="kw">let</span> <span class="ident">interp</span> <span class="op">=</span> <span class="macro">unwrap_interpreter</span><span class="macro">!</span>(<span class="ident">mrb</span>);
+        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">args</span>::<span class="ident">Rest</span>::<span class="ident">extract</span>(<span class="kw-2">&amp;</span><span class="ident">interp</span>);
 
-        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">rest</span> {
+        <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">args</span><span class="op">|</span> <span class="ident">args</span>.<span class="ident">rest</span>).<span class="ident">unwrap_or_default</span>() {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_s</span>();
             <span class="kw">if</span> <span class="op">!</span><span class="ident">string</span>.<span class="ident">ends_with</span>(<span class="string">&#39;\n&#39;</span>) {
                 <span class="ident">string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">string</span>);
@@ -908,4 +782,4 @@ end
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../";window.currentCrate = "mruby";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../../";window.currentCrate = "mruby";</script><script src="../../../../../aliases.js"></script><script src="../../../../../main.js"></script><script src="../../../../../source-script.js"></script><script src="../../../../../source-files.js"></script><script defer src="../../../../../search-index.js"></script></body></html>
