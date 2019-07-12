@@ -75,33 +75,51 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Unsafe trait for implementing reachability checks for cycle detection and</span>
-<span class="doccomment">//! reaping used by [`CactusRef`](crate::CactusRef).</span>
+<span class="doccomment">//! reaping used by [`Rc`](crate::Rc).</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This module provides automatic implementations for `&amp;T`, `&amp;mut T`,</span>
 <span class="doccomment">//! `*const T`, `*mut T`, and `Box&lt;T&gt;` for any `T` that implements</span>
 <span class="doccomment">//! [`Reachable`].</span>
 
-<span class="doccomment">/// Reachability tests for objects wrapped by [`CactusRef`](crate::CactusRef).</span>
-<span class="doccomment">/// This trait is unsafe.</span>
+<span class="doccomment">/// Reachability tests for objects wrapped by [`Rc`](crate::Rc). This trait is</span>
+<span class="doccomment">/// unsafe.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// **Warning**: If this trait is implemented incorrectly,</span>
-<span class="doccomment">/// [`CactusRef`](crate::CactusRef) has undefined behavior. Memory may leak or</span>
-<span class="doccomment">/// be double freed.</span>
+<span class="doccomment">/// **Warning**: If this trait is implemented incorrectly, [`Rc`](crate::Rc) has</span>
+<span class="doccomment">/// undefined behavior. Memory may leak or be double freed.</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">trait</span> <span class="ident">Reachable</span> {
     <span class="doccomment">/// An identifier for this object that is unique within an arena.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// An arena consists of any objects that _may_ reference each other.</span>
     <span class="kw">fn</span> <span class="ident">object_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span>;
 
-    <span class="doccomment">/// Reachability test used by [`CactusRef`](crate::CactusRef) to perform</span>
-    <span class="doccomment">/// breadth first search for cycle detection in [`Drop`] implementation.</span>
+    <span class="doccomment">/// Reachability test used by [`Rc`](crate::Rc) to perform breadth first</span>
+    <span class="doccomment">/// search for cycle detection in [`Drop`] implementation.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Warning**: If this function is implemented incorrectly,</span>
-    <span class="doccomment">/// [`CactusRef`](crate::CactusRef) has undefined behavior. Memory may leak</span>
+    <span class="doccomment">/// [`Rc`](crate::Rc) has undefined behavior. Memory may leak</span>
     <span class="doccomment">/// or be double freed.</span>
     <span class="kw">fn</span> <span class="ident">can_reach</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">object_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+}
+
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Reachable</span> <span class="kw">for</span> () {
+    <span class="kw">fn</span> <span class="ident">object_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        <span class="number">0</span>
+    }
+
+    <span class="kw">fn</span> <span class="ident">can_reach</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_object_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="bool-val">false</span>
+    }
 }
 
 <span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Reachable</span><span class="op">&gt;</span> <span class="ident">Reachable</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
