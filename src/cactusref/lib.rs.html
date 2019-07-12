@@ -33,12 +33,16 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(
     <span class="ident">allocator_api</span>,
     <span class="ident">alloc_layout_extra</span>,
     <span class="ident">box_into_raw_non_null</span>,
     <span class="ident">core_intrinsics</span>,
+    <span class="ident">doc_spotlight</span>,
     <span class="ident">dropck_eyepatch</span>,
     <span class="ident">optin_builtin_traits</span>,
     <span class="ident">ptr_internals</span>
@@ -52,6 +56,7 @@
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
 
+<span class="kw">mod</span> <span class="ident">adoptable</span>;
 <span class="kw">mod</span> <span class="ident">link</span>;
 <span class="kw">mod</span> <span class="ident">ptr</span>;
 <span class="kw">mod</span> <span class="ident">rc</span>;
@@ -60,6 +65,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span>;
 <span class="kw">mod</span> <span class="ident">weak</span>;
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">adoptable</span>::<span class="ident">Adoptable</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">reachable</span>::<span class="ident">Reachable</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">weak</span>::<span class="ident">Weak</span>;
