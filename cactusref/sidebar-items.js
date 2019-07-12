@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["CactusRef",""],["CactusWeakRef",""]],"trait":[["Reachable",""]],"type":[["ObjectId",""]]});
+initSidebarItems({"struct":[["CactusRef",""],["CactusWeakRef",""]],"trait":[["Reachable","Reachability tests for objects wrapped by `CactusRef`. This trait is unsafe."]]});
