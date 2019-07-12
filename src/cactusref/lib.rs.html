@@ -378,7 +378,6 @@
 <span id="378">378</span>
 <span id="379">379</span>
 <span id="380">380</span>
-<span id="381">381</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">allocator_api</span>, <span class="ident">box_into_raw_non_null</span>, <span class="ident">core_intrinsics</span>, <span class="ident">dropck_eyepatch</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
@@ -555,8 +554,7 @@
                 }
             }
             <span class="comment">// Iterate over the items in the clique. For each pair of nodes,</span>
-            <span class="comment">// determine if the nodes can mutually reach each other. If two</span>
-            <span class="comment">// nodes can mutually reach each other, they participate in a cycle.</span>
+            <span class="comment">// find nodes that can reach each other. These nodes form a cycle.</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">new</span>();
             <span class="kw">for</span> (<span class="ident">left</span>, <span class="ident">right</span>) <span class="kw">in</span> <span class="ident">clique</span>
                 .<span class="ident">iter</span>()
