@@ -385,37 +385,6 @@
 <span id="385">385</span>
 <span id="386">386</span>
 <span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
-<span id="408">408</span>
-<span id="409">409</span>
-<span id="410">410</span>
-<span id="411">411</span>
-<span id="412">412</span>
-<span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">allocator_api</span>, <span class="ident">box_into_raw_non_null</span>, <span class="ident">core_intrinsics</span>, <span class="ident">dropck_eyepatch</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
@@ -427,12 +396,17 @@
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">ptr</span>::{<span class="self">self</span>, <span class="ident">NonNull</span>};
+<span class="kw">use</span> <span class="ident">itertools</span>::<span class="ident">Itertools</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">alloc</span>::{<span class="ident">Alloc</span>, <span class="ident">Global</span>, <span class="ident">Layout</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::{<span class="ident">Cell</span>, <span class="ident">RefCell</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">intrinsics</span>::<span class="ident">abort</span>;
+
+<span class="kw">mod</span> <span class="ident">link</span>;
+
+<span class="kw">use</span> <span class="ident">link</span>::<span class="ident">CactusLinkRef</span>;
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ObjectId</span> <span class="op">=</span> <span class="ident">usize</span>;
 
@@ -442,7 +416,7 @@
     <span class="kw">fn</span> <span class="ident">can_reach</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">object_id</span>: <span class="ident">ObjectId</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
 }
 
-<span class="kw">trait</span> <span class="ident">CactusBoxPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">trait</span> <span class="ident">CactusBoxPtr</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Reachable</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">inner</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -499,31 +473,25 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">CactusBoxPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Reachable</span><span class="op">&gt;</span> <span class="ident">CactusBoxPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">inner</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span> {
         <span class="self">self</span>
     }
 }
 
-<span class="kw">struct</span> <span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">struct</span> <span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Reachable</span><span class="op">&gt;</span> {
     <span class="ident">strong</span>: <span class="ident">Cell</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="ident">weak</span>: <span class="ident">Cell</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="ident">value</span>: <span class="ident">T</span>,
-    <span class="ident">links</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ObjectId</span>, <span class="ident">NonNull</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">links</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">CactusLinkRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CactusRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Reachable</span>,
-{
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CactusRef</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Reachable</span><span class="op">&gt;</span> {
     <span class="ident">ptr</span>: <span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
     <span class="ident">phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">CactusRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Reachable</span>,
-{
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Reachable</span><span class="op">&gt;</span> <span class="ident">CactusRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="comment">// there is an implicit weak pointer owned by all the strong</span>
@@ -534,7 +502,7 @@
                 <span class="ident">strong</span>: <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="number">1</span>),
                 <span class="ident">weak</span>: <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="number">1</span>),
                 <span class="ident">value</span>,
-                <span class="ident">links</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">HashMap</span>::<span class="ident">default</span>()),
+                <span class="ident">links</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">HashSet</span>::<span class="ident">default</span>()),
             })),
             <span class="ident">phantom</span>: <span class="ident">PhantomData</span>,
         }
@@ -543,12 +511,10 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">adopt</span>(<span class="ident">this</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw">let</span> <span class="ident">other_id</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">inner</span>().<span class="ident">value</span>.<span class="ident">object_id</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
-        <span class="kw">if</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">value</span>.<span class="ident">object_id</span>() <span class="op">!=</span> <span class="ident">other_id</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">links</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">other_id</span>) {
+        <span class="kw">if</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">value</span>.<span class="ident">object_id</span>() <span class="op">!=</span> <span class="ident">other_id</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">links</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">CactusLinkRef</span>(<span class="ident">other</span>.<span class="ident">ptr</span>))
+        {
             <span class="ident">other</span>.<span class="ident">inc_strong</span>();
-            <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="kw">unsafe</span> {
-                <span class="ident">NonNull</span>::<span class="ident">new_unchecked</span>(<span class="ident">other</span>.<span class="ident">inner</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
-            };
-            <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">other_id</span>, <span class="ident">ptr</span>);
+            <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">CactusLinkRef</span>(<span class="ident">other</span>.<span class="ident">ptr</span>));
         }
     }
 
@@ -565,9 +531,9 @@
         <span class="kw">unsafe</span> {
             <span class="self">self</span>.<span class="ident">dec_strong</span>();
 
-            <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;drop on {}&quot;</span>, <span class="self">self</span>.<span class="ident">inner</span>().<span class="ident">value</span>.<span class="ident">object_id</span>());
-            <span class="kw">let</span> <span class="ident">no_links</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow</span>().<span class="ident">is_empty</span>();
-            <span class="kw">if</span> <span class="ident">no_links</span> {
+            <span class="comment">// If links is empty, the object is either not in a cycle or part of</span>
+            <span class="comment">// a cycle that has been link busted for deallocation.</span>
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow</span>().<span class="ident">is_empty</span>() {
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">strong</span>() <span class="op">==</span> <span class="number">0</span> {
                     <span class="comment">// destroy the contained object</span>
                     <span class="ident">ptr</span>::<span class="ident">drop_in_place</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">as_mut</span>());
@@ -580,104 +546,76 @@
                         <span class="ident">Global</span>.<span class="ident">dealloc</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">cast</span>(), <span class="ident">Layout</span>::<span class="ident">for_value</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">as_ref</span>()));
                     }
                 }
-            } <span class="kw">else</span> {
-                <span class="comment">// Trace the links to determine a clique that includes self.</span>
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle_owned_refs</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="self">self</span>.<span class="ident">ptr</span>];
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">strong_counts_in_cycle</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
-                <span class="kw">loop</span> {
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_refs</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-                    <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">cycle_owned_refs</span> {
-                        <span class="kw">let</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">links</span>.<span class="ident">borrow</span>();
-                        <span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">obj</span>) <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
-                            <span class="kw">if</span> <span class="op">!</span><span class="ident">cycle_owned_refs</span>
-                                .<span class="ident">iter</span>()
-                                .<span class="ident">any</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>() <span class="op">==</span> <span class="kw-2">*</span><span class="ident">id</span>)
-                            {
-                                <span class="ident">new_refs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">obj</span>);
-                            }
-                        }
-                    }
-                    <span class="kw">if</span> <span class="ident">new_refs</span>.<span class="ident">is_empty</span>() {
-                        <span class="kw">break</span>;
-                    }
-                    <span class="ident">cycle_owned_refs</span>.<span class="ident">extend</span>(<span class="ident">new_refs</span>);
-                }
-                <span class="comment">// Iterate over the items in the clique and for each pair of nodes,</span>
-                <span class="comment">// find nodes that can reach each other. These nodes form a cycle.</span>
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle_participants</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-                <span class="kw">for</span> <span class="ident">left</span> <span class="kw">in</span> <span class="ident">cycle_owned_refs</span>.<span class="ident">clone</span>() {
-                    <span class="kw">for</span> <span class="ident">right</span> <span class="kw">in</span> <span class="ident">cycle_owned_refs</span>.<span class="ident">clone</span>() {
-                        <span class="kw">if</span> <span class="ident">left</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>() <span class="op">==</span> <span class="ident">right</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>() {
-                            <span class="kw">continue</span>;
-                        }
-                        <span class="kw">let</span> <span class="ident">left_reaches_right</span> <span class="op">=</span> <span class="ident">left</span>
-                            .<span class="ident">as_ref</span>()
-                            .<span class="ident">value</span>
-                            .<span class="ident">can_reach</span>(<span class="ident">right</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>());
-                        <span class="kw">let</span> <span class="ident">right_reaches_left</span> <span class="op">=</span> <span class="ident">right</span>
-                            .<span class="ident">as_ref</span>()
-                            .<span class="ident">value</span>
-                            .<span class="ident">can_reach</span>(<span class="ident">left</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>());
-                        <span class="kw">let</span> <span class="ident">right_is_new_cycle_participant</span> <span class="op">=</span> <span class="ident">cycle_participants</span>
-                            .<span class="ident">iter</span>()
-                            .<span class="ident">find</span>(<span class="op">|</span><span class="ident">item</span>: <span class="op">&amp;&amp;</span><span class="ident">NonNull</span><span class="op">&lt;</span><span class="ident">CactusBox</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">|</span> {
-                                <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>() <span class="op">==</span> <span class="ident">right</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>()
-                            })
-                            .<span class="ident">is_none</span>();
-                        <span class="kw">if</span> <span class="ident">left_reaches_right</span>
-                            <span class="op">&amp;&amp;</span> <span class="ident">right_reaches_left</span>
-                            <span class="op">&amp;&amp;</span> <span class="ident">right_is_new_cycle_participant</span>
-                        {
-                            <span class="macro">trace</span><span class="macro">!</span>(
-                                <span class="string">&quot;ObjectId&lt;{}&gt; and ObjectId&lt;{}&gt; are in a cycle&quot;</span>,
-                                <span class="ident">left</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>(),
-                                <span class="ident">right</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>()
-                            );
-                            <span class="ident">cycle_participants</span>.<span class="ident">push</span>(<span class="ident">right</span>);
-                            <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">strong_counts_in_cycle</span>
-                                .<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">right</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>())
-                                .<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">0</span>);
-                            <span class="ident">strong_counts_in_cycle</span>
-                                .<span class="ident">insert</span>(<span class="ident">right</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>(), <span class="ident">count</span> <span class="op">+</span> <span class="number">1</span>);
-                        }
+                <span class="kw">return</span>;
+            }
+            <span class="comment">// Perform a breadth first search over all of the links to determine</span>
+            <span class="comment">// the clique of refs that self can reach.</span>
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">clique</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">new</span>();
+            <span class="ident">clique</span>.<span class="ident">insert</span>(<span class="ident">CactusLinkRef</span>(<span class="self">self</span>.<span class="ident">ptr</span>));
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">strong_counts_in_cycle</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
+            <span class="kw">loop</span> {
+                <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">clique</span>.<span class="ident">len</span>();
+                <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">clique</span>.<span class="ident">clone</span>() {
+                    <span class="kw">let</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">links</span>.<span class="ident">borrow</span>();
+                    <span class="kw">for</span> <span class="ident">link</span> <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
+                        <span class="ident">clique</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">link</span>);
                     }
                 }
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle_ids</span> <span class="op">=</span> <span class="ident">cycle_participants</span>
+                <span class="comment">// BFS has found no new refs in the clique.</span>
+                <span class="kw">if</span> <span class="ident">size</span> <span class="op">==</span> <span class="ident">clique</span>.<span class="ident">len</span>() {
+                    <span class="kw">break</span>;
+                }
+            }
+            <span class="comment">// Iterate over the items in the clique. For each pair of nodes,</span>
+            <span class="comment">// determine if the nodes can mutually reach each other. If two</span>
+            <span class="comment">// nodes can mutually reach each other, they participate in a cycle.</span>
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">new</span>();
+            <span class="kw">for</span> (<span class="ident">left</span>, <span class="ident">right</span>) <span class="kw">in</span> <span class="ident">clique</span>
+                .<span class="ident">iter</span>()
+                .<span class="ident">cartesian_product</span>(<span class="ident">clique</span>.<span class="ident">iter</span>())
+                .<span class="ident">filter</span>(<span class="op">|</span>(<span class="ident">left</span>, <span class="ident">right</span>)<span class="op">|</span> <span class="ident">left</span> <span class="op">!=</span> <span class="ident">right</span>)
+            {
+                <span class="kw">let</span> <span class="ident">left_reaches_right</span> <span class="op">=</span> <span class="ident">left</span>.<span class="ident">value</span>().<span class="ident">can_reach</span>(<span class="ident">right</span>.<span class="ident">value</span>().<span class="ident">object_id</span>());
+                <span class="kw">let</span> <span class="ident">right_reaches_left</span> <span class="op">=</span> <span class="ident">right</span>.<span class="ident">value</span>().<span class="ident">can_reach</span>(<span class="ident">left</span>.<span class="ident">value</span>().<span class="ident">object_id</span>());
+                <span class="kw">let</span> <span class="ident">is_new</span> <span class="op">=</span> <span class="op">!</span><span class="ident">cycle</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident">CactusLinkRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">item</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">right</span>);
+                <span class="kw">if</span> <span class="ident">left_reaches_right</span> <span class="op">&amp;&amp;</span> <span class="ident">right_reaches_left</span> <span class="op">&amp;&amp;</span> <span class="ident">is_new</span> {
+                    <span class="ident">cycle</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">right</span>);
+                    <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">strong_counts_in_cycle</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">right</span>).<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">0</span>);
+                    <span class="ident">strong_counts_in_cycle</span>.<span class="ident">insert</span>(<span class="ident">right</span>, <span class="ident">count</span> <span class="op">+</span> <span class="number">1</span>);
+                }
+            }
+            <span class="kw">let</span> <span class="ident">cycle_has_external_owners</span> <span class="op">=</span> <span class="ident">cycle</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">cycle_strong_count</span> <span class="op">=</span> <span class="ident">strong_counts_in_cycle</span>[<span class="ident">item</span>];
+                <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">strong</span>() <span class="op">&gt;</span> <span class="ident">cycle_strong_count</span>
+            });
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">cycle</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">cycle_has_external_owners</span> {
+                <span class="kw">let</span> <span class="ident">ids</span> <span class="op">=</span> <span class="ident">cycle</span>
                     .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>())
-                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-                <span class="ident">cycle_ids</span>.<span class="ident">sort</span>();
-                <span class="kw">let</span> <span class="ident">cycle_has_external_owners</span> <span class="op">=</span> <span class="ident">cycle_participants</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">object_id</span> <span class="op">=</span> <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>();
-                    <span class="kw">let</span> <span class="ident">cycle_strong_count</span> <span class="op">=</span> <span class="ident">strong_counts_in_cycle</span>[<span class="kw-2">&amp;</span><span class="ident">object_id</span>];
-                    <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">strong</span>() <span class="op">&gt;</span> <span class="ident">cycle_strong_count</span>
-                });
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">cycle_participants</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">cycle_has_external_owners</span> {
-                    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;CactusRef cycle detected with object ids: {:?}&quot;</span>, <span class="ident">cycle_ids</span>);
-                    <span class="comment">// break the cycle and remove all links</span>
-                    <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">cycle_participants</span> {
-                        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">item</span>.<span class="ident">as_ref</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
-                        <span class="kw">for</span> <span class="ident">other</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">cycle_participants</span> {
-                            <span class="kw">let</span> <span class="ident">other_id</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>();
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">links</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">other_id</span>);
-                        }
-                    }
-                    <span class="kw">for</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="kw">in</span> <span class="ident">cycle_participants</span> {
-                        <span class="macro">debug</span><span class="macro">!</span>(
-                            <span class="string">&quot;CactusRef dropping cycle participant ObjectId&lt;{}&gt;&quot;</span>,
-                            <span class="ident">obj</span>.<span class="ident">as_ref</span>().<span class="ident">value</span>.<span class="ident">object_id</span>()
-                        );
-                        <span class="comment">// destroy the contained object</span>
-                        <span class="ident">ptr</span>::<span class="ident">drop_in_place</span>(<span class="ident">obj</span>.<span class="ident">as_mut</span>());
-                    }
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">value</span>().<span class="ident">object_id</span>())
+                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
+                <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;orphaned cycle detected with object ids: {:?}&quot;</span>, <span class="ident">ids</span>);
+                <span class="comment">// Break the cycle and remove all links to prevent loops when</span>
+                <span class="comment">// dropping cycle refs.</span>
+                <span class="kw">for</span> (<span class="ident">left</span>, <span class="ident">right</span>) <span class="kw">in</span> <span class="ident">cycle</span>
+                    .<span class="ident">iter</span>()
+                    .<span class="ident">cartesian_product</span>(<span class="ident">cycle</span>.<span class="ident">iter</span>())
+                    .<span class="ident">filter</span>(<span class="op">|</span>(<span class="ident">left</span>, <span class="ident">right</span>)<span class="op">|</span> <span class="ident">left</span> <span class="op">!=</span> <span class="ident">right</span>)
+                {
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">left</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
+                    <span class="ident">links</span>.<span class="ident">remove</span>(<span class="ident">right</span>);
+                }
+                <span class="kw">for</span> <span class="kw-2">mut</span> <span class="ident">obj</span> <span class="kw">in</span> <span class="ident">cycle</span> {
+                    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;dropping cycle participant {{{}}}&quot;</span>, <span class="ident">obj</span>.<span class="ident">value</span>().<span class="ident">object_id</span>());
+                    <span class="comment">// destroy the contained object</span>
+                    <span class="ident">ptr</span>::<span class="ident">drop_in_place</span>(<span class="ident">obj</span>.<span class="number">0</span>.<span class="ident">as_mut</span>());
+                }
 
-                    <span class="comment">// remove the implicit &quot;strong weak&quot; pointer now that we&#39;ve</span>
-                    <span class="comment">// destroyed the contents.</span>
-                    <span class="self">self</span>.<span class="ident">dec_weak</span>();
+                <span class="comment">// remove the implicit &quot;strong weak&quot; pointer now that we&#39;ve</span>
+                <span class="comment">// destroyed the contents.</span>
+                <span class="self">self</span>.<span class="ident">dec_weak</span>();
 
-                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">weak</span>() <span class="op">==</span> <span class="number">0</span> {
-                        <span class="ident">Global</span>.<span class="ident">dealloc</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">cast</span>(), <span class="ident">Layout</span>::<span class="ident">for_value</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">as_ref</span>()));
-                    }
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">weak</span>() <span class="op">==</span> <span class="number">0</span> {
+                    <span class="ident">Global</span>.<span class="ident">dealloc</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">cast</span>(), <span class="ident">Layout</span>::<span class="ident">for_value</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">as_ref</span>()));
                 }
             }
         }
