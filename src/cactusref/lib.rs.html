@@ -35,8 +35,6 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(
     <span class="ident">allocator_api</span>,
@@ -46,13 +44,13 @@
     <span class="ident">doc_spotlight</span>,
     <span class="ident">dropck_eyepatch</span>,
     <span class="ident">optin_builtin_traits</span>,
-    <span class="ident">ptr_internals</span>
+    <span class="ident">ptr_internals</span>,
+    <span class="ident">specialization</span>
 )]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>, <span class="ident">intra_doc_link_resolution_failure</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">clippy</span>::<span class="ident">all</span>, <span class="ident">clippy</span>::<span class="ident">pedantic</span>)]</span>
 
 <span class="comment">// does not support Rc::downcast</span>
-<span class="comment">// Does not support operations on Rc&lt;[T]&gt;</span>
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
@@ -62,14 +60,12 @@
 <span class="kw">mod</span> <span class="ident">link</span>;
 <span class="kw">mod</span> <span class="ident">ptr</span>;
 <span class="kw">mod</span> <span class="ident">rc</span>;
-<span class="kw">mod</span> <span class="ident">reachable</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
 <span class="kw">mod</span> <span class="ident">weak</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">adoptable</span>::<span class="ident">Adoptable</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">reachable</span>::<span class="ident">Reachable</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">weak</span>::<span class="ident">Weak</span>;
 
 <span class="doccomment">/// Cactus alias for [`Rc`].</span>
