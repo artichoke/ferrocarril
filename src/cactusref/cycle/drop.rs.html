@@ -132,6 +132,8 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">ptr</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">alloc</span>::{<span class="ident">Alloc</span>, <span class="ident">Global</span>, <span class="ident">Layout</span>};
@@ -248,6 +250,8 @@
                 );
                 <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">cycle</span>.<span class="ident">keys</span>() {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
+                    <span class="ident">links</span>.<span class="ident">clear</span>();
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">back_links</span>.<span class="ident">borrow_mut</span>();
                     <span class="ident">links</span>.<span class="ident">clear</span>();
                 }
                 <span class="kw">for</span> (<span class="kw-2">mut</span> <span class="ident">obj</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">cycle</span> {
