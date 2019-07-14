@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cactusref` crate."><meta name="keywords" content="rust, rustlang, rust-lang, cactusref"><title>cactusref - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../cactusref/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate cactusref</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all cactusref's items</p></a><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'cactusref', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/cactusref/lib.rs.html#1-153' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>cactusref</a></span></h1><div class='docblock'><h1 id="-cactusref" class="section-header"><a href="#-cactusref">🌵 <code>CactusRef</code></a></h1>
 <p>Single-threaded, cycle-aware, reference-counting pointers. 'Rc' stands
 for 'Reference Counted'.</p>
-<p>The type <a href="../cactusref/struct.Rc.html" title="`Rc`"><code>Rc&lt;T&gt;</code></a> provides shared ownership of a value of type <code>T</code>,
+<p>The type <a href="../cactusref/struct.Rc.html"><code>Rc&lt;T&gt;</code></a> provides shared ownership of a value of type <code>T</code>,
 allocated in the heap. Invoking <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone"><code>clone</code></a> on <a href="../cactusref/struct.Rc.html" title="`Rc`"><code>Rc</code></a> produces a
 new pointer to the same value in the heap. When the last externally
 reachable <a href="../cactusref/struct.Rc.html" title="`Rc`"><code>Rc</code></a> pointer to a given value is destroyed, the pointed-to value
@@ -35,9 +35,9 @@ the cycle come from other nodes in the cycle.</p>
 <code>use cactusref::Adoptable;</code>, <code>Drop</code> uses the same implementation as
 <code>std::rc::Rc</code> (and leaks in the same way as <code>std::rc::Rc</code> if you form a
 cycle of strong references). The only costs you pay are the memory costs of
-an empty
-<a href="https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html"><code>RefCell</code></a><code>&lt;</code><a href="https://doc.rust-lang.org/nightly/std/collections/hash/set/struct.HashSet.html"><code>HashSet</code></a><code>&lt;T&gt;&gt;</code>
-for tracking adoptions and an if statement to check if this structure is
+two empty
+<a href="https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html"><code>RefCell</code></a><code>&lt;</code><a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html"><code>HashMap</code></a><code>&lt;T&gt;&gt;</code>
+for tracking adoptions and an if statement to check if these structures are
 empty on <code>drop</code>.</p>
 <p>Cycle detection uses breadth-first search for traversing the object graph.
 The algorithm supports arbitrarily large object graphs and will not overflow
@@ -80,7 +80,7 @@ deallocated once the <code>list</code> binding is dropped.</p>
         <span class="kw">let</span> <span class="ident">curr</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">nodes</span>[<span class="number">0</span>];
         <span class="ident">Rc</span>::<span class="ident">adopt</span>(<span class="ident">curr</span>, <span class="ident">prev</span>);
         <span class="ident">curr</span>.<span class="ident">borrow_mut</span>().<span class="ident">prev</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="ident">prev</span>));
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..=(<span class="ident">nodes</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>)).<span class="ident">rev</span>() {
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="ident">nodes</span>.<span class="ident">len</span>()).<span class="ident">rev</span>() {
             <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">nodes</span>[<span class="ident">i</span>];
             <span class="kw">let</span> <span class="ident">curr</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">nodes</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>];
             <span class="ident">curr</span>.<span class="ident">borrow_mut</span>().<span class="ident">next</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="ident">prev</span>));
@@ -99,8 +99,8 @@ deallocated once the <code>list</code> binding is dropped.</p>
     .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;a&quot;</span>.<span class="ident">repeat</span>(<span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>))
     .<span class="ident">take</span>(<span class="number">10</span>)
     .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-    <span class="kw">let</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">DoublyLinkedList</span>::<span class="ident">from</span>(<span class="ident">list</span>);
-    <span class="ident">drop</span>(<span class="ident">list</span>);
+<span class="kw">let</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">DoublyLinkedList</span>::<span class="ident">from</span>(<span class="ident">list</span>);
+<span class="ident">drop</span>(<span class="ident">list</span>);
 <span class="comment">// all memory consumed by the list nodes is reclaimed.</span></pre></div>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table><tr class='module-item'><td><a class="struct" href="struct.Rc.html" title='cactusref::Rc struct'>Rc</a></td><td class='docblock-short'><p>A single-threaded reference-counting pointer. 'Rc' stands for 'Reference
