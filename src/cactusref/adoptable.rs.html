@@ -40,6 +40,42 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">link</span>::<span class="ident">Link</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ptr</span>::<span class="ident">RcBoxPtr</span>;
@@ -72,13 +108,49 @@
     <span class="doccomment">/// droppable `Rc` created. During cycle detection, this increased strong</span>
     <span class="doccomment">/// count is used to determine whether the cycle is reachable by any objects</span>
     <span class="doccomment">/// outside of the cycle.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The following implements a self-referential array.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust</span>
+    <span class="doccomment">/// use cactusref::{Adoptable, Rc};</span>
+    <span class="doccomment">/// use std::cell::RefCell;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// #[derive(Default)]</span>
+    <span class="doccomment">/// struct Array {</span>
+    <span class="doccomment">///     buffer: Vec&lt;Rc&lt;RefCell&lt;Self&gt;&gt;&gt;,</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let array = Rc::new(RefCell::new(Array::default()));</span>
+    <span class="doccomment">/// for _ in 0..10 {</span>
+    <span class="doccomment">///     let item = Rc::clone(&amp;array);</span>
+    <span class="doccomment">///     Rc::adopt(&amp;array, &amp;item);</span>
+    <span class="doccomment">///     array.borrow_mut().buffer.push(item);</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// let weak = Rc::downgrade(&amp;array);</span>
+    <span class="doccomment">/// // 1 for the array binding, 10 for the `Rc`s in buffer</span>
+    <span class="doccomment">/// assert_eq!(Rc::strong_count(&amp;array), 11);</span>
+    <span class="doccomment">/// drop(array);</span>
+    <span class="doccomment">/// assert!(weak.upgrade().is_none());</span>
+    <span class="doccomment">/// assert_eq!(weak.weak_count(), Some(1));</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">adopt</span>(<span class="ident">this</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
-        <span class="comment">// Do not adopt self, do not adopt other multiple times</span>
-        <span class="kw">if</span> <span class="op">!</span><span class="self">Self</span>::<span class="ident">ptr_eq</span>(<span class="ident">this</span>, <span class="ident">other</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">links</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">Link</span>(<span class="ident">other</span>.<span class="ident">ptr</span>)) {
-            <span class="ident">other</span>.<span class="ident">inc_strong</span>();
-            <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>(<span class="ident">other</span>.<span class="ident">ptr</span>));
+        <span class="comment">// Adoption signals the intent to take an owned reference to `other`, so</span>
+        <span class="comment">// always increment the strong count of other. This allows `this` to be</span>
+        <span class="comment">// self-referential and allows `this` to own multiple references to</span>
+        <span class="comment">// `other`. These behaviors allow implementing self-referential</span>
+        <span class="comment">// collection types.</span>
+        <span class="ident">other</span>.<span class="ident">inc_strong</span>();
+        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">ptr_eq</span>(<span class="ident">this</span>, <span class="ident">other</span>) {
+            <span class="ident">this</span>.<span class="ident">inc_link</span>();
         }
+        <span class="comment">// Store a forward reference to `other` in `this`. This bookkeeping logs</span>
+        <span class="comment">// a strong reference and is used for discovering cycles.</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
+        <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>(<span class="ident">other</span>.<span class="ident">ptr</span>));
+        <span class="comment">// Store a backward reference to `this` in `other`. This bookkeeping is</span>
+        <span class="comment">// used for discovering cycles.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">inner</span>().<span class="ident">back_links</span>.<span class="ident">borrow_mut</span>();
         <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>(<span class="ident">this</span>.<span class="ident">ptr</span>));
     }

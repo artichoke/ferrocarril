@@ -119,9 +119,9 @@
     <span class="ident">clique</span>.<span class="ident">insert</span>(<span class="ident">this</span>);
     <span class="kw">loop</span> {
         <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">clique</span>.<span class="ident">len</span>();
-        <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">clique</span>.<span class="ident">clone</span>().<span class="ident">iter</span>() {
+        <span class="kw">for</span> (<span class="ident">item</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">clique</span>.<span class="ident">clone</span>().<span class="ident">iter</span>() {
             <span class="kw">let</span> <span class="ident">links</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>() }.<span class="ident">links</span>.<span class="ident">borrow</span>();
-            <span class="kw">for</span> <span class="ident">link</span> <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
+            <span class="kw">for</span> (<span class="ident">link</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
                 <span class="ident">clique</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">link</span>);
             }
         }
@@ -138,18 +138,18 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">cycle_refs</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">this</span>: <span class="ident">Link</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Link</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">usize</span><span class="op">&gt;</span> {
     <span class="comment">// Map of Link to number of strong references held by the cycle.</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle_owned_refs</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">default</span>();
-    <span class="comment">// `this` does not have a strong reference to itself.</span>
-    <span class="ident">cycle_owned_refs</span>.<span class="ident">insert</span>(<span class="ident">this</span>, <span class="number">0</span>);
+    <span class="comment">// `this` may have strong references to itself.</span>
+    <span class="ident">cycle_owned_refs</span>.<span class="ident">insert</span>(<span class="ident">this</span>, <span class="ident">this</span>.<span class="ident">self_link</span>());
     <span class="kw">loop</span> {
         <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">cycle_owned_refs</span>.<span class="ident">len</span>();
         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">cycle_owned_refs</span>.<span class="ident">clone</span>().<span class="ident">keys</span>() {
             <span class="kw">let</span> <span class="ident">links</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>() }.<span class="ident">links</span>.<span class="ident">borrow</span>();
-            <span class="kw">for</span> <span class="ident">link</span> <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
+            <span class="kw">for</span> (<span class="ident">link</span>, <span class="ident">strong</span>) <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
                 <span class="comment">// Forward references contribute to strong ownership counts.</span>
-                <span class="kw-2">*</span><span class="ident">cycle_owned_refs</span>.<span class="ident">entry</span>(<span class="kw-2">*</span><span class="ident">link</span>).<span class="ident">or_insert</span>(<span class="number">0</span>) <span class="op">+=</span> <span class="number">1</span>;
+                <span class="kw-2">*</span><span class="ident">cycle_owned_refs</span>.<span class="ident">entry</span>(<span class="kw-2">*</span><span class="ident">link</span>).<span class="ident">or_insert</span>(<span class="number">0</span>) <span class="op">+=</span> <span class="ident">strong</span>;
             }
             <span class="kw">let</span> <span class="ident">links</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">item</span>.<span class="number">0</span>.<span class="ident">as_ref</span>() }.<span class="ident">back_links</span>.<span class="ident">borrow</span>();
-            <span class="kw">for</span> <span class="ident">link</span> <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
+            <span class="kw">for</span> (<span class="ident">link</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">links</span>.<span class="ident">iter</span>() {
                 <span class="comment">// Back references do not contribute to strong ownership counts,</span>
                 <span class="comment">// but they are added to the set of cycle owned refs so BFS can</span>
                 <span class="comment">// include them in the reachability analysis.</span>
