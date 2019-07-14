@@ -151,6 +151,37 @@
 <span id="151">151</span>
 <span id="152">152</span>
 <span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(
     <span class="ident">allocator_api</span>,
@@ -212,9 +243,9 @@
 <span class="doccomment">//! `use cactusref::Adoptable;`, `Drop` uses the same implementation as</span>
 <span class="doccomment">//! `std::rc::Rc` (and leaks in the same way as `std::rc::Rc` if you form a</span>
 <span class="doccomment">//! cycle of strong references). The only costs you pay are the memory costs of</span>
-<span class="doccomment">//! two empty</span>
+<span class="doccomment">//! one [`Cell&lt;usize&gt;`](std::cell::Cell) for preventing double frees, two empty</span>
 <span class="doccomment">//! [`RefCell`](std::cell::RefCell)`&lt;`[`HashMap`](std::collections::HashMap)`&lt;T&gt;&gt;`</span>
-<span class="doccomment">//! for tracking adoptions and an if statement to check if these structures are</span>
+<span class="doccomment">//! for tracking adoptions, and an if statement to check if these structures are</span>
 <span class="doccomment">//! empty on `drop`.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Cycle detection uses breadth-first search for traversing the object graph.</span>
@@ -232,18 +263,48 @@
 <span class="doccomment">//! use std::cell::RefCell;</span>
 <span class="doccomment">//! use std::iter;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! struct DoublyLinkedList&lt;T&gt; {</span>
+<span class="doccomment">//! struct Node&lt;T&gt; {</span>
 <span class="doccomment">//!     pub prev: Option&lt;Rc&lt;RefCell&lt;Self&gt;&gt;&gt;,</span>
 <span class="doccomment">//!     pub next: Option&lt;Rc&lt;RefCell&lt;Self&gt;&gt;&gt;,</span>
 <span class="doccomment">//!     pub data: T,</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! impl&lt;T&gt; DoublyLinkedList&lt;T&gt; {</span>
-<span class="doccomment">//!     fn from(item: Vec&lt;T&gt;) -&gt; Rc&lt;RefCell&lt;Self&gt;&gt; {</span>
-<span class="doccomment">//!         let mut nodes = item</span>
+<span class="doccomment">//! struct List&lt;T&gt; {</span>
+<span class="doccomment">//!     pub head: Option&lt;Rc&lt;RefCell&lt;Node&lt;T&gt;&gt;&gt;&gt;,</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! impl&lt;T&gt; List&lt;T&gt; {</span>
+<span class="doccomment">//!     fn pop(&amp;mut self) -&gt; Option&lt;Rc&lt;RefCell&lt;Node&lt;T&gt;&gt;&gt;&gt; {</span>
+<span class="doccomment">//!         let head = self.head.take()?;</span>
+<span class="doccomment">//!         let tail = head.borrow_mut().prev.take();</span>
+<span class="doccomment">//!         let next = head.borrow_mut().next.take();</span>
+<span class="doccomment">//!         if let Some(ref tail) = tail {</span>
+<span class="doccomment">//!             Rc::unadopt(&amp;head, &amp;tail);</span>
+<span class="doccomment">//!             Rc::unadopt(&amp;tail, &amp;head);</span>
+<span class="doccomment">//!             tail.borrow_mut().next = next.as_ref().map(Rc::clone);</span>
+<span class="doccomment">//!             if let Some(ref next) = next {</span>
+<span class="doccomment">//!                 Rc::adopt(tail, next);</span>
+<span class="doccomment">//!             }</span>
+<span class="doccomment">//!         }</span>
+<span class="doccomment">//!         if let Some(ref next) = next {</span>
+<span class="doccomment">//!             Rc::unadopt(&amp;head, &amp;next);</span>
+<span class="doccomment">//!             Rc::unadopt(&amp;next, &amp;head);</span>
+<span class="doccomment">//!             next.borrow_mut().prev = tail.as_ref().map(Rc::clone);</span>
+<span class="doccomment">//!             if let Some(ref tail) = tail {</span>
+<span class="doccomment">//!                 Rc::adopt(next, tail);</span>
+<span class="doccomment">//!             }</span>
+<span class="doccomment">//!         }</span>
+<span class="doccomment">//!         self.head = next;</span>
+<span class="doccomment">//!         Some(head)</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! impl&lt;T&gt; From&lt;Vec&lt;T&gt;&gt; for List&lt;T&gt; {</span>
+<span class="doccomment">//!     fn from(list: Vec&lt;T&gt;) -&gt; Self {</span>
+<span class="doccomment">//!         let nodes = list</span>
 <span class="doccomment">//!             .into_iter()</span>
 <span class="doccomment">//!             .map(|data| {</span>
-<span class="doccomment">//!                 Rc::new(RefCell::new(Self {</span>
+<span class="doccomment">//!                 Rc::new(RefCell::new(Node {</span>
 <span class="doccomment">//!                     prev: None,</span>
 <span class="doccomment">//!                     next: None,</span>
 <span class="doccomment">//!                     data,</span>
@@ -251,27 +312,22 @@
 <span class="doccomment">//!             })</span>
 <span class="doccomment">//!             .collect::&lt;Vec&lt;_&gt;&gt;();</span>
 <span class="doccomment">//!         for i in 0..nodes.len() - 1 {</span>
-<span class="doccomment">//!             let prev = &amp;nodes[i];</span>
-<span class="doccomment">//!             let curr = &amp;nodes[i + 1];</span>
-<span class="doccomment">//!             curr.borrow_mut().prev = Some(Rc::clone(prev));</span>
-<span class="doccomment">//!             Rc::adopt(curr, prev);</span>
+<span class="doccomment">//!             let curr = &amp;nodes[i];</span>
+<span class="doccomment">//!             let next = &amp;nodes[i + 1];</span>
+<span class="doccomment">//!             curr.borrow_mut().next = Some(Rc::clone(next));</span>
+<span class="doccomment">//!             next.borrow_mut().prev = Some(Rc::clone(curr));</span>
+<span class="doccomment">//!             Rc::adopt(curr, next);</span>
+<span class="doccomment">//!             Rc::adopt(next, curr);</span>
 <span class="doccomment">//!         }</span>
-<span class="doccomment">//!         let prev = &amp;nodes[nodes.len() - 1];</span>
-<span class="doccomment">//!         let curr = &amp;nodes[0];</span>
-<span class="doccomment">//!         Rc::adopt(curr, prev);</span>
-<span class="doccomment">//!         curr.borrow_mut().prev = Some(Rc::clone(prev));</span>
-<span class="doccomment">//!         for i in (1..nodes.len()).rev() {</span>
-<span class="doccomment">//!             let prev = &amp;nodes[i];</span>
-<span class="doccomment">//!             let curr = &amp;nodes[i - 1];</span>
-<span class="doccomment">//!             curr.borrow_mut().next = Some(Rc::clone(prev));</span>
-<span class="doccomment">//!             Rc::adopt(curr, prev);</span>
-<span class="doccomment">//!         }</span>
-<span class="doccomment">//!         let prev = &amp;nodes[0];</span>
-<span class="doccomment">//!         let curr = &amp;nodes[nodes.len() - 1];</span>
-<span class="doccomment">//!         Rc::adopt(curr, prev);</span>
-<span class="doccomment">//!         curr.borrow_mut().next = Some(Rc::clone(prev));</span>
+<span class="doccomment">//!         let tail = &amp;nodes[nodes.len() - 1];</span>
+<span class="doccomment">//!         let head = &amp;nodes[0];</span>
+<span class="doccomment">//!         tail.borrow_mut().next = Some(Rc::clone(head));</span>
+<span class="doccomment">//!         head.borrow_mut().prev = Some(Rc::clone(tail));</span>
+<span class="doccomment">//!         Rc::adopt(tail, head);</span>
+<span class="doccomment">//!         Rc::adopt(head, tail);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//!         nodes.remove(0)</span>
+<span class="doccomment">//!         let head = Rc::clone(head);</span>
+<span class="doccomment">//!         Self { head: Some(head) }</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
@@ -279,7 +335,13 @@
 <span class="doccomment">//!     .map(|_| &quot;a&quot;.repeat(1024 * 1024))</span>
 <span class="doccomment">//!     .take(10)</span>
 <span class="doccomment">//!     .collect::&lt;Vec&lt;_&gt;&gt;();</span>
-<span class="doccomment">//! let list = DoublyLinkedList::from(list);</span>
+<span class="doccomment">//! let mut list = List::from(list);</span>
+<span class="doccomment">//! let head = list.pop().unwrap();</span>
+<span class="doccomment">//! assert_eq!(Rc::strong_count(&amp;head), 1);</span>
+<span class="doccomment">//! assert_eq!(list.head.as_ref().map(Rc::strong_count), Some(3));</span>
+<span class="doccomment">//! let weak = Rc::downgrade(&amp;head);</span>
+<span class="doccomment">//! drop(head);</span>
+<span class="doccomment">//! assert!(weak.upgrade().is_none());</span>
 <span class="doccomment">//! drop(list);</span>
 <span class="doccomment">//! // all memory consumed by the list nodes is reclaimed.</span>
 <span class="doccomment">//! ```</span>
