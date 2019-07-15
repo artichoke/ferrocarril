@@ -129,11 +129,6 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
-<span id="132">132</span>
-<span id="133">133</span>
-<span id="134">134</span>
-<span id="135">135</span>
-<span id="136">136</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">link</span>::<span class="ident">Link</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ptr</span>::<span class="ident">RcBoxPtr</span>;
@@ -203,9 +198,7 @@
         <span class="comment">// self-referential and allows `this` to own multiple references to</span>
         <span class="comment">// `other`. These behaviors allow implementing self-referential</span>
         <span class="comment">// collection types.</span>
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">ptr_eq</span>(<span class="ident">this</span>, <span class="ident">other</span>) {
-            <span class="ident">this</span>.<span class="ident">inc_link</span>();
-        }
+
         <span class="comment">// Store a forward reference to `other` in `this`. This bookkeeping logs</span>
         <span class="comment">// a strong reference and is used for discovering cycles.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
@@ -258,9 +251,6 @@
     <span class="doccomment">/// assert_eq!(weak.weak_count(), Some(1));</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">unadopt</span>(<span class="ident">this</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">ptr_eq</span>(<span class="ident">this</span>, <span class="ident">other</span>) {
-            <span class="ident">this</span>.<span class="ident">dec_link</span>();
-        }
         <span class="comment">// Remove a forward reference to `other` in `this`. This bookkeeping</span>
         <span class="comment">// logs a strong reference and is used for discovering cycles.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
