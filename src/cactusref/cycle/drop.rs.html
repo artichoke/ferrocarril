@@ -263,6 +263,7 @@
 <span id="263">263</span>
 <span id="264">264</span>
 <span id="265">265</span>
+<span id="266">266</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">ptr</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">alloc</span>::{<span class="ident">Alloc</span>, <span class="ident">Global</span>, <span class="ident">Layout</span>};
@@ -367,12 +368,6 @@
     <span class="doccomment">/// links is the number of adoptions that are alive and nodes is the number</span>
     <span class="doccomment">/// objects in the cycle.</span>
     <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="comment">// If a drop is occuring it is because there was an existing `Rc` which</span>
-        <span class="comment">// is maintaining a strong count. Decrement the strong count on drop,</span>
-        <span class="comment">// even if this `Rc` is dead. This ensures `Weak::upgrade` behaves</span>
-        <span class="comment">// correctly for deallocated cycles and does not cause a use-after-free.</span>
-        <span class="self">self</span>.<span class="ident">dec_strong</span>();
-
         <span class="comment">// If `self` is held in a cycle, as we deallocate members of the cycle,</span>
         <span class="comment">// they will drop their refs to `self`. To prevent a double free, mark</span>
         <span class="comment">// nodes as dead if they have already been deallocated and short</span>
@@ -380,6 +375,13 @@
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_dead</span>() {
             <span class="kw">return</span>;
         }
+
+        <span class="comment">// If a drop is occuring it is because there was an existing `Rc` which</span>
+        <span class="comment">// is maintaining a strong count. Decrement the strong count on drop,</span>
+        <span class="comment">// even if this `Rc` is dead. This ensures `Weak::upgrade` behaves</span>
+        <span class="comment">// correctly for deallocated cycles and does not cause a use-after-free.</span>
+        <span class="self">self</span>.<span class="ident">dec_strong</span>();
+
         <span class="kw">unsafe</span> {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow</span>().<span class="ident">is_empty</span>() {
                 <span class="comment">// If links is empty, the object is either not in a cycle or</span>
