@@ -36,7 +36,7 @@ the cycle come from other nodes in the cycle.</p>
 <code>std::rc::Rc</code> (and leaks in the same way as <code>std::rc::Rc</code> if you form a
 cycle of strong references). The only costs you pay are the memory costs of
 two empty
-<a href="https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html"><code>RefCell</code></a><code>&lt;</code><a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html"><code>HashMap</code></a><code>&lt;NonNull&lt;T&gt;, usize&gt;&gt;</code>
+<a href="https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html"><code>RefCell</code></a><code>&lt;</code><a href="hashbrown::HashMap"><code>HashMap</code></a><code>&lt;NonNull&lt;T&gt;, usize&gt;&gt;</code>
 for tracking adoptions and an if statement to check if these structures are
 empty on <code>drop</code>.</p>
 <p>Cycle detection uses breadth-first search for traversing the object graph.
