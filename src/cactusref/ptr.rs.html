@@ -145,7 +145,6 @@
 <span id="145">145</span>
 <span id="146">146</span>
 <span id="147">147</span>
-<span id="148">148</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">ptr</span>::{<span class="self">self</span>, <span class="ident">NonNull</span>, <span class="ident">Unique</span>};
@@ -234,7 +233,6 @@
     <span class="kw">pub</span> <span class="ident">strong</span>: <span class="ident">Cell</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">weak</span>: <span class="ident">Cell</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">links</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Links</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">back_links</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Links</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
     <span class="kw">pub</span> <span class="ident">value</span>: <span class="ident">T</span>,
 }
 
@@ -292,7 +290,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">sizeof_rcbox</span>() {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">RcBox</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span>(), <span class="number">112</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">RcBox</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span>(), <span class="number">64</span>);
     }
 }
 </pre></div>

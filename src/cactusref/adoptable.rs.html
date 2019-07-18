@@ -129,6 +129,14 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">link</span>::<span class="ident">Link</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ptr</span>::<span class="ident">RcBoxPtr</span>;
@@ -202,11 +210,15 @@
         <span class="comment">// Store a forward reference to `other` in `this`. This bookkeeping logs</span>
         <span class="comment">// a strong reference and is used for discovering cycles.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
-        <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>(<span class="ident">other</span>.<span class="ident">ptr</span>));
+        <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>::<span class="ident">forward</span>(<span class="ident">other</span>.<span class="ident">ptr</span>));
+        <span class="comment">// `this` and `other` may be the same `Rc`. Drop the borrow on `links`</span>
+        <span class="comment">// before accessing `other` to avoid a already borrowed error from the</span>
+        <span class="comment">// `RefCell`.</span>
+        <span class="ident">drop</span>(<span class="ident">links</span>);
         <span class="comment">// Store a backward reference to `this` in `other`. This bookkeeping is</span>
         <span class="comment">// used for discovering cycles.</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">inner</span>().<span class="ident">back_links</span>.<span class="ident">borrow_mut</span>();
-        <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>(<span class="ident">this</span>.<span class="ident">ptr</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
+        <span class="ident">links</span>.<span class="ident">insert</span>(<span class="ident">Link</span>::<span class="ident">backward</span>(<span class="ident">this</span>.<span class="ident">ptr</span>));
     }
 
     <span class="doccomment">/// Perform bookkeeping to record that `this` no longer has an owned</span>
@@ -254,11 +266,15 @@
         <span class="comment">// Remove a forward reference to `other` in `this`. This bookkeeping</span>
         <span class="comment">// logs a strong reference and is used for discovering cycles.</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
-        <span class="ident">links</span>.<span class="ident">remove</span>(<span class="ident">Link</span>(<span class="ident">other</span>.<span class="ident">ptr</span>));
+        <span class="ident">links</span>.<span class="ident">remove</span>(<span class="ident">Link</span>::<span class="ident">forward</span>(<span class="ident">other</span>.<span class="ident">ptr</span>), <span class="number">1</span>);
+        <span class="comment">// `this` and `other` may be the same `Rc`. Drop the borrow on `links`</span>
+        <span class="comment">// before accessing `other` to avoid a already borrowed error from the</span>
+        <span class="comment">// `RefCell`.</span>
+        <span class="ident">drop</span>(<span class="ident">links</span>);
         <span class="comment">// Remove a backward reference to `this` in `other`. This bookkeeping is</span>
         <span class="comment">// used for discovering cycles.</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">inner</span>().<span class="ident">back_links</span>.<span class="ident">borrow_mut</span>();
-        <span class="ident">links</span>.<span class="ident">remove</span>(<span class="ident">Link</span>(<span class="ident">this</span>.<span class="ident">ptr</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">inner</span>().<span class="ident">links</span>.<span class="ident">borrow_mut</span>();
+        <span class="ident">links</span>.<span class="ident">remove</span>(<span class="ident">Link</span>::<span class="ident">backward</span>(<span class="ident">this</span>.<span class="ident">ptr</span>), <span class="number">1</span>);
     }
 }
 </pre></div>

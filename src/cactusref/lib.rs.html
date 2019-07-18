@@ -243,7 +243,7 @@
 <span class="doccomment">//! `use cactusref::Adoptable;`, `Drop` uses the same implementation as</span>
 <span class="doccomment">//! `std::rc::Rc` (and leaks in the same way as `std::rc::Rc` if you form a</span>
 <span class="doccomment">//! cycle of strong references). The only costs you pay are the memory costs of</span>
-<span class="doccomment">//! two empty</span>
+<span class="doccomment">//! one empty</span>
 <span class="doccomment">//! [`RefCell`](std::cell::RefCell)`&lt;`[`HashMap`](hashbrown::HashMap)`&lt;NonNull&lt;T&gt;, usize&gt;&gt;`</span>
 <span class="doccomment">//! for tracking adoptions and an if statement to check if these structures are</span>
 <span class="doccomment">//! empty on `drop`.</span>
