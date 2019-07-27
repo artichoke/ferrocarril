@@ -1,6 +1,6 @@
 # ferrocarril
 
-[![CircleCI](https://circleci.com/gh/lopopolo/ferrocarril.svg?style=svg)](https://circleci.com/gh/lopopolo/ferrocarril)
+[![CircleCI](https://circleci.com/gh/artichoke/ferrocarril.svg?style=svg)](https://circleci.com/gh/artichoke/ferrocarril)
 
 ferrocarril aims to embed a [Ruby on Rails](https://github.com/rails/rails) web
 application that talks to an external MySQL database in Rust and serve the app
@@ -64,7 +64,7 @@ Then, open `http://localhost:8000` on your browser.
 - Defines [classes and modules in Rust](/foolsgold/src/foolsgold.rs) and loads
   them into the [virtual filesystem](/mruby-vfs) such that Ruby code can require
   them.
-- [Shares Rust objects across mruby interpreter instances](https://github.com/lopopolo/ferrocarril/blob/2144cf230360e18937664393b4f0e245718386a1/foolsgold/src/foolsgold.rs#L90-L110).
+- [Shares Rust objects across mruby interpreter instances](https://github.com/artichoke/ferrocarril/blob/2144cf230360e18937664393b4f0e245718386a1/foolsgold/src/foolsgold.rs#L90-L110).
 - Defines Ruby classes whose
   [instances are backed by Rust structs](/mruby/tests/manual.rs).
 - [Bridges Rust and Ruby](/nemesis/src/handler.rs) by converting a
@@ -88,9 +88,9 @@ cargo run --bin rirb
 ## Contributing
 
 There is a lot to build! If you'd like to help out, take a look at the
-[open issues](https://github.com/lopopolo/ferrocarril/issues). Tickets that are
+[open issues](https://github.com/artichoke/ferrocarril/issues). Tickets that are
 tagged with
-[_good first issue_](https://github.com/lopopolo/ferrocarril/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[_good first issue_](https://github.com/artichoke/ferrocarril/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 might be a good introduction to the codebase.
 
 ### Setup
@@ -130,7 +130,7 @@ mruby does not implement any of the
 [Ruby 2.6 standard library](https://ruby-doc.org/stdlib-2.6.3/).
 
 See the stdlib tracking ticket
-([GH-8](https://github.com/lopopolo/ferrocarril/issues/8)) for more details.
+([GH-8](https://github.com/artichoke/ferrocarril/issues/8)) for more details.
 
 #### Gems
 

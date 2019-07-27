@@ -20,7 +20,7 @@ list of successful specs. If any spec fails, spec-runner will exit with a
 non-zero exit code and print a list of spec failures and backtraces.
 
 For example, before
-[`87678cc`](https://github.com/lopopolo/ferrocarril/commit/87678ccd39afba73876290690b36e3e9fa051b8a)
+[`87678cc`](https://github.com/artichoke/ferrocarril/commit/87678ccd39afba73876290690b36e3e9fa051b8a)
 landed, `uri` was failing one spec related to private method visibility. The
 failure is reported like this:
 

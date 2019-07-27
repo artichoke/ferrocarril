@@ -1,5 +1,5 @@
 //! Convert a
-//! [`Nemesis::Response`](https://github.com/lopopolo/ferrocarril/blob/master/nemesis/ruby/lib/nemesis/response.rb)
+//! [`Nemesis::Response`](https://github.com/artichoke/ferrocarril/blob/master/nemesis/ruby/lib/nemesis/response.rb)
 //! Rack response to a [`rocket::Response`].
 //!
 //! Based on
