@@ -1,6 +1,5 @@
 [workspace]
 members = [
-  "cactusref",
   "foolsgold",
   "hubris",
   "mruby",
