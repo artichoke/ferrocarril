@@ -1,5 +1,4 @@
 var ALIASES = {};
-ALIASES["cactusref"] = {};
 ALIASES["foolsgold"] = {};
 ALIASES["hubris"] = {};
 ALIASES["mruby"] = {};
