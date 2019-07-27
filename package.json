@@ -8,8 +8,8 @@
     "ruby",
     "rust"
   ],
-  "homepage": "https://github.com/lopopolo/ferrocarril",
-  "bugs": "https://github.com/lopopolo/ferrocarril/issues",
+  "homepage": "https://github.com/artichoke/ferrocarril",
+  "bugs": "https://github.com/artichoke/ferrocarril/issues",
   "license": "MIT",
   "author": {
     "name": "Ryan Lopopolo",
@@ -25,7 +25,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/lopopolo/ferrocarril.git"
+    "url": "https://github.com/artichoke/ferrocarril.git"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

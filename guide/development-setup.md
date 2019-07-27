@@ -201,7 +201,7 @@ If after running `yarn upgrade` there are still outdated packages reported by
 `yarn outdated`, there has likely been a major release of a dependency. If you
 would like to update the dependency and deal with any breakage, please do;
 otherwise, please
-[file an issue](https://github.com/lopopolo/ferrocarril/issues/new).
+[file an issue](https://github.com/artichoke/ferrocarril/issues/new).
 
 ## Source Code Statistics
 
