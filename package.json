@@ -81,6 +81,7 @@
   },
   "scripts": {
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "format-text": "prettier --write --prose-wrap always './*.{css,html,js,json,md}' '{!(target),!(node_modules)}**/*.{css,html,js,json,md}'",
     "lint": "./scripts/lint.sh",
     "loc": "loc --exclude vendor --exclude ffi\\.rs --exclude mruby-bin/ruby/fixtures --exclude spec-runner/spec"
   }

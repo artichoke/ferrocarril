@@ -68,6 +68,4 @@ find . -type f \
 # Text sources (e.g. HTML, Markdown)
 
 ## Format with prettier
-yarn run prettier --write --prose-wrap always \
-  './*.{css,html,js,json,md}' \
-  '{!(target),!(node_modules)}**/*.{css,html,js,json,md}'
+yarn run format-text
